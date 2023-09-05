@@ -14,8 +14,11 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
   - [Table of contents](#table-of-contents)
   - [Branching strategy](#branching-strategy)
     - [Branches](#branches)
-    - [Naming](#naming)
+  - [Naming](#naming)
+    - [Branch naming](#branch-naming)
       - [Example](#example)
+    - [Commit naming](#commit-naming)
+      - [Example](#example-1)
   - [Repository rules](#repository-rules)
   - [Tree](#tree)
     - [Notes](#notes)
@@ -32,7 +35,9 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 - **Feat branch** - these branches are branched from *test branch* and are used for developing.
   - Each feature branch is used for a different task and each feature branch belongs to it's owner and should be worked on by the owner.
 
-### Naming
+## Naming
+
+### Branch naming
 
 - Branch names should begin with *feat*
 - Feat branch name should give information about the task
@@ -41,13 +46,29 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 
 #### Example
 
-- feat-pipeline
-- feat-pipeline-2
+- "feat-pipeline"
+- "feat-pipeline-2"
+
+### Commit naming
+
+Commit messages should begin with one of the following:
+
+- Add
+- Delete
+- Change
+- Fix
+
+#### Example
+
+- "Add ASP.NET template"
+- "Change README.md"
+- "Delete build files"
 
 ## Repository rules
 
-1. Approver count: 1
-2. Feat branches merge to test
+- Approver count
+  - Main: 2
+  - Test: 1
 
 ## Tree
 
