@@ -1,9 +1,20 @@
 # psi_webapp
 
-Aldas Vertelis
+## Description
 
-Danielius Podbielski
+## Table of contents
 
-Kanstantinas Piatrashka
+- [psi\_webapp](#psi_webapp)
+  - [Description](#description)
+  - [Table of contents](#table-of-contents)
+  - [Branching strategy](#branching-strategy)
+  - [Authors](#authors)
 
-Motiejus Šveikauskas
+## Branching strategy
+
+## Authors
+
+- Aldas Vertelis
+- Danielius Podbielski
+- Kanstantinas Piatrashka
+- Motiejus Šveikauskas
