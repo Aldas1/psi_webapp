@@ -6,6 +6,27 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 
 ## Tech stack
 
+- ASP.NET
+- React
+
+## Development setup
+
+This repo contains two projects: the web api written using ASP.NET (`QuizAppApi`) and react frontend using Vite (`react-app`).
+You first need to run web api and, after that, run the frontend.
+
+### Backend setup
+
+If you are using an ide, setup should be straightforward. You can also run it via cli:
+
+```
+dotnet run # or
+dotnet watch
+```
+
+### Frontend setup
+
+Please check the [react-app README](react-app/README.md)
+
 ## Table of contents
 
 - [Quiz app](#quiz-app)
@@ -32,14 +53,14 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 
 - **Main branch** - used as a production branch and is only updated when the app is ready for production.
 - **Test branch** - used as a branch for all feature branches to merge and in this environment the app is tested.
-- **Feat branch** - these branches are branched from *test branch* and are used for developing.
+- **Feat branch** - these branches are branched from _test branch_ and are used for developing.
   - Each feature branch is used for a different task and each feature branch belongs to it's owner and should be worked on by the owner.
 
 ## Naming
 
 ### Branch naming
 
-- Branch names should begin with *feat*
+- Branch names should begin with _feat_
 - Feat branch name should give information about the task
 - Words in branch name are seperated by dashes (-)
 - If the feat branch is a branch of another feat branch, the name should have a number at the end
@@ -72,7 +93,7 @@ Commit messages should begin with one of the following:
 
 ## Tree
 
-``` bash
+```bash
 .
 ├── misc
 │   └── branching_strat.png
