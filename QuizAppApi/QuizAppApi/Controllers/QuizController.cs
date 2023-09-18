@@ -9,9 +9,9 @@ namespace QuizAppApi.Controllers
         private readonly QuizStorage _quizzes = QuizStorage.Instance;
 
         [HttpPost]
-        public ActionResult<QuizCreationResponse> CreateQuiz([FromBody]QuizCreationRequest request)
+        public ActionResult<QuizCreationResponse> CreateQuiz([FromBody] QuizCreationRequest request)
         {
-            return BadRequest(new QuizCreationResponse { Status = "failed"});
+            return BadRequest(new QuizCreationResponse { Status = "failed" });
         }
 
         [HttpGet]
@@ -21,7 +21,7 @@ namespace QuizAppApi.Controllers
             List<QuizReponse> quizesResponse = new();
             foreach (var quiz in _quizzes)
             {
-                quizesResponse.Add(new QuizReponse{ Name = quiz.Name, Id = quiz.Id});
+                quizesResponse.Add(new QuizReponse { Name = quiz.Name, Id = quiz.Id });
             }
             return quizesResponse;
         }
@@ -30,13 +30,21 @@ namespace QuizAppApi.Controllers
         [HttpGet("{id}/questions")]
         public ActionResult<IEnumerable<QuestionResponse>> GetQuestions(Guid id)
         {
-            var quiz =_quizzes.Find(q => q.Id == id);
+            var quiz = _quizzes.Find(q => q.Id == id);
+            if (quiz == null)
+                return NotFound();
             List<QuestionResponse> questions = new();
-            foreach(var question in quiz.Questions)
+            foreach (var question in quiz.Questions)
             {
                 questions.Add(new QuestionResponse { QuestionText = question.QuestionText });
             }
             return questions;
+        }
+
+        [HttpPost("{id}/submit")]
+        public ActionResult<SubmitResponse> SubmitAnswers(Guid id, [FromBody] SubmitRequest request)
+        {
+            return BadRequest(new { StatusCode = "Not implemented" });
         }
     }
 
@@ -65,5 +73,15 @@ namespace QuizAppApi.Controllers
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
+    }
+
+    public class SubmitResponse
+    {
+
+    }
+
+    public class SubmitRequest
+    {
+
     }
 }
