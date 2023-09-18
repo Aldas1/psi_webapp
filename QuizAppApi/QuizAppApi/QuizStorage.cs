@@ -5,15 +5,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace QuizAppApi
 {
-    public class QuizStorage : List<Quiz>
+    public sealed class QuizStorage : List<Quiz>
     {
-        private static readonly QuizStorage _instance = new();
+        private static readonly Lazy<QuizStorage> _instance = new(() => new QuizStorage());
         public static QuizStorage Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get => _instance.Value;
         }
         private QuizStorage()
         {
