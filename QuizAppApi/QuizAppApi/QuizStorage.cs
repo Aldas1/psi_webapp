@@ -1,13 +1,13 @@
 ﻿using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 
 namespace QuizAppApi
 {
-    public class QuizStorage : IEnumerable<Quiz>
+    public class QuizStorage : List<Quiz>
     {
         private static readonly QuizStorage _instance = new();
-        private readonly List<Quiz> _quizzes = new();
         public static QuizStorage Instance
         {
             get
@@ -30,32 +30,8 @@ namespace QuizAppApi
             citiesQuiz.Questions.Add(
                 new SingleChoiceQuizQuestion("Do all countries have capitals?", new List<string>() { "Yes", "No" }, new SingleChoiceQuizAnswer(0))
             );
-            _quizzes.Add(citiesQuiz);
+            this.Add(citiesQuiz);
         }
 
-        public void Add(Quiz quiz)
-        {
-            _quizzes.Add(quiz);
-        }
-
-        public void Remove(Quiz quiz)
-        {
-            _quizzes.Remove(quiz);
-        }
-
-        public void Clear()
-        {
-            _quizzes.Clear();
-        }
-
-        public IEnumerator<Quiz> GetEnumerator()
-        {
-            return _quizzes.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }
