@@ -1,28 +1,46 @@
-import { Link } from "react-router-dom";
-import "./Root.css";
-import { useEffect, useState } from "react";
+import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Root() {
-  const [authors, setAuthors] = useState(null);
-  useEffect(() => {
-    let ignore = false;
-    fetch("/api/authors")
-      .then((res) => res.json())
-      .then((res) => {
-        if (!ignore) {
-          setAuthors(res);
-        }
-      })
-      .catch(() => setAuthors(["ERROR"]));
-    return () => (ignore = true);
-  }, []);
   return (
-    <>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/quizCreator">QuizCreator</Link>
-      </nav>
-      {authors && <p>Authors: {authors.join(", ")}</p>}
-    </>
+    <Grid container spacing={2} justifyContent="center">
+      {/* Create Quiz Button */}
+      <Grid item xs={12} sm={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h5" component="div">
+              Create Quiz
+            </Typography>
+            <Button
+              component={RouterLink}
+              to="/createQuiz"
+              variant="contained"
+              color="primary"
+            >
+              Go
+            </Button>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* List Quizzes Button */}
+      <Grid item xs={12} sm={6}>
+        <Card>
+          <CardContent>
+            <Typography variant="h5" component="div">
+              List Quizzes
+            </Typography>
+            <Button
+              component={RouterLink}
+              to="/quizList"
+              variant="contained"
+              color="primary"
+            >
+              Go
+            </Button>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }
