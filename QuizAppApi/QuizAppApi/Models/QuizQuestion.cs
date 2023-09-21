@@ -13,5 +13,7 @@
             QuestionType = GetQuestionType();
             CorrectAnswer = correctAnswer;
         }
+
+        public abstract Object GenerateApiParameters();
     }
 }

@@ -36,7 +36,7 @@ namespace QuizAppApi.Controllers
             List<QuestionResponse> questions = new();
             foreach (var question in quiz.Questions)
             {
-                questions.Add(new QuestionResponse { QuestionText = question.QuestionText });
+                questions.Add(new QuestionResponse { QuestionText = question.QuestionText, QuestionType = question.QuestionType, QuestionParameters = question.GenerateApiParameters()  });
             }
             return questions;
         }
@@ -67,6 +67,9 @@ namespace QuizAppApi.Controllers
     public class QuestionResponse
     {
         public string QuestionText { get; set; }
+        public string QuestionType { get; set; }
+
+        public Object QuestionParameters { get; set; }
     }
 
     public class QuizReponse
