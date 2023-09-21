@@ -10,7 +10,15 @@
 
         public override string GetQuestionType()
         {
-            return "singleChoiceQuizQuestion";
+            return "singleChoiceQuestion";
+        }
+
+        public override object GenerateApiParameters()
+        {
+            return new
+            {
+                Options = Options
+            };
         }
 
     }
