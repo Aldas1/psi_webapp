@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Controllers
 {
@@ -44,7 +45,26 @@ namespace QuizAppApi.Controllers
         [HttpPost("{id}/submit")]
         public ActionResult<SubmitResponse> SubmitAnswers(Guid id, [FromBody] SubmitRequest request)
         {
-            return BadRequest(new { StatusCode = "Not implemented" });
+            //implement submitanswers response
+            var quiz = _quizzes.Find(q => q.Id == id);
+
+            if (quiz == null)
+                return NotFound();
+
+            bool submissionResult = quiz.SubmitAnswers(request.Answers);
+
+            ActionResult<SubmitResponse> response;
+ 
+            if (submissionResult)
+            {
+                response = Ok(new SubmitResponse { Status = "success" });
+            }
+            else
+            {
+                response = BadRequest(new SubmitResponse { Status = "failed" });
+            }
+
+            return response;
         }
     }
 
@@ -77,14 +97,14 @@ namespace QuizAppApi.Controllers
         public string Name { get; set; }
         public Guid Id { get; set; }
     }
-
+    
     public class SubmitResponse
     {
-
+        public string Status { get; set; }
     }
 
     public class SubmitRequest
     {
-
+        public List<SingleChoiceQuizAnswer> Answers { get; set; }
     }
 }
