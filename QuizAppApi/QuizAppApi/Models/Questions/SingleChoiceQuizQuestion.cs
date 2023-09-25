@@ -21,5 +21,11 @@
             };
         }
 
+        public static QuizQuestion CreateFromParameters(string questionText, object questionParameters)
+        {
+            //todo add explanation to read me
+
+            return new SingleChoiceQuizQuestion("", new List<string>(), new SingleChoiceQuizAnswer(0));
+        }
     }
 }

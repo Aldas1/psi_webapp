@@ -14,5 +14,7 @@
             Id = Guid.NewGuid();
             Questions = new List<QuizQuestion>();
         }
+        //TODO add question
+        //jau yra natively?
     }
 }
