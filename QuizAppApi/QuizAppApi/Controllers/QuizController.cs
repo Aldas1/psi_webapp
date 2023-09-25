@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Controllers
@@ -24,6 +25,7 @@ namespace QuizAppApi.Controllers
             {
                 quizesResponse.Add(new QuizReponse { Name = quiz.Name, Id = quiz.Id });
             }
+
             return quizesResponse;
         }
 
@@ -37,24 +39,46 @@ namespace QuizAppApi.Controllers
             List<QuestionResponse> questions = new();
             foreach (var question in quiz.Questions)
             {
-                questions.Add(new QuestionResponse { QuestionText = question.QuestionText, QuestionType = question.QuestionType, QuestionParameters = question.GenerateApiParameters()  });
+                questions.Add(new QuestionResponse
+                {
+                    QuestionText = question.QuestionText, QuestionType = question.QuestionType,
+                    QuestionParameters = question.GenerateApiParameters()
+                });
             }
+
             return questions;
         }
 
         [HttpPost("{id}/submit")]
-        public ActionResult<SubmitResponse> SubmitAnswers(Guid id, [FromBody] SubmitRequest request)
+        public ActionResult<SubmitResponse> SubmitAnswers(Guid id, [FromBody] List<QuizAnswerRequest> answers)
         {
-            //implement submitanswers response
             var quiz = _quizzes.Find(q => q.Id == id);
 
             if (quiz == null)
                 return NotFound();
 
-            bool submissionResult = quiz.SubmitAnswers(request.Answers);
+            var quizAnswers = new List<QuizAnswer>();
+
+            foreach (var submission in answers)
+            {
+                if (submission.QuestionIndex >= 0 && submission.QuestionIndex < quiz.Questions.Count)
+                {
+                    var question = quiz.Questions[submission.QuestionIndex];
+
+                    if (question is SingleChoiceQuizQuestion singleChoiceQuestion)
+                    {
+                        // Handle single-choice questions
+                        var selectedAnswer = new SingleChoiceQuizAnswer(submission.SelectedOptionIndex);
+                        quizAnswers.Add(selectedAnswer);
+                    }
+                    // Add handling for other question types if needed
+                }
+            }
+
+            bool submissionResult = quiz.SubmitAnswers(quizAnswers);
 
             ActionResult<SubmitResponse> response;
- 
+
             if (submissionResult)
             {
                 response = Ok(new SubmitResponse { Status = "success" });
@@ -66,45 +90,58 @@ namespace QuizAppApi.Controllers
 
             return response;
         }
-    }
 
-    public class QuizCreationResponse
-    {
-        public string Status { get; set; }
-    }
 
-    public class QuizCreationRequest
-    {
-        public string Name { get; set; }
-        public List<QuestionRequest> Questions { get; set; }
-    }
 
-    public class QuestionRequest
-    {
 
-    }
 
-    public class QuestionResponse
-    {
-        public string QuestionText { get; set; }
-        public string QuestionType { get; set; }
+        public class QuizCreationResponse
+        {
+            public string Status { get; set; }
+        }
 
-        public Object QuestionParameters { get; set; }
-    }
+        public class QuizCreationRequest
+        {
+            public string Name { get; set; }
+            public List<QuestionRequest> Questions { get; set; }
+        }
 
-    public class QuizReponse
-    {
-        public string Name { get; set; }
-        public Guid Id { get; set; }
-    }
-    
-    public class SubmitResponse
-    {
-        public string Status { get; set; }
-    }
+        public class QuestionRequest
+        {
 
-    public class SubmitRequest
-    {
-        public List<SingleChoiceQuizAnswer> Answers { get; set; }
+        }
+
+        public class QuestionResponse
+        {
+            public string QuestionText { get; set; }
+            public string QuestionType { get; set; }
+
+            public Object QuestionParameters { get; set; }
+        }
+
+        public class QuizReponse
+        {
+            public string Name { get; set; }
+            public Guid Id { get; set; }
+        }
+
+        public class SubmitResponse
+        {
+            public string Status { get; set; }
+        }
+
+        public class SubmitRequest
+        {
+            public List<SingleChoiceQuizAnswer> Answers { get; set; }
+        }
+
+        public class QuizAnswerRequest
+        {
+            public int QuestionIndex { get; set; }
+            public int CorrectOptionIndex { get; set; }
+            public string AnswerString { get; set; }
+            public int SelectedOptionIndex { get; set; }
+        }
+
     }
 }

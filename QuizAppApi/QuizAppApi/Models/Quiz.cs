@@ -1,4 +1,5 @@
-﻿using QuizAppApi.Models.Questions;
+﻿using QuizAppApi.Controllers;
+using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Models
 {
@@ -16,21 +17,38 @@ namespace QuizAppApi.Models
             Id = Guid.NewGuid();
             Questions = new List<QuizQuestion>();
         }
-        
-        public bool SubmitAnswers(List<SingleChoiceQuizAnswer> answers)
+
+        public bool SubmitAnswers(List<QuizController.QuizAnswerRequest> answers)
         {
-            foreach (var question in Questions)
+            foreach (var submission in answers)
             {
-                var matchingAnswer = answers.FirstOrDefault(answer => answer.Question == question);
-                if (matchingAnswer != null)
+                if (submission.QuestionIndex >= 0 && submission.QuestionIndex < Questions.Count)
                 {
-                    bool isCorrect = matchingAnswer.OptionIndex == question.CorrectOptionIndex;
-                    // Update the question state or record the correctness as needed.
+                    var question = Questions[submission.QuestionIndex];
+
+                    if (submission.CorrectOptionIndex >= 0)
+                    {
+                        // Handle single-choice questions
+                        if (question is SingleChoiceQuizQuestion singleChoiceQuestion)
+                        {
+                            var selectedAnswer = new SingleChoiceQuizAnswer(submission.CorrectOptionIndex);
+                            bool isCorrect = selectedAnswer.IsCorrect(singleChoiceQuestion.CorrectAnswer);
+                            // Update the question state or record the correctness as needed.
+                        }
+                        // Add handling for other question types (if applicable)
+                    }
+                    else if (!string.IsNullOrEmpty(submission.AnswerString))
+                    {
+                        // Handle other question types that require a text answer (e.g., short answer)
+                        // You would need to implement the logic to check the correctness based on the provided answer.
+                    }
                 }
             }
+            
+            NumberOfSubmitters++;
 
-            // You can also update the NumberOfSubmitters here.
-            return true; // Indicate success
+            return true;
         }
+
     }
 }
