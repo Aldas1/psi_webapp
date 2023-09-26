@@ -57,8 +57,6 @@ namespace QuizAppApi.Controllers
             if (quiz == null)
                 return NotFound();
 
-            var quizAnswers = new List<QuizAnswer>();
-
             foreach (var submission in answers)
             {
                 if (submission.QuestionIndex >= 0 && submission.QuestionIndex < quiz.Questions.Count)
@@ -68,27 +66,28 @@ namespace QuizAppApi.Controllers
                     if (question is SingleChoiceQuizQuestion singleChoiceQuestion)
                     {
                         // Handle single-choice questions
-                        var selectedAnswer = new SingleChoiceQuizAnswer(submission.SelectedOptionIndex);
-                        quizAnswers.Add(selectedAnswer);
+                        var selectedAnswer = new SingleChoiceQuizAnswer(submission.CorrectOptionIndex);
+                        if (selectedAnswer.Equals(question.CorrectAnswer))
+                        {
+                            // TODO: Add handling for correct answers
+                        }
                     }
                     // Add handling for other question types if needed
                 }
             }
 
-            bool submissionResult = quiz.SubmitAnswers(quizAnswers);
-
             ActionResult<SubmitResponse> response;
 
-            if (submissionResult)
-            {
-                response = Ok(new SubmitResponse { Status = "success" });
-            }
-            else
-            {
-                response = BadRequest(new SubmitResponse { Status = "failed" });
-            }
+            // if (submissionResult)
+            // {
+            //     response = Ok(new SubmitResponse { Status = "success" });
+            // }
+            // else
+            // {
+            //     response = BadRequest(new SubmitResponse { Status = "failed" });
+            // }
 
-            return response;
+            return BadRequest(new SubmitResponse { Status = "failed" });
         }
 
 
@@ -139,8 +138,13 @@ namespace QuizAppApi.Controllers
         {
             public int QuestionIndex { get; set; }
             public int CorrectOptionIndex { get; set; }
-            public string AnswerString { get; set; }
-            public int SelectedOptionIndex { get; set; }
+            
+            public bool Answered { get; set; }
+        }
+
+        public class SingleChoiceQuizAnswerRequest
+        {
+            
         }
 
     }
