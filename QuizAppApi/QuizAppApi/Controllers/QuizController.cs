@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
+using System.Text.Json;
 
 namespace QuizAppApi.Controllers
 {
@@ -13,16 +14,26 @@ namespace QuizAppApi.Controllers
         [HttpPost]
         public ActionResult<QuizCreationResponse> CreateQuiz([FromBody] QuizCreationRequest request)
         {
-            //sukurti quiz obj ir priskirti name reiksme
-            //questionu obj ir i quiz obj
-            var new_quiz = new Quiz(request.Name, 0);
-            request.Questions.Select(question => new_quiz.Questions.Add(
-                //pakeist kad acceptintu bet koki typea
-                new SingleChoiceQuizQuestion(request.Questions., , )
-            ));
-            
-            _quizzes.Add(new Quiz(request.Name, 0));
-            return BadRequest(new QuizCreationResponse { Status = "failed" });
+            var newQuiz = new Quiz(request.Name);
+            foreach(var question in  request.Questions) 
+            {
+                //deserializining json stringa into a dictionary
+                Dictionary<string, object> data = JsonSerializer.Deserialize<Dictionary<string, object>>(question.QuestionParameters);
+                if (question.QuestionType.Equals("singleChoiceQuestion") || question.QuestionType.Equals("Single Choice Question"))
+                {
+                    Dictionary<string, object> parameters = (Dictionary<string, object>)data["parameters"];
+                    //getting answer options from parameters
+                    List<string> options = (List<string>)parameters["options"];
+                    int correctOptionIndex = Convert.ToInt32(parameters["correctOptionIndex"]);
+                    newQuiz.Questions.Add(new SingleChoiceQuizQuestion(question.QuestionText, options, new SingleChoiceQuizAnswer(correctOptionIndex)));
+                } else if (false) {
+                    //other types of questions
+                } else {
+                    return BadRequest(new QuizCreationResponse { Status = "failed" });
+                }
+            }
+            _quizzes.Add(newQuiz);
+            return CreatedAtAction(nameof(GetQuestions), new { id = newQuiz.Id }, new QuizCreationResponse { Status = "success" });
         }
 
         [HttpGet]
@@ -62,14 +73,16 @@ namespace QuizAppApi.Controllers
     public class QuizCreationRequest
     {
         public string Name { get; set; }
-        public List<QuestionRequest> Questions { get; set; } //listas klausimu
+        public List<QuestionRequest> Questions { get; set; }
     }
 
     public class QuestionRequest
     {
         public string QuestionText { get; set; }
         public string QuestionType { get; set; }
-        public Object QuestionParameters { get; set; }
+        //change object to dictionary
+        public string QuestionParameters { get; set; }
+        //public Dictionary<string, Object> QuestionParameters { get; set; }
     }
 
     public class QuestionResponse
