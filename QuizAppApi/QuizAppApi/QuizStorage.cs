@@ -1,7 +1,5 @@
 ﻿using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
 
 namespace QuizAppApi
 {
