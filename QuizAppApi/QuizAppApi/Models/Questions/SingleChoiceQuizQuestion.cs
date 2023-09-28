@@ -1,4 +1,7 @@
-﻿namespace QuizAppApi.Models.Questions
+﻿using QuizAppApi.Controllers;
+using System.Text.Json;
+
+namespace QuizAppApi.Models.Questions
 {
     public class SingleChoiceQuizQuestion : QuizQuestion
     {
@@ -21,11 +24,14 @@
             };
         }
 
-        public static QuizQuestion CreateFromParameters(string questionText, object questionParameters)
+        public static QuizQuestion CreateFromParameters(string questionText, Dictionary<string, JsonElement> questionParameters)
         {
-            //todo add explanation to read me
+            Dictionary<string, JsonElement> parameters = (Dictionary<string, JsonElement>)questionParameters["parameters"];
+            // Getting answer options from parameters
+            List<string> options = (List<string>)parameters["options"];
+            int correctOptionIndex = Convert.ToInt32(parameters["correctOptionIndex"]);
 
-            return new SingleChoiceQuizQuestion("", new List<string>(), new SingleChoiceQuizAnswer(0));
+            return new SingleChoiceQuizQuestion(questionText, options, new SingleChoiceQuizAnswer(correctOptionIndex));
         }
     }
 }

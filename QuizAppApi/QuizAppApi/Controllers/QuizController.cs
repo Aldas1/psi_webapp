@@ -17,20 +17,22 @@ namespace QuizAppApi.Controllers
             var newQuiz = new Quiz(request.Name);
             foreach(var question in  request.Questions) 
             {
-                //deserializining json stringa into a dictionary
-                Dictionary<string, object> data = JsonSerializer.Deserialize<Dictionary<string, object>>(question.QuestionParameters);
-                if (question.QuestionType.Equals("singleChoiceQuestion") || question.QuestionType.Equals("Single Choice Question"))
+                //deserializining json string into a dictionary
+                Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(question.QuestionParameters);
+                Dictionary<string, JsonElement> parameters = (Dictionary<string, JsonElement>)data["parameters"];
+
+                switch (question.QuestionType.ToLowerInvariant())
                 {
-                    Dictionary<string, object> parameters = (Dictionary<string, object>)data["parameters"];
-                    //getting answer options from parameters
-                    List<string> options = (List<string>)parameters["options"];
-                    int correctOptionIndex = Convert.ToInt32(parameters["correctOptionIndex"]);
-                    newQuiz.Questions.Add(new SingleChoiceQuizQuestion(question.QuestionText, options, new SingleChoiceQuizAnswer(correctOptionIndex)));
-                } else if (false) {
-                    //other types of questions
-                } else {
-                    return BadRequest(new QuizCreationResponse { Status = "failed" });
+                    case "singlechoicequestion":
+                        {
+                            newQuiz.Questions.Add(SingleChoiceQuizQuestion.CreateFromParameters(question.QuestionText, parameters));
+                            break;
+                        }
+                    default:
+                        return BadRequest(new QuizCreationResponse { Status = "failed" });
                 }
+
+
             }
             _quizzes.Add(newQuiz);
             return CreatedAtAction(nameof(GetQuestions), new { id = newQuiz.Id }, new QuizCreationResponse { Status = "success" });
@@ -80,16 +82,14 @@ namespace QuizAppApi.Controllers
     {
         public string QuestionText { get; set; }
         public string QuestionType { get; set; }
-        //change object to dictionary
-        public string QuestionParameters { get; set; }
-        //public Dictionary<string, Object> QuestionParameters { get; set; }
+        public Dictionary<string, JsonElement> QuestionParameters { get; set; }
     }
 
     public class QuestionResponse
     {
         public string QuestionText { get; set; }
         public string QuestionType { get; set; }
-        public Object QuestionParameters { get; set; }
+        public Object QuestionParameters { get; set; }//pakeiciu
     }
 
     public class QuizResponse
