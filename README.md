@@ -47,13 +47,10 @@ Please check the [react-app README](react-app/README.md)
 
 ## Branching strategy
 
-![Branching strat](misc/branching_strat.png)
-
 ### Branches
 
-- **Main branch** - used as a production branch and is only updated when the app is ready for production.
-- **Test branch** - used as a branch for all feature branches to merge and in this environment the app is tested.
-- **Feat branch** - these branches are branched from _test branch_ and are used for developing.
+- **Main branch** - used as a branch for all feature branches to merge and in this environment the app is tested.
+- **Feat branch** - these branches are branched from _main branch_ and are used for developing.
   - Each feature branch is used for a different task and each feature branch belongs to it's owner and should be worked on by the owner.
 
 ## Naming
@@ -88,15 +85,13 @@ Commit messages should begin with one of the following:
 ## Repository rules
 
 - Approver count
-  - Main: 2
-  - Test: 1
+  - Main: 1
 
 ## Tree
 
 ```bash
 .
 ├── misc
-│   └── branching_strat.png
 └── README.md
 ```
 
