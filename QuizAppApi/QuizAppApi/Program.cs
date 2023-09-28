@@ -1,4 +1,5 @@
 using QuizAppApi.Interfaces;
+using QuizAppApi.Repositories;
 using QuizAppApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddSingleton<IQuizRepository, InMemoryQuizRepository>();
 
 var app = builder.Build();
 

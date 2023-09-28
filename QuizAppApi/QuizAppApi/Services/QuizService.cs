@@ -5,6 +5,13 @@ namespace QuizAppApi.Services
 {
     public class QuizService : IQuizService
     {
+        private IQuizRepository _quizRepository;
+
+        public QuizService(IQuizRepository quizRepository)
+        {
+            _quizRepository = quizRepository;
+        }
+
         public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
         {
             throw new NotImplementedException();
@@ -12,28 +19,21 @@ namespace QuizAppApi.Services
 
         public IEnumerable<QuestionResponseDTO> GetQuestions(int id)
         {
-            throw new NotImplementedException();
-            //var quiz = _quizzes.Find(q => q.Id == id);
-            //if (quiz == null)
-            //    return NotFound();
-            //List<QuestionResponseDTO> questions = new();
-            //foreach (var question in quiz.Questions)
-            //{
-            //    //questions.Add(new QuestionResponseDTO { Text = question.Text, QuestionType = question.QuestionType, QuestionParameters = question.GenerateApiParameters()  });
-            //}
-            //return questions;
+            var quiz = _quizRepository.GetQuizById(id);
+            if (quiz == null)
+            {
+                return null;
+            }
+            // TODO: Return type
+            return quiz.Questions.Select(quiz => new QuestionResponseDTO { Text = quiz.Text });
         }
 
         public IEnumerable<QuizResponseDTO> GetQuizzes()
         {
-            throw new NotImplementedException();
-            //// TODO: (Maybe) Posibly use LINQ here
-            //List<QuizResponseDTO> quizesResponse = new();
-            //foreach (var quiz in _quizzes)
-            //{
-            //    quizesResponse.Add(new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
-            //}
-            //return quizesResponse;
+            return _quizRepository.GetQuizzes()
+                .Select(
+                    quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id }
+                );
         }
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
