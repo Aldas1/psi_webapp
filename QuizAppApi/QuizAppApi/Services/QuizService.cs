@@ -19,13 +19,14 @@ namespace QuizAppApi.Services
 
         public IEnumerable<QuestionResponseDTO> GetQuestions(int id)
         {
-            var quiz = _quizRepository.GetQuizById(id);
-            if (quiz == null)
-            {
-                return null;
-            }
-            // TODO: Return type
-            return quiz.Questions.Select(quiz => new QuestionResponseDTO { Text = quiz.Text });
+            throw new NotImplementedException();
+            // var quiz = _quizRepository.GetQuizById(id);
+            // if (quiz == null)
+            // {
+            //     return null;
+            // }
+            // // TODO: Return type
+            // return quiz.Questions.Select(quiz => new QuestionResponseDTO { Text = quiz.Text });
         }
 
         public IEnumerable<QuizResponseDTO> GetQuizzes()

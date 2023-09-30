@@ -2,7 +2,8 @@
 {
     public class QuestionResponseDTO
     {
-        public string Text { get; set; }
-        public string Type { get; set; }
+        public string QuestionText { get; set; }
+        public string QuestionType { get; set; }
+        public QuestionParametersDTO QuestionParameters { get; set; }
     }
 }
