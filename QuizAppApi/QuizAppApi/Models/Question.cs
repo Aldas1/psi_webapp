@@ -2,7 +2,7 @@
 {
     public abstract class Question
     {
-        // public int Id { get; set; }
+        public int Id { get; set; }
         public string Text { get; set; }
         public abstract string Type { get; }
     }

@@ -11,10 +11,10 @@ namespace QuizAppApi.Repositories
         private readonly List<Quiz> _quizzes;
         private int _nextQuizId = 0;
         // private int _nextOptionId = 0;
-        // private int _nextQuestionId = 0;
+        private int _nextQuestionId = 0;
 
         private int NextQuizId() => _nextQuizId++;
-        // private int NextQuestionId() => _nextQuestionId++;
+        private int NextQuestionId() => _nextQuestionId++;
         // private int NextOptionId() => _nextOptionId++;
 
         private void UpdateDataFile()
@@ -32,11 +32,6 @@ namespace QuizAppApi.Repositories
         public InMemoryQuizRepository()
         {
             _quizzes = ReadFromDataFile();
-            var newQuiz = new Quiz{Id = 1, Name = "test", NumberOfSubmitters = 23};
-            var question = new SingleChoiceQuestion { Text = "test" };
-            newQuiz.Questions = new List<Question>();
-            newQuiz.Questions.Add(question);
-            _quizzes.Add(newQuiz);
         }
 
 
@@ -44,6 +39,10 @@ namespace QuizAppApi.Repositories
         {
             Quiz newQuiz = QuizSerialization.CloneQuiz(quiz);
             newQuiz.Id = NextQuizId();
+            foreach (var question in newQuiz.Questions)
+            {
+                question.Id = NextQuizId();
+            }
             _quizzes.Add(newQuiz);
             UpdateDataFile();
             return QuizSerialization.CloneQuiz(newQuiz);
@@ -75,6 +74,9 @@ namespace QuizAppApi.Repositories
             _quizzes.Remove(foundQuiz);
             var newQuiz = QuizSerialization.CloneQuiz(quiz);
             newQuiz.Id = id;
+            // TODO: handle question id
+            // It is highly likely that we should do somewhat complicated question matching or create new id's
+            // In the future, we should add QuestionRepository to handle such tasks.
             _quizzes.Add(newQuiz);
             UpdateDataFile();
             return QuizSerialization.CloneQuiz(newQuiz);
