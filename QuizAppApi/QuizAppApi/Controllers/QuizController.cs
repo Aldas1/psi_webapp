@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizAppApi.DTOs;
+using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers
 {
@@ -7,47 +8,46 @@ namespace QuizAppApi.Controllers
     [Route("quizzes")]
     public class QuizController : ControllerBase
     {
-        private readonly QuizStorage _quizzes = QuizStorage.Instance;
+        private readonly IQuizService _quizService;
 
-        [HttpPost]
-        public ActionResult<QuizCreationResponseDTO> CreateQuiz([FromBody] QuizCreationQuestionRequestDTO request)
+        public QuizController(IQuizService quizService)
         {
-            throw new NotImplementedException();
+            _quizService = quizService;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<QuizResponseDTO>> ListQuizzes()
+        [HttpPost]
+        public ActionResult<QuizCreationResponseDTO> CreateQuiz([FromBody] QuizCreationRequestDTO request)
         {
-            throw new NotImplementedException();
-            //// TODO: (Maybe) Posibly use LINQ here
-            //List<QuizResponseDTO> quizesResponse = new();
-            //foreach (var quiz in _quizzes)
-            //{
-            //    quizesResponse.Add(new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
-            //}
-            //return quizesResponse;
+            return _quizService.CreateQuiz(request);
+        }
+            
+        [HttpGet]
+        public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
+        {
+            var quizzes = _quizService.GetQuizzes();
+            if (quizzes == null)
+            {
+                return NotFound();
+            }
+            return Ok(quizzes);
         }
 
         // TODO: Add details
         [HttpGet("{id}/questions")]
         public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
         {
-            throw new NotImplementedException();
-            //var quiz = _quizzes.Find(q => q.Id == id);
-            //if (quiz == null)
-            //    return NotFound();
-            //List<QuestionResponseDTO> questions = new();
-            //foreach (var question in quiz.Questions)
-            //{
-            //    //questions.Add(new QuestionResponseDTO { Text = question.Text, QuestionType = question.QuestionType, QuestionParameters = question.GenerateApiParameters()  });
-            //}
-            //return questions;
+            var questions = _quizService.GetQuestions(id);
+            if (questions == null)
+            {
+                return NotFound();
+            }
+            return Ok(questions);
         }
 
         [HttpPost("{id}/submit")]
         public ActionResult<AnswerSubmitResponseDTO> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
         {
-            throw new NotImplementedException();
+            return _quizService.SubmitAnswers(id, request);
         }
     }
 }
