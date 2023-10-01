@@ -1,5 +1,7 @@
 ﻿using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
+using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services
@@ -7,7 +9,6 @@ namespace QuizAppApi.Services
     public class QuizService : IQuizService
     {
         private IQuizRepository _quizRepository;
-        private SingleChoiceAnswerChecker _singleChoiceAnswerChecker;
 
         public QuizService(IQuizRepository quizRepository)
         {
@@ -42,18 +43,23 @@ namespace QuizAppApi.Services
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
-            // throw new NotImplementedException();
             var response = new AnswerSubmitResponseDTO();
+            var quiz = _quizRepository.GetQuizById(id);
             var correctAnswers = 0;
-
 
             foreach (var answer in request)
             {
-                var isCorrect = _singleChoiceAnswerChecker.IsCorrect(answer.QuestionId, answer.OptionIndex);
-
-                if (isCorrect)
+                var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId) as SingleChoiceQuestion;
+                var selectedOption = question?.Options.FirstOrDefault(o => o.Name == answer.OptionName);
+                if (question != null && selectedOption != null)
                 {
-                    correctAnswers++;
+                    var checker = new SingleChoiceAnswerChecker();
+                    var isCorrect = checker.IsCorrect(question, selectedOption);
+
+                    if (isCorrect)
+                    {
+                        correctAnswers++;
+                    }
                 }
             }
 
