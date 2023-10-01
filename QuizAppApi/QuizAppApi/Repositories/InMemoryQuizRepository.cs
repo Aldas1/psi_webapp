@@ -9,13 +9,9 @@ namespace QuizAppApi.Repositories
     public class InMemoryQuizRepository : IQuizRepository
     {
         private readonly List<Quiz> _quizzes;
-        private int _nextQuizId = 0;
-        // private int _nextOptionId = 0;
-        private int _nextQuestionId = 0;
+        private int _nextId = 0;
 
-        private int NextQuizId() => _nextQuizId++;
-        private int NextQuestionId() => _nextQuestionId++;
-        // private int NextOptionId() => _nextOptionId++;
+        private int NextId() => _nextId++;
 
         private void UpdateDataFile()
         {
@@ -38,10 +34,10 @@ namespace QuizAppApi.Repositories
         public Quiz? AddQuiz(Quiz quiz)
         {
             Quiz newQuiz = QuizSerialization.CloneQuiz(quiz);
-            newQuiz.Id = NextQuizId();
+            newQuiz.Id = NextId();
             foreach (var question in newQuiz.Questions)
             {
-                question.Id = NextQuizId();
+                question.Id = NextId();
             }
             _quizzes.Add(newQuiz);
             UpdateDataFile();
