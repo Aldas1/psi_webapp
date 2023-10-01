@@ -1,9 +1,11 @@
-﻿namespace QuizAppApi.DTOs
+﻿using QuizAppApi.Models.Questions;
+
+namespace QuizAppApi.DTOs
 {
     public class AnswerSubmitRequestDTO
     {
-        public int QuestionId { get; set; }
-        public int? OptionIndex { get; set; }
+        public SingleChoiceQuestion QuestionId { get; set; }
+        public Option? OptionIndex { get; set; }
         // TODO: Add props for other question types
     }
 }
