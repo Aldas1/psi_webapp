@@ -19,14 +19,14 @@ import { PropTypes } from "prop-types";
 
 export default function SoloGame() {
   const location = useLocation();
-  const [quizId, setQuizId] = useState("");
+  const [quizId, setQuizId] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!location.state) {
-      setQuizId(false);
+      setQuizId(null);
       return;
     }
     fetch(`/api/quizzes/${location.state.quizId}/questions`)
@@ -44,7 +44,7 @@ export default function SoloGame() {
       });
   }, [location]);
 
-  if (!quizId) {
+  if (quizId == null) {
     return "Whoops! Please select quiz from a list.";
   }
 
