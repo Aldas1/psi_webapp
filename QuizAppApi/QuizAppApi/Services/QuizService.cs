@@ -1,6 +1,5 @@
 ﻿using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
-using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
@@ -41,48 +40,57 @@ namespace QuizAppApi.Services
                 );
         }
 
-public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
-{
-    var response = new AnswerSubmitResponseDTO();
-    var quiz = _quizRepository.GetQuizById(id);
-    var correctAnswers = 0;
-
-    foreach (var answer in request)
-    {
-        var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
-
-        switch (question)
+        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
-            case SingleChoiceQuestion singleChoiceQuestion:
-                var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
-                if (selectedOption != null)
+            var response = new AnswerSubmitResponseDTO();
+            var quiz = _quizRepository.GetQuizById(id);
+            var correctAnswers = 0;
+
+            if (quiz == null)
+            {
+                response.Status = "failed";
+                return response;
+            }
+
+            foreach (var answer in request)
+            {
+                var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
+
+                if (question == null)
                 {
-                    var checker = new SingleChoiceAnswerChecker();
-                    var isCorrect = checker.IsCorrect(singleChoiceQuestion, selectedOption);
-
-                    if (isCorrect)
-                    {
-                        correctAnswers++;
-                    }
+                    continue;
                 }
-                break;
 
-            case MultipleChoiceQuestion multipleChoiceQuestion:
-                // TODO: Implement multiple choice answer checking
-                break;
+                switch (question)
+                {
+                    case SingleChoiceQuestion singleChoiceQuestion:
+                        var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
+                        if (selectedOption != null)
+                        {
+                            var checker = new SingleChoiceAnswerChecker();
+                            var isCorrect = checker.IsCorrect(singleChoiceQuestion, selectedOption);
 
-            case OpenTextQuestion openTextQuestion:
-                // TODO: Implement text answer checking
-                break;
+                            if (isCorrect)
+                            {
+                                correctAnswers++;
+                            }
+                        }
+                        break;
 
-            default:
-                throw new InvalidOperationException($"Unknown question type: {question.GetType().Name}");
+                    case MultipleChoiceQuestion multipleChoiceQuestion:
+                        // TODO: Implement multiple choice answer checking
+                        break;
+
+                    case OpenTextQuestion openTextQuestion:
+                        // TODO: Implement text answer checking
+                        break;
+                }
+            }
+
+            response.CorrectlyAnswered = correctAnswers;
+            response.Score = correctAnswers / quiz.Questions.Count * 100;
+
+            return response;
         }
-    }
-
-    response.CorrectlyAnswered = correctAnswers;
-
-    return response;
-}
     }
 }
