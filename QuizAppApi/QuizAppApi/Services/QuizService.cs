@@ -41,31 +41,48 @@ namespace QuizAppApi.Services
                 );
         }
 
-        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
-        {
-            var response = new AnswerSubmitResponseDTO();
-            var quiz = _quizRepository.GetQuizById(id);
-            var correctAnswers = 0;
+public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+{
+    var response = new AnswerSubmitResponseDTO();
+    var quiz = _quizRepository.GetQuizById(id);
+    var correctAnswers = 0;
 
-            foreach (var answer in request)
-            {
-                var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId) as SingleChoiceQuestion;
-                var selectedOption = question?.Options.FirstOrDefault(o => o.Name == answer.OptionName);
-                if (question != null && selectedOption != null)
+    foreach (var answer in request)
+    {
+        var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
+
+        switch (question)
+        {
+            case SingleChoiceQuestion singleChoiceQuestion:
+                var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
+                if (selectedOption != null)
                 {
                     var checker = new SingleChoiceAnswerChecker();
-                    var isCorrect = checker.IsCorrect(question, selectedOption);
+                    var isCorrect = checker.IsCorrect(singleChoiceQuestion, selectedOption);
 
                     if (isCorrect)
                     {
                         correctAnswers++;
                     }
                 }
-            }
+                break;
 
-            response.CorrectlyAnswered = correctAnswers;
+            case MultipleChoiceQuestion multipleChoiceQuestion:
+                // TODO: Implement multiple choice answer checking
+                break;
 
-            return response;
+            case OpenTextQuestion openTextQuestion:
+                // TODO: Implement text answer checking
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unknown question type: {question.GetType().Name}");
         }
+    }
+
+    response.CorrectlyAnswered = correctAnswers;
+
+    return response;
+}
     }
 }
