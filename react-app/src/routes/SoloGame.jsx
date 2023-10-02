@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
+import axios from "axios";
 import { produce } from "immer";
 
 import {
@@ -24,6 +24,10 @@ export default function SoloGame() {
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [answered, setAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+  const [correctlyAnswered, setCorrectlyAnswered] = useState(0);
+
   useEffect(() => {
     if (!location.state) {
       setQuizId(null);
@@ -34,15 +38,15 @@ export default function SoloGame() {
       .then((data) => {
         setQuizId(location.state.quizId);
         setQuestions(data);
-        setAnswers(
-          data.map(() => {
-            return {};
-          })
-        );
+        setAnswers([]);
         setCurrentQuestionIndex(0);
         setLoading(false);
       });
   }, [location]);
+
+  if (answered) {
+    return `Score: ${score}. Correctly answered ${correctlyAnswered} out of ${questions.length}`;
+  }
 
   if (quizId == null) {
     return "Whoops! Please select quiz from a list.";
@@ -58,11 +62,20 @@ export default function SoloGame() {
       questionElement = (
         <SingleChoiceQuestion
           question={questions[currentQuestionIndex]}
-          answer={answers[currentQuestionIndex]}
+          answer={answers.find(
+            (a) => a.questionId === questions[currentQuestionIndex].id
+          )}
           onAnswerChange={(newAnswer) => {
             setAnswers(
               produce(answers, (draft) => {
-                draft[currentQuestionIndex] = newAnswer;
+                let answerIndex = draft.findIndex(
+                  (a) => a.questionId === newAnswer.questionId
+                );
+                if (answerIndex === -1) {
+                  draft.push(newAnswer);
+                } else {
+                  draft[answerIndex] = newAnswer;
+                }
               })
             );
           }}
@@ -100,41 +113,39 @@ export default function SoloGame() {
     </Card>
   );
 
-  function submit() {
-    console.table(answers);
+  async function submit() {
+    const response = await axios.post(`/api/quizzes/${quizId}/submit`, answers);
+    if (response.data.status === "success") {
+      setAnswered(true);
+      setScore(response.data.score);
+      setCorrectlyAnswered(response.data.correctlyAnswered);
+    }
   }
 }
 
 function SingleChoiceQuestion({ question, answer, onAnswerChange }) {
   const options = question.questionParameters.options;
 
-  useEffect(() => {
-    if (answer.optionIndex == null) {
-      onAnswerChange({ answered: false, optionIndex: -1 });
-    }
-  }, [answer, onAnswerChange]);
-
-  // Material UI determines that radio group is uncontrolled on first render (before answer.optionIndex is not null)
-  // this helps avoid that
-  if (answer.optionIndex == null) {
-    return "";
+  let optionName = null;
+  if (answer) {
+    optionName = answer.optionName;
   }
 
   return (
     <List>
       <RadioGroup
-        value={answer.optionIndex}
+        value={optionName}
         onChange={(e) => {
           onAnswerChange({
-            answered: true,
-            optionIndex: parseInt(e.target.value),
+            questionId: question.id,
+            optionName: e.target.value,
           });
         }}
       >
-        {question.questionParameters.options.map((opt, index) => {
+        {options.map((opt, index) => {
           return (
             <ListItem key={index}>
-              <FormControlLabel value={index} control={<Radio />} />
+              <FormControlLabel value={opt} control={<Radio />} />
               {opt}
             </ListItem>
           );
