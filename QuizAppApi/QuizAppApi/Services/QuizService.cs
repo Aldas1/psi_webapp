@@ -24,15 +24,24 @@ namespace QuizAppApi.Services
                 switch (question.QuestionType)
                 {
                     case "singleChoiceQuestion":
-                        var newQuestion = new SingleChoiceQuestion();
-                        newQuestion.Text = question.QuestionText;
-                        //int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
-                        //newQuestion.CorrectOption = question.QuestionParameters.Options[correctOptionIndex];
-                            
+                        var newQuestion = new SingleChoiceQuestion
+                        {
+                            Text = question.QuestionText
+                        };
 
+                        int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
+                        newQuestion.CorrectOption = new Option
+                        {
+                            Name = question.QuestionParameters.Options[correctOptionIndex]
+                        };
 
-
-                        //newQuiz.Questions.Add(newQuestion);
+                        foreach (var option in question.QuestionParameters.Options)
+                        {
+                            Option newOption = new Option();
+                            newOption.Name = option;
+                            newQuestion.Options.Add(newOption);                            
+                        }
+                        newQuiz.Questions.Add(newQuestion);
                         break;
                     case "multipleChoiceQuestion":
 
@@ -41,7 +50,7 @@ namespace QuizAppApi.Services
 
                         break;
                     default:
-                        return new QuizCreationResponseDTO { Status = "success"};
+                        return new QuizCreationResponseDTO { Status = "Question type not found"};
                 }
             }
 
