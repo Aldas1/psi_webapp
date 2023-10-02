@@ -2,8 +2,8 @@
 {
     public class MultipleChoiceQuestion : Question
     {
-        ICollection<Option> Options { get; set; }
-        ICollection<Option> CorrectOptionIndexes { get; set; }
+        public ICollection<Option> Options { get; set; }
+        public ICollection<Option> CorrectOptions { get; set; }
 
         public override string Type { get => "multipleChoiceQuestion"; }
     }
