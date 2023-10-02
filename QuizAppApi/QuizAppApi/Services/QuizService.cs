@@ -90,7 +90,7 @@ namespace QuizAppApi.Services
             }
 
             response.CorrectlyAnswered = correctAnswers;
-            response.Score = correctAnswers * 100 / quiz.Questions.Count;
+            response.Score = quiz.Questions.Count == 0 ? 0 :correctAnswers * 100 / quiz.Questions.Count;
 
             return response;
         }
