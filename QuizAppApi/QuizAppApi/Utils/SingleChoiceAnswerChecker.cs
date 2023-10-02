@@ -3,11 +3,11 @@ using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Utils
 {
-    public class SingleChoiceAnswerChecker : IAnswerChecker<SingleChoiceQuestion,Option>
+    public static class SingleChoiceAnswerChecker
     {
-        public bool IsCorrect(SingleChoiceQuestion question, Option answer)
+        public static bool IsCorrect(SingleChoiceQuestion question, Option answer)
         {
-            throw new NotImplementedException();
+            return answer.Name == question.CorrectOption.Name;
         }
     }
 }
