@@ -50,6 +50,8 @@ namespace QuizAppApi.Services
             {
                 response.Status = "failed";
                 return response;
+            } else {
+                response.Status = "success";
             }
 
             foreach (var answer in request)
@@ -88,7 +90,7 @@ namespace QuizAppApi.Services
             }
 
             response.CorrectlyAnswered = correctAnswers;
-            response.Score = correctAnswers / quiz.Questions.Count * 100;
+            response.Score = correctAnswers * 100 / quiz.Questions.Count;
 
             return response;
         }
