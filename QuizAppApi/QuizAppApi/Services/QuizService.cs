@@ -1,4 +1,4 @@
-﻿using QuizAppApi.DTOs;
+using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
@@ -7,7 +7,7 @@ namespace QuizAppApi.Services
 {
     public class QuizService : IQuizService
     {
-        private IQuizRepository _quizRepository;
+        private readonly IQuizRepository _quizRepository;
 
         public QuizService(IQuizRepository quizRepository)
         {
@@ -19,16 +19,30 @@ namespace QuizAppApi.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<QuestionResponseDTO> GetQuestions(int id)
+        public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
         {
-            throw new NotImplementedException();
-            // var quiz = _quizRepository.GetQuizById(id);
-            // if (quiz == null)
-            // {
-            //     return null;
-            // }
-            // // TODO: Return type
-            // return quiz.Questions.Select(quiz => new QuestionResponseDTO { Text = quiz.Text });
+            var quiz = _quizRepository.GetQuizById(id);
+            if (quiz == null)
+            {
+                return null;
+            }
+            var questions = new List<QuestionResponseDTO>();
+            foreach (var question in quiz.Questions)
+            {
+                var questionResponse = new QuestionResponseDTO
+                    { Id = question.Id, QuestionText = question.Text, QuestionType = question.Type};
+                switch (question)
+                {
+                    case SingleChoiceQuestion singleChoiceQuestion:
+                        questionResponse.QuestionParameters = new QuestionParametersDTO
+                        {
+                            Options = singleChoiceQuestion.Options.Select(opt => opt.Name).ToList(),
+                        };
+                        questions.Add(questionResponse);
+                        break;
+                }
+            }
+            return questions;
         }
 
         public IEnumerable<QuizResponseDTO> GetQuizzes()
