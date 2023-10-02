@@ -3,7 +3,7 @@
     public class AnswerSubmitRequestDTO
     {
         public int QuestionId { get; set; }
-        public int? OptionIndex { get; set; }
+        public string? OptionName { get; set; }
         // TODO: Add props for other question types
     }
 }

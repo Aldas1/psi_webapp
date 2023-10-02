@@ -5,7 +5,7 @@ namespace QuizAppApi.Utils
 {
     public static class QuizSerialization
     {
-        private static JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Converters = new JsonConverter[] { new QuestionJsonConverter() }
@@ -13,13 +13,13 @@ namespace QuizAppApi.Utils
 
         public static string SerializeQuiz(Quiz quiz)
         {
-            var json = JsonConvert.SerializeObject(quiz, _serializerSettings);
+            var json = JsonConvert.SerializeObject(quiz, SerializerSettings);
             return json;
         }
 
         public static Quiz? DeserializeQuiz(string quizStr)
         {
-            var quiz = JsonConvert.DeserializeObject<Quiz>(quizStr, _serializerSettings);
+            var quiz = JsonConvert.DeserializeObject<Quiz>(quizStr, SerializerSettings);
             return quiz;
         }
         
@@ -27,5 +27,7 @@ namespace QuizAppApi.Utils
         {
             return (Quiz)DeserializeQuiz(SerializeQuiz(quiz));
         }
+        
+        
     }
 }

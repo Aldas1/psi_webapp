@@ -1,6 +1,7 @@
-﻿using QuizAppApi.DTOs;
+using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
+using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services
 {
@@ -55,7 +56,57 @@ namespace QuizAppApi.Services
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
-            throw new NotImplementedException();
+            var response = new AnswerSubmitResponseDTO();
+            var quiz = _quizRepository.GetQuizById(id);
+            var correctAnswers = 0;
+
+            if (quiz == null)
+            {
+                response.Status = "failed";
+                return response;
+            } else {
+                response.Status = "success";
+            }
+
+            foreach (var answer in request)
+            {
+                var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
+
+                if (question == null)
+                {
+                    continue;
+                }
+
+                switch (question)
+                {
+                    case SingleChoiceQuestion singleChoiceQuestion:
+                        var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
+                        if (selectedOption != null)
+                        {
+                            var checker = new SingleChoiceAnswerChecker();
+                            var isCorrect = checker.IsCorrect(singleChoiceQuestion, selectedOption);
+
+                            if (isCorrect)
+                            {
+                                correctAnswers++;
+                            }
+                        }
+                        break;
+
+                    case MultipleChoiceQuestion multipleChoiceQuestion:
+                        // TODO: Implement multiple choice answer checking
+                        break;
+
+                    case OpenTextQuestion openTextQuestion:
+                        // TODO: Implement text answer checking
+                        break;
+                }
+            }
+
+            response.CorrectlyAnswered = correctAnswers;
+            response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
+
+            return response;
         }
     }
 }
