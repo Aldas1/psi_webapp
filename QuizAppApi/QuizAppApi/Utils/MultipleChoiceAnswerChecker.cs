@@ -1,4 +1,3 @@
-using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Utils
