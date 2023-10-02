@@ -1,5 +1,6 @@
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
@@ -16,7 +17,43 @@ namespace QuizAppApi.Services
 
         public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
         {
-            throw new NotImplementedException();
+            Quiz newQuiz = new Quiz();
+            newQuiz.Name = request.Name;
+            foreach (var question in request.Questions)
+            {
+                switch (question.QuestionType)
+                {
+                    case "singleChoiceQuestion":
+                        var newQuestion = new SingleChoiceQuestion();
+                        newQuestion.Text = question.QuestionText;
+                        //int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
+                        //newQuestion.CorrectOption = question.QuestionParameters.Options[correctOptionIndex];
+                            
+
+
+
+                        //newQuiz.Questions.Add(newQuestion);
+                        break;
+                    case "multipleChoiceQuestion":
+
+                        break;
+                    case "openTextQuestion":
+
+                        break;
+                    default:
+                        return new QuizCreationResponseDTO { Status = "success"};
+                }
+            }
+
+
+            if (newQuiz == null)
+            {
+                return new QuizCreationResponseDTO { Status = "failed", Id = null };
+            }
+
+            _quizRepository.AddQuiz(newQuiz);
+
+            return new QuizCreationResponseDTO { Status = "success"};
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
