@@ -18,7 +18,7 @@ You first need to run web api and, after that, run the frontend.
 
 If you are using an ide, setup should be straightforward. You can also run it via cli:
 
-```
+``` bash
 dotnet run # or
 dotnet watch
 ```
