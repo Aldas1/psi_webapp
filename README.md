@@ -18,7 +18,7 @@ You first need to run web api and, after that, run the frontend.
 
 If you are using an ide, setup should be straightforward. You can also run it via cli:
 
-```
+``` bash
 dotnet run # or
 dotnet watch
 ```
@@ -32,6 +32,9 @@ Please check the [react-app README](react-app/README.md)
 - [Quiz app](#quiz-app)
   - [Description](#description)
   - [Tech stack](#tech-stack)
+  - [Development setup](#development-setup)
+    - [Backend setup](#backend-setup)
+    - [Frontend setup](#frontend-setup)
   - [Table of contents](#table-of-contents)
   - [Branching strategy](#branching-strategy)
     - [Branches](#branches)
@@ -91,7 +94,16 @@ Commit messages should begin with one of the following:
 
 ```bash
 .
-├── misc
+├── QuizAppApi
+│   ├── QuizAppApi
+│   └── QuizAppApi.sln
+├── react-app
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── README.md
+│   ├── src
+│   └── vite.config.js
 └── README.md
 ```
 
