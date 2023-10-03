@@ -1,5 +1,6 @@
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
@@ -16,7 +17,62 @@ namespace QuizAppApi.Services
 
         public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
         {
-            throw new NotImplementedException();
+            Quiz newQuiz = new Quiz();
+            newQuiz.Name = request.Name;
+            newQuiz.Questions = new List<Question>();
+
+            foreach (var question in request.Questions)
+            {
+                switch (question.QuestionType)
+                {
+                    case "singleChoiceQuestion":
+                        var newQuestion = new SingleChoiceQuestion
+                        {
+                            Text = question.QuestionText
+                        };
+
+                        int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
+                        if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
+                        {
+                            return new QuizCreationResponseDTO { Status = "Correct option index out of Options list bounds" };
+                        }
+                        newQuestion.CorrectOption = new Option
+                        {
+                            Name = question.QuestionParameters.Options[correctOptionIndex]
+                        };
+
+                        newQuestion.Options = new List<Option>();
+
+                        foreach (var option in question.QuestionParameters.Options)
+                        {
+                            Option newOption = new Option();
+                            newOption.Name = option;
+                            newQuestion.Options.Add(newOption);                            
+                        }
+
+                        newQuiz.Questions.Add(newQuestion);
+                        break;
+                    case "multipleChoiceQuestion":
+
+                        break;
+                    case "openTextQuestion":
+
+                        break;
+                    default:
+                        return new QuizCreationResponseDTO { Status = "Question type not found"};
+                }
+            }
+
+            Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
+            
+            if (createdQuiz == null)
+            {
+                return new QuizCreationResponseDTO { Status = "failed" };
+            }
+
+            int createdQuizId = createdQuiz.Id;
+
+            return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
