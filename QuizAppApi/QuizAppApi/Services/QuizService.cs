@@ -64,12 +64,13 @@ namespace QuizAppApi.Services
             }
 
             Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
-            int createdQuizId = createdQuiz.Id;
             
             if (createdQuiz == null)
             {
                 return new QuizCreationResponseDTO { Status = "failed" };
             }
+
+            int createdQuizId = createdQuiz.Id;
 
             return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
