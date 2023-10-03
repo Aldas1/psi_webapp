@@ -19,6 +19,8 @@ namespace QuizAppApi.Services
         {
             Quiz newQuiz = new Quiz();
             newQuiz.Name = request.Name;
+            newQuiz.Questions = new List<Question>();
+
             foreach (var question in request.Questions)
             {
                 switch (question.QuestionType)
@@ -30,10 +32,16 @@ namespace QuizAppApi.Services
                         };
 
                         int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
+                        if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
+                        {
+                            return new QuizCreationResponseDTO { Status = "Correct option index out of Options list bounds" };
+                        }
                         newQuestion.CorrectOption = new Option
                         {
                             Name = question.QuestionParameters.Options[correctOptionIndex]
                         };
+
+                        newQuestion.Options = new List<Option>();
 
                         foreach (var option in question.QuestionParameters.Options)
                         {
@@ -41,6 +49,7 @@ namespace QuizAppApi.Services
                             newOption.Name = option;
                             newQuestion.Options.Add(newOption);                            
                         }
+
                         newQuiz.Questions.Add(newQuestion);
                         break;
                     case "multipleChoiceQuestion":
@@ -54,15 +63,14 @@ namespace QuizAppApi.Services
                 }
             }
 
-
+            int newId = _quizRepository.AddQuiz(newQuiz).Id;
+            
             if (newQuiz == null)
             {
-                return new QuizCreationResponseDTO { Status = "failed", Id = null };
+                return new QuizCreationResponseDTO { Status = "failed" };
             }
 
-            _quizRepository.AddQuiz(newQuiz);
-
-            return new QuizCreationResponseDTO { Status = "success"};
+            return new QuizCreationResponseDTO { Status = "success", Id = newId};
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
