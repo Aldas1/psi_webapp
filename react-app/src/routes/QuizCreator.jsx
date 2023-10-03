@@ -19,11 +19,15 @@ import { Question } from "../data/Question";
 import { PropTypes } from "prop-types";
 import { produce } from "immer";
 import uniqid from "uniqid";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
 export default function QuizCreator() {
   const [quizName, setQuizName] = useState("");
   const [questions, setQuestions] = useState([]);
   const [dataNotProvided, setDataNotProvided] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div>
       <Typography variant="h5" gutterBottom>
@@ -103,7 +107,7 @@ export default function QuizCreator() {
     setQuestions([...questions, Question()]);
   }
 
-  function submitQuiz() {
+  async function submitQuiz() {
     if (quizName.length === 0) {
       setDataNotProvided(true);
       return;
@@ -118,13 +122,13 @@ export default function QuizCreator() {
       const questionData = {
         questionText: q.questionText,
         questionType: q.questionType,
-        questionsParameters: {},
+        questionParameters: {},
       };
       switch (questionData.questionType) {
         case "singleChoiceQuestion":
-          questionData.questionsParameters.correctOptionIndex =
+          questionData.questionParameters.correctOptionIndex =
             q.parameters.correctOptionIndex;
-          questionData.questionsParameters.options = q.parameters.options.map(
+          questionData.questionParameters.options = q.parameters.options.map(
             (opt) => opt.value
           );
           break;
@@ -134,7 +138,12 @@ export default function QuizCreator() {
       payload.questions.push(questionData);
     }
     setDataNotProvided(false);
-    console.table(payload);
+    const response = await axios.post("/api/quizzes", payload);
+    if (response.data.status === "success") {
+      navigate("/soloGame", { state: {quizId: response.data.id }});
+    } else {
+      navigate(0);
+    }
   }
 }
 

@@ -44,6 +44,10 @@ export default function SoloGame() {
       });
   }, [location]);
 
+  if (questions.length === 0) {
+    return "Empty quiz";
+  }
+
   if (answered) {
     return `Score: ${score}. Correctly answered ${correctlyAnswered} out of ${questions.length}`;
   }
