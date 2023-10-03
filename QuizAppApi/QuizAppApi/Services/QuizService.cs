@@ -63,14 +63,15 @@ namespace QuizAppApi.Services
                 }
             }
 
-            int newId = _quizRepository.AddQuiz(newQuiz).Id;
+            Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
+            int createdQuizId = createdQuiz.Id;
             
-            if (newQuiz == null)
+            if (createdQuiz == null)
             {
                 return new QuizCreationResponseDTO { Status = "failed" };
             }
 
-            return new QuizCreationResponseDTO { Status = "success", Id = newId};
+            return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
