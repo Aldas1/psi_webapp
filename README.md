@@ -1,5 +1,7 @@
 # Quiz app
 
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Aldas1/f04a7acd2cbaa647c6515030113c444b/raw/code-coverage.json)
+
 ## Description
 
 ASP.NET based quiz app, which helps students and teachers to conduct quizes and make learning easier.
