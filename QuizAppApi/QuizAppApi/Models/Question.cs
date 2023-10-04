@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public abstract string Type { get; }
+        public abstract QuestionType Type { get; }
     }
 }

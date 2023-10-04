@@ -5,6 +5,6 @@
         public ICollection<Option> Options { get; set; }
         public ICollection<Option> CorrectOptions { get; set; }
 
-        public override string Type { get => "multipleChoiceQuestion"; }
+        public override QuestionType Type { get => QuestionType.multipleChoiceQuestion; }
     }
 }
