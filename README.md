@@ -1,6 +1,7 @@
 # Quiz app
 
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Aldas1/f04a7acd2cbaa647c6515030113c444b/raw/code-coverage.json)
+![Github Actions](https://github.com/Aldas1/psi_webapp/actions/workflows/dotnet.yml/badge.svg)
+![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Aldas1/f04a7acd2cbaa647c6515030113c444b/raw/code-coverage.json)
 
 ## Description
 
