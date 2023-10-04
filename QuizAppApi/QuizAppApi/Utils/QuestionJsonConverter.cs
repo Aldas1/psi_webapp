@@ -17,17 +17,21 @@ namespace QuizAppApi.Utils
             JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            switch (jo["Type"]?.Value<string>())
+            if (jo["Type"] != null && Enum.TryParse(jo["Type"].Value<string>(), out QuestionType questionType))
             {
-                case "singleChoiceQuestion":
-                    return jo.ToObject<SingleChoiceQuestion>();
-                case "multipleChoiceQuestion":
-                    return jo.ToObject<MultipleChoiceQuestion>();
-                case "openTextQuestion":
-                    return jo.ToObject<OpenTextQuestion>();
-                default:
-                    return null;
+                switch (questionType)
+                {
+                    case QuestionType.singleChoiceQuestion:
+                        return jo.ToObject<SingleChoiceQuestion>();
+                    case QuestionType.multipleChoiceQuestion:
+                        return jo.ToObject<MultipleChoiceQuestion>();
+                    case QuestionType.openTextQuestion:
+                        return jo.ToObject<OpenTextQuestion>();
+                    default:
+                        return null;
+                }
             }
+            return null;
         }
     }
 }
