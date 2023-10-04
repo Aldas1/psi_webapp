@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+defaults:
+  run:
+    working-directory: QuizAppApi
+
 jobs:
   build:
 
@@ -14,8 +18,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Cd into sln folder
-      run: cd QuizAppApi
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
