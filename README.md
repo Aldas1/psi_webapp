@@ -26,6 +26,14 @@ dotnet run # or
 dotnet watch
 ```
 
+### Backend tests
+
+To run .NET tests use this command in QuizAppApi.sln directory:
+
+``` bash
+dotnet test
+```
+
 ### Frontend setup
 
 Please check the [react-app README](react-app/README.md)
@@ -37,6 +45,7 @@ Please check the [react-app README](react-app/README.md)
   - [Tech stack](#tech-stack)
   - [Development setup](#development-setup)
     - [Backend setup](#backend-setup)
+    - [Backend tests](#backend-tests)
     - [Frontend setup](#frontend-setup)
   - [Table of contents](#table-of-contents)
   - [Branching strategy](#branching-strategy)
