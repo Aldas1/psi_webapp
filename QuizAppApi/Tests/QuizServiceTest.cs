@@ -49,7 +49,7 @@ namespace Tests
                     }
                 }
             };
-            var expectedResponse = new QuizCreationResponseDTO { Status = "success" };
+            var expectedResponse = new QuizCreationResponseDTO { Status = "success", Id = 1 };
 
             // Mock repository setup
             _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
@@ -59,6 +59,7 @@ namespace Tests
 
             // Assert
             Assert.AreEqual(expectedResponse.Status, result.Status);
+            Assert.AreEqual(expectedResponse.Id, result.Id);
             _mockQuizRepository.Verify(repo => repo.AddQuiz(It.IsAny<Quiz>()), Times.Once);
         }
 
@@ -85,23 +86,21 @@ namespace Tests
             };
 
             // Mock repository setup
-            var createdQuiz = new Quiz { Id = 1, Name = "Test Quiz" };
-            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(createdQuiz);
-
+            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
             // Ensure that GetQuizzes returns the expected list of quizzes
-            var expectedQuizzes = new List<Quiz> { createdQuiz };
+            var expectedQuizzes = new List<Quiz> { new Quiz { Id = 1, Name = "Test Quiz" } };
             _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(expectedQuizzes);
 
             // Act
-            var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Id == createdQuiz.Id);
+            var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Name == quizRequest.Name);
 
             // Assert
-            Assert.IsNotNull(createdQuiz); // Ensure quiz is created successfully
             Assert.IsNotNull(result); // Ensure result is not null
             Assert.AreEqual(quizRequest.Name, result.Name);
             // Add assertions for other properties as needed
-            _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called
+            _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called exactly once
         }
+
         
         [Test]
         public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
