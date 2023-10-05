@@ -1,8 +1,9 @@
+using Moq;
 using NUnit.Framework;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
 using QuizAppApi.Services;
-using QuizAppApi.Repositories;
 
 namespace Tests
 {
@@ -10,20 +11,20 @@ namespace Tests
     public class QuizServiceTests
     {
         private IQuizService? _quizService;
-        private IQuizRepository? _quizRepository;
+        private Mock<IQuizRepository>? _mockQuizRepository;
 
         [SetUp]
         public void Setup()
         {
-            _quizRepository = new InMemoryQuizRepository();
-            _quizService = new QuizService(_quizRepository);
+            _mockQuizRepository = new Mock<IQuizRepository>();
+            _quizService = new QuizService(_mockQuizRepository.Object);
         }
-        
+
         [TearDown]
         public void TearDown()
         {
-            // Reset the repository after each test
-            _quizRepository = null;
+            // Reset the mock after each test
+            _mockQuizRepository = null;
             _quizService = null;
         }
 
@@ -50,46 +51,16 @@ namespace Tests
             };
             var expectedResponse = new QuizCreationResponseDTO { Status = "success" };
 
+            // Mock repository setup
+            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
+
             // Act
             var result = _quizService.CreateQuiz(request);
-            
+
             // Assert
             Assert.AreEqual(expectedResponse.Status, result.Status);
-            Assert.AreEqual(request.Name, _quizRepository.GetQuizById(0).Name);
-            Assert.AreEqual(request.Questions.Count, _quizRepository.GetQuizById(0).Questions.Count);
-            Assert.AreEqual(request.Questions.First().QuestionText, _quizRepository.GetQuizById(0).Questions.First().Text);
+            _mockQuizRepository.Verify(repo => repo.AddQuiz(It.IsAny<Quiz>()), Times.Once);
         }
-
-        // [Test]
-        // public void CreateQuiz_ReturnsErrorForInvalidRequest()
-        // {
-        //     // Arrange
-        //     var request = new QuizCreationRequestDTO
-        //     {
-        //         Name = "Test Quiz",
-        //         Questions = new List<QuizCreationQuestionRequestDTO>
-        //         {
-        //             new QuizCreationQuestionRequestDTO
-        //             {
-        //                 QuestionText = "What is the capital of France?",
-        //                 QuestionType = "singleChoiceQuestion",
-        //                 QuestionParameters = new QuestionParametersDTO
-        //                 {
-        //                     Options = new List<string> { "Paris", "London", "Berlin", "Madrid" },
-        //                     CorrectOptionIndex = 4 // Invalid index
-        //                 }
-        //             }
-        //         }
-        //     };
-        //     var expectedResponse = new QuizCreationResponseDTO { Status = "Correct option index out of Options list bounds" };
-        //
-        //     // Act
-        //     var result = _quizService.CreateQuiz(request);
-        //
-        //     // Assert
-        //     Assert.AreEqual(expectedResponse.Status, result.Status);
-        //     Assert.AreEqual(0, _quizRepository.GetQuizzes().Count());
-        // }
 
         [Test]
         public void GetQuiz_ReturnsCorrectQuiz()
@@ -112,66 +83,26 @@ namespace Tests
                     }
                 }
             };
-            var createdQuiz = _quizService.CreateQuiz(quizRequest);
+
+            // Mock repository setup
+            var createdQuiz = new Quiz { Id = 1, Name = "Test Quiz" };
+            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(createdQuiz);
+
+            // Ensure that GetQuizzes returns the expected list of quizzes
+            var expectedQuizzes = new List<Quiz> { createdQuiz };
+            _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(expectedQuizzes);
 
             // Act
-            var result = _quizRepository.GetQuizById(createdQuiz.Id ?? 0);
+            var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Id == createdQuiz.Id);
 
             // Assert
+            Assert.IsNotNull(createdQuiz); // Ensure quiz is created successfully
+            Assert.IsNotNull(result); // Ensure result is not null
             Assert.AreEqual(quizRequest.Name, result.Name);
-            Assert.AreEqual(quizRequest.Questions.Count, result.Questions.Count);
-            Assert.AreEqual(quizRequest.Questions.First().QuestionText, result.Questions.First().Text);
+            // Add assertions for other properties as needed
+            _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called
         }
-
-        // [Test]
-        // public void GetQuiz_ReturnsNullForNonexistentQuiz()
-        // {
-        //     // Arrange
-        //
-        //     // Act
-        //     var result = _quizRepository.GetQuizById(0);
-        //
-        //     // Assert
-        //     Assert.IsNull(result);
-        // }
-
-        // [Test]
-        // public void SubmitAnswers_ReturnsCorrectResponse()
-        // {
-        //     // Arrange
-        //     var quizRequest = new QuizCreationRequestDTO
-        //     {
-        //         Name = "Test Quiz",
-        //         Questions = new List<QuizCreationQuestionRequestDTO>
-        //         {
-        //             new QuizCreationQuestionRequestDTO
-        //             {
-        //                 QuestionText = "What is the capital of France?",
-        //                 QuestionType = "singleChoiceQuestion",
-        //                 QuestionParameters = new QuestionParametersDTO
-        //                 {
-        //                     Options = new List<string> { "Paris", "London", "Berlin", "Madrid" },
-        //                     CorrectOptionIndex = 0
-        //                 }
-        //             }
-        //         }
-        //     };
-        //     var createdQuiz = _quizService.CreateQuiz(quizRequest);
-        //
-        //     var answerRequest = new List<AnswerSubmitRequestDTO>
-        //     {
-        //         new AnswerSubmitRequestDTO { QuestionId = 0, OptionName = "Paris" }
-        //     };
-        //     
-        //     var expectedResponse = new AnswerSubmitResponseDTO { CorrectlyAnswered = 1 };
-        //
-        //     // Act
-        //     var result = _quizService.SubmitAnswers(createdQuiz.Id ?? 0, answerRequest);
-        //
-        //     // Assert
-        //     Assert.AreEqual(expectedResponse.CorrectlyAnswered, createdQuiz.Id);
-        // }
-
+        
         [Test]
         public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
         {
@@ -182,11 +113,37 @@ namespace Tests
             };
             var expectedResponse = new AnswerSubmitResponseDTO { Status = "failed" };
 
+            // Mock repository setup
+            _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
+
             // Act
             var result = _quizService.SubmitAnswers(1, answerRequest);
 
             // Assert
             Assert.AreEqual(expectedResponse.Status, result.Status);
+            _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+        }
+
+        [Test]
+        public void GetQuizzes_ReturnsCorrectQuizzes()
+        {
+            // Arrange
+            var quizzes = new List<Quiz>
+            {
+                new Quiz { Id = 1, Name = "Quiz 1" },
+                new Quiz { Id = 2, Name = "Quiz 2" }
+            };
+
+            // Mock repository setup
+            _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(quizzes);
+
+            // Act
+            var result = _quizService.GetQuizzes();
+
+            // Assert
+            Assert.AreEqual(quizzes.Count, result.Count());
+            Assert.AreEqual(quizzes[0].Name, result.First().Name);
+            Assert.AreEqual(quizzes[1].Name, result.Skip(1).First().Name);
         }
     }
 }

@@ -103,12 +103,12 @@ namespace QuizAppApi.Services
 
         public IEnumerable<QuizResponseDTO> GetQuizzes()
         {
-            _quizRepository.GetQuizzes();
-            return _quizRepository.GetQuizzes()
-                .Select(
-                    quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id }
-                );
+            var quizzes = _quizRepository.GetQuizzes();
+
+            return quizzes
+                .Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
         }
+
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
