@@ -1,5 +1,8 @@
 # Quiz app
 
+![Github Actions](https://github.com/Aldas1/psi_webapp/actions/workflows/dotnet.yml/badge.svg)
+![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Aldas1/f04a7acd2cbaa647c6515030113c444b/raw/code-coverage.json)
+
 ## Description
 
 ASP.NET based quiz app, which helps students and teachers to conduct quizes and make learning easier.
@@ -23,6 +26,14 @@ dotnet run # or
 dotnet watch
 ```
 
+### Backend tests
+
+To run .NET tests use this command in QuizAppApi.sln directory:
+
+``` bash
+dotnet test
+```
+
 ### Frontend setup
 
 Please check the [react-app README](react-app/README.md)
@@ -34,6 +45,7 @@ Please check the [react-app README](react-app/README.md)
   - [Tech stack](#tech-stack)
   - [Development setup](#development-setup)
     - [Backend setup](#backend-setup)
+    - [Backend tests](#backend-tests)
     - [Frontend setup](#frontend-setup)
   - [Table of contents](#table-of-contents)
   - [Branching strategy](#branching-strategy)
