@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QuizAppApi.Enums;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 
@@ -17,15 +18,16 @@ namespace QuizAppApi.Utils
             JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
+            //TODO cia irgi pakeist kad teisingai matchintu
             if (jo["Type"] != null && Enum.TryParse(jo["Type"].Value<string>(), out QuestionType questionType))
             {
                 switch (questionType)
                 {
-                    case QuestionType.singleChoiceQuestion:
+                    case QuestionType.SingleChoiceQuestion:
                         return jo.ToObject<SingleChoiceQuestion>();
-                    case QuestionType.multipleChoiceQuestion:
+                    case QuestionType.MultipleChoiceQuestion:
                         return jo.ToObject<MultipleChoiceQuestion>();
-                    case QuestionType.openTextQuestion:
+                    case QuestionType.OpenTextQuestion:
                         return jo.ToObject<OpenTextQuestion>();
                     default:
                         return null;

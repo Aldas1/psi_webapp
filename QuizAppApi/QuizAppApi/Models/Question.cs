@@ -1,4 +1,6 @@
-﻿namespace QuizAppApi.Models
+﻿using QuizAppApi.Enums;
+
+namespace QuizAppApi.Models
 {
     public abstract class Question
     {
