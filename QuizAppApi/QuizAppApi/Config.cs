@@ -8,7 +8,5 @@
             public const string MultipleChoiceQuestionApiString = "multipleChoiceQuestion";
             public const string OpenTextQuestionApiString = "openTextQuestion";
         }
-
-        //public static QuestionType QuestionTypeValues { get; } = new QuestionType();
     }
 }
