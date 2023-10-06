@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace QuizAppApi.Enums
+﻿namespace QuizAppApi.Enums
 {
     public enum QuestionType
     {
@@ -8,6 +6,8 @@ namespace QuizAppApi.Enums
 
         MultipleChoiceQuestion,
 
-        OpenTextQuestion
+        OpenTextQuestion,
+
+        Unknown
     }
 }

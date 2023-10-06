@@ -2,20 +2,13 @@
 {
     public static class Config
     {
-        public struct ConfigValues
+        public struct QuestionTypeValues
         {
-            public string SingleChoiceQuestionApiString { get; set; }
-
-            public string MultipleChoiceQuestionApiString { get; set; }
-
-            public string OpenTextQuestionApiString { get; set; }
+            public const string SingleChoiceQuestionApiString = "singleChoiceQuestion";
+            public const string MultipleChoiceQuestionApiString = "multipleChoiceQuestion";
+            public const string OpenTextQuestionApiString = "openTextQuestion";
         }
 
-        public static ConfigValues QuestionTypeValues { get; } = new ConfigValues
-        {
-            SingleChoiceQuestionApiString = "singleChoiceQuestion",
-            MultipleChoiceQuestionApiString = "multipleChoiceQuestion",
-            OpenTextQuestionApiString = "openTextQuestion"
-        };
+        //public static QuestionType QuestionTypeValues { get; } = new QuestionType();
     }
 }
