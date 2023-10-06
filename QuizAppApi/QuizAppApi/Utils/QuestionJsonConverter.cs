@@ -18,7 +18,6 @@ namespace QuizAppApi.Utils
             JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            //TODO cia irgi pakeist kad teisingai matchintu
             if (jo["Type"] != null && Enum.TryParse(jo["Type"].Value<string>(), out QuestionType questionType))
             {
                 switch (questionType)
