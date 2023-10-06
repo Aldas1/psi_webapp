@@ -1,9 +1,11 @@
-﻿namespace QuizAppApi.Models
+﻿using QuizAppApi.Enums;
+
+namespace QuizAppApi.Models
 {
     public abstract class Question
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public abstract string Type { get; }
+        public abstract QuestionType Type { get; }
     }
 }

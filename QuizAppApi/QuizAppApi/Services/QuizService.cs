@@ -1,4 +1,5 @@
 using QuizAppApi.DTOs;
+using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
@@ -23,9 +24,10 @@ namespace QuizAppApi.Services
 
             foreach (var question in request.Questions)
             {
-                switch (question.QuestionType)
+
+                switch(QuestionTypeConverter.FromString(question.QuestionType))
                 {
-                    case "singleChoiceQuestion":
+                    case QuestionType.SingleChoiceQuestion:
                         var newQuestion = new SingleChoiceQuestion
                         {
                             Text = question.QuestionText
@@ -34,7 +36,7 @@ namespace QuizAppApi.Services
                         int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
                         if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
                         {
-                            return new QuizCreationResponseDTO { Status = "Correct option index out of Options list bounds" };
+                            return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
                         }
                         newQuestion.CorrectOption = new Option
                         {
@@ -47,19 +49,17 @@ namespace QuizAppApi.Services
                         {
                             Option newOption = new Option();
                             newOption.Name = option;
-                            newQuestion.Options.Add(newOption);                            
+                            newQuestion.Options.Add(newOption);
                         }
 
                         newQuiz.Questions.Add(newQuestion);
                         break;
-                    case "multipleChoiceQuestion":
-
+                    case QuestionType.MultipleChoiceQuestion:
                         break;
-                    case "openTextQuestion":
-
+                    case QuestionType.OpenTextQuestion: 
                         break;
                     default:
-                        return new QuizCreationResponseDTO { Status = "Question type not found"};
+                        return new QuizCreationResponseDTO { Status = "Question type not found" };
                 }
             }
 
@@ -86,7 +86,7 @@ namespace QuizAppApi.Services
             foreach (var question in quiz.Questions)
             {
                 var questionResponse = new QuestionResponseDTO
-                    { Id = question.Id, QuestionText = question.Text, QuestionType = question.Type};
+                { Id = question.Id, QuestionText = question.Text, QuestionType = QuestionTypeConverter.ToString(question.Type) };
                 switch (question)
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
