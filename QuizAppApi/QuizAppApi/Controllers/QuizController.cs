@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 
@@ -48,6 +49,12 @@ namespace QuizAppApi.Controllers
         public ActionResult<AnswerSubmitResponseDTO> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
         {
             return _quizService.SubmitAnswers(id, request);
+        }
+
+        [HttpDelete]
+        public ActionResult<QuizDeletionResponseDTO> DeleteQuiz(int id)
+        {
+            return _quizService.DeleteQuiz(id);
         }
     }
 }
