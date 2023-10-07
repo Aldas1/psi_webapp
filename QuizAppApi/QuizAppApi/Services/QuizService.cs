@@ -105,8 +105,7 @@ namespace QuizAppApi.Services
         {
             var quizzes = _quizRepository.GetQuizzes();
 
-            return quizzes
-                .Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
+            return quizzes.Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
         }
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
@@ -165,6 +164,13 @@ namespace QuizAppApi.Services
 
         public QuizDeletionResponseDTO DeleteQuiz(int id)
         {
+            var quiz = _quizRepository.GetQuizById(id);
+            if (quiz == null)
+            {
+                return new QuizDeletionResponseDTO { Status = "Failed. Quiz not found." };
+            }
+
+            _quizRepository.DeleteQuiz(id);
             return new QuizDeletionResponseDTO { Status = "Success" };
         }
     }
