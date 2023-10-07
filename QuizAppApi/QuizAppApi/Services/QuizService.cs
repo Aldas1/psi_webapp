@@ -109,7 +109,6 @@ namespace QuizAppApi.Services
                 .Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
         }
 
-
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
             var response = new AnswerSubmitResponseDTO();
@@ -162,6 +161,11 @@ namespace QuizAppApi.Services
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
 
             return response;
+        }
+
+        public QuizDeletionResponseDTO DeleteQuiz(int id)
+        {
+            return new QuizDeletionResponseDTO { Status = "Success" };
         }
     }
 }
