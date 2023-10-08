@@ -31,7 +31,7 @@ interface QuestionParametersDto {
 
 interface QuestionResponseDto {
   id: number;
-  questionText: number;
+  questionText: string;
   questionType: QuestionTypeDto;
   questionParameters: QuestionParametersDto;
 }
