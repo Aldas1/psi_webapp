@@ -8,6 +8,8 @@ import {
   QuizResponseDto,
 } from "../../types";
 import QuizEditor from "../../components/QuizEditor";
+import { useState } from "react";
+import SoloGame from "../../components/SoloGame";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,
@@ -15,19 +17,15 @@ function generateQuiz(
 ): QuizCreationRequestDto {
   return {
     name: quizResponse.name,
-    questions: questionsResponse.map((q) => {
-      return {
-        questionText: q.questionText,
-        questionType: q.questionType,
-        questionParameters: q.questionParameters,
-      };
-    }),
+    questions: questionsResponse,
   };
 }
 
 function QuizPreview() {
   const params = useParams();
   const id = parseInt(params.id ?? "0");
+
+  const [inGame, setInGame] = useState(false);
 
   const navigate = useNavigate();
 
@@ -61,13 +59,19 @@ function QuizPreview() {
 
   const quiz = generateQuiz(quizData, questionsData);
 
+  if (inGame) {
+    return <SoloGame quiz={quiz} />;
+  }
+
   return (
     <QuizEditor
       quiz={quiz}
       preview
       previewBody={
         <HStack>
-          <Button>Solo game</Button>
+          {quiz.questions.length > 0 && (
+            <Button onClick={() => setInGame(true)}>Solo game</Button>
+          )}
           <Button
             colorScheme="red"
             onClick={async () => {
