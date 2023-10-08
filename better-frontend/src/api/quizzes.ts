@@ -33,6 +33,10 @@ async function createQuiz(quiz: QuizCreationRequestDto) {
   return response.data;
 }
 
+async function deleteQuiz(id: number) {
+  return axios.delete(`/api/quizzes/${id}`);
+}
+
 async function submitAnswers(id: number, answers: AnswerSubmitRequestDto[]) {
   const response = await axios.post<AnswerSubmitResponseDto>(
     `/api/quizzes/${id}/submit`,
@@ -41,4 +45,11 @@ async function submitAnswers(id: number, answers: AnswerSubmitRequestDto[]) {
   return response.data;
 }
 
-export { getQuizzes, getQuiz, getQuestions, createQuiz, submitAnswers };
+export {
+  getQuizzes,
+  getQuiz,
+  getQuestions,
+  createQuiz,
+  deleteQuiz,
+  submitAnswers,
+};
