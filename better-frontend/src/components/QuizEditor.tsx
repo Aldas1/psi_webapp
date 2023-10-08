@@ -29,7 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { QuestionTypeDto } from "../types";
-import { Component } from "react";
+import { ReactNode } from "react";
 
 function createQuestionParameters(
   type: QuestionTypeDto

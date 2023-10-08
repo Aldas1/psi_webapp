@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { deleteQuiz, getQuestions, getQuiz } from "../../api/quizzes";
-import { Button, Container, HStack, Spinner } from "@chakra-ui/react";
+import { Button, HStack, Spinner } from "@chakra-ui/react";
 import {
   QuestionResponseDto,
   QuizCreationRequestDto,
