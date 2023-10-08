@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { QuestionTypeDto } from "../types";
+import { Component } from "react";
 
 function createQuestionParameters(
   type: QuestionTypeDto
@@ -211,11 +212,13 @@ function QuizEditor({
   quiz,
   onQuizChange = () => undefined,
   preview = false,
+  previewBody,
   onSubmit = () => undefined,
 }: {
   quiz: QuizCreationRequestDto;
   onQuizChange?: (newQuiz: QuizCreationRequestDto) => void;
   preview?: boolean;
+  previewBody?: ReactNode;
   onSubmit?: () => void;
 }) {
   return (
@@ -241,6 +244,7 @@ function QuizEditor({
               width="100%"
             />
           )}
+          {preview && previewBody}
           <Heading size="md" as="h4">
             Questions
           </Heading>
