@@ -13,6 +13,11 @@ async function getQuizzes() {
   return response.data;
 }
 
+async function getQuiz(id: number) {
+  const response = await axios.get<QuizResponseDto>(`/api/quizzes/${id}`);
+  return response.data;
+}
+
 async function getQuestions(id: number) {
   const response = await axios.get<QuestionResponseDto[]>(
     `/api/quizzes/${id}/questions`
@@ -36,4 +41,4 @@ async function submitAnswers(id: number, answers: AnswerSubmitRequestDto[]) {
   return response.data;
 }
 
-export { getQuizzes, getQuestions, createQuiz, submitAnswers };
+export { getQuizzes, getQuiz, getQuestions, createQuiz, submitAnswers };
