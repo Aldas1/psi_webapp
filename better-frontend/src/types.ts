@@ -25,8 +25,8 @@ type QuestionTypeDto =
   | "openTextQuestion";
 
 interface QuestionParametersDto {
-  options: string[];
-  correctOptionIndex: number;
+  options?: string[];
+  correctOptionIndex?: number;
 }
 
 interface QuestionResponseDto {
@@ -48,7 +48,10 @@ interface AnswerSubmitResponseDto {
 }
 
 export type {
+  QuestionTypeDto,
+  QuestionParametersDto,
   QuizCreationRequestDto,
+  QuizCreationQuestionRequestDto,
   QuizCreationResponseDto,
   QuizResponseDto,
   QuestionResponseDto,
