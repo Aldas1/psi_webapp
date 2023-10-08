@@ -27,7 +27,7 @@ import {
   RadioGroup,
   Radio,
 } from "@chakra-ui/react";
-import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { QuestionTypeDto } from "../types";
 
 function createQuestionParameters(
@@ -84,19 +84,32 @@ function SingleChoiceQuestionEditor({
               {preview ? (
                 <Text>{o}</Text>
               ) : (
-                <Input
-                  maxLength={30}
-                  value={o}
-                  placeholder="Option"
-                  onChange={(e) =>
-                    onParametersChange({
-                      ...parameters,
-                      options: options.map((opt, optI) =>
-                        optI === i ? e.target.value : opt
-                      ),
-                    })
-                  }
-                />
+                <>
+                  <Input
+                    maxLength={30}
+                    value={o}
+                    placeholder="Option"
+                    onChange={(e) =>
+                      onParametersChange({
+                        ...parameters,
+                        options: options.map((opt, optI) =>
+                          optI === i ? e.target.value : opt
+                        ),
+                      })
+                    }
+                  />
+                  <IconButton
+                    aria-label="Delete option"
+                    icon={<DeleteIcon />}
+                    onClick={() => {
+                      onParametersChange({
+                        ...parameters,
+                        options: options.filter((_opt, optI) => optI !== i),
+                        correctOptionIndex: 0,
+                      });
+                    }}
+                  />
+                </>
               )}
             </HStack>
           ))}
