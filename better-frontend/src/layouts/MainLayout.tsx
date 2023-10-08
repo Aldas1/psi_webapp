@@ -6,7 +6,7 @@ function MainLayout() {
   return (
     <Box marginX="1rem">
       <Header />
-      <Box marginTop="1rem">
+      <Box marginY="2rem">
         <Outlet />
       </Box>
     </Box>
