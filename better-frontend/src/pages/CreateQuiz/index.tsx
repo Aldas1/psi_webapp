@@ -4,8 +4,10 @@ import QuizEditor from "../../components/QuizEditor";
 import { Heading, VStack } from "@chakra-ui/layout";
 import { createQuiz } from "../../api/quizzes";
 import { useToast } from "@chakra-ui/toast";
+import { useNavigate } from "react-router";
 
 function CreateQuiz() {
+  const navigate = useNavigate();
   const [quiz, setQuiz] = useState<QuizCreationRequestDto>({
     name: "",
     questions: [],
@@ -38,6 +40,7 @@ function CreateQuiz() {
               duration: 5000,
               isClosable: true,
             });
+            navigate(`/quizzes/${response.id}`);
           }
         }}
       />
