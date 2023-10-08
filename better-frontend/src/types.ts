@@ -1,0 +1,57 @@
+interface QuizResponseDto {
+  id: number;
+  name: string;
+}
+
+interface QuizCreationQuestionRequestDto {
+  questionText: string;
+  questionType: QuestionTypeDto;
+  questionParameters: QuestionParametersDto;
+}
+
+interface QuizCreationRequestDto {
+  name: string;
+  questions: QuizCreationQuestionRequestDto[];
+}
+
+interface QuizCreationResponseDto {
+  status: string;
+  id: number;
+}
+
+type QuestionTypeDto =
+  | "singleChoiceQuestion"
+  | "multipleChoiceQuestion"
+  | "openTextQuestion";
+
+interface QuestionParametersDto {
+  options: string[];
+  correctOptionIndex: number;
+}
+
+interface QuestionResponseDto {
+  id: number;
+  questionText: number;
+  questionType: QuestionTypeDto;
+  questionParameters: QuestionParametersDto;
+}
+
+interface AnswerSubmitRequestDto {
+  questionId: number;
+  optionName: string;
+}
+
+interface AnswerSubmitResponseDto {
+  score: number;
+  correctlyAnswered: number;
+  status: string;
+}
+
+export type {
+  QuizCreationRequestDto,
+  QuizCreationResponseDto,
+  QuizResponseDto,
+  QuestionResponseDto,
+  AnswerSubmitRequestDto,
+  AnswerSubmitResponseDto,
+};
