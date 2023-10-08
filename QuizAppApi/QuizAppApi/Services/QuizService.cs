@@ -105,10 +105,8 @@ namespace QuizAppApi.Services
         {
             var quizzes = _quizRepository.GetQuizzes();
 
-            return quizzes
-                .Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
+            return quizzes.Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
         }
-
 
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
@@ -162,6 +160,18 @@ namespace QuizAppApi.Services
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
 
             return response;
+        }
+
+        public bool DeleteQuiz(int id)
+        {
+            var quiz = _quizRepository.GetQuizById(id);
+            if (quiz == null)
+            {
+                return false;
+            }
+
+            _quizRepository.DeleteQuiz(id);
+            return true;
         }
     }
 }

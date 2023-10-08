@@ -8,5 +8,6 @@ namespace QuizAppApi.Interfaces
         IEnumerable<Quiz> GetQuizzes();
         Quiz? GetQuizById(int id);
         Quiz? UpdateQuiz(int id, Quiz quiz);
+        void DeleteQuiz(int id);
     }
 }

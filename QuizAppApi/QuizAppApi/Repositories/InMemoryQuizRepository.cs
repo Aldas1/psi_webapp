@@ -102,5 +102,15 @@ namespace QuizAppApi.Repositories
             UpdateDataFile();
             return QuizSerialization.CloneQuiz(newQuiz);
         }
+
+        public void DeleteQuiz(int id)
+        {
+            var quiz = _quizzes.FirstOrDefault(q => q.Id == id);
+            if (quiz != null)
+            {
+                _quizzes.Remove(quiz);
+                UpdateDataFile();
+            }
+        }
     }
 }

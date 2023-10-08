@@ -49,5 +49,20 @@ namespace QuizAppApi.Controllers
         {
             return _quizService.SubmitAnswers(id, request);
         }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteQuiz(int id)
+        {
+            bool response = _quizService.DeleteQuiz(id);
+            if (response)
+            {
+                return Ok();
+
+            } else
+            {
+                return BadRequest();
+
+            }
+        }
     }
 }
