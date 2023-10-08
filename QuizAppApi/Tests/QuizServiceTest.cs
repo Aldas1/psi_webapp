@@ -126,5 +126,20 @@ namespace Tests
             Assert.AreEqual(quizzes[0].Name, result.First().Name);
             Assert.AreEqual(quizzes[1].Name, result.Skip(1).First().Name);
         }
+
+        [Test]
+        public void DeleteQuiz_DeletesCorrectQuiz()
+        {
+            int quizIdToDelete = 1;
+            var quizToDelete = new Quiz { Id = quizIdToDelete, Name = "Quiz that will soon be *poof*" };
+
+            _mockQuizRepository.Setup(repo => repo.GetQuizById(quizIdToDelete)).Returns(quizToDelete);
+            
+            var result = _quizService.DeleteQuiz(quizIdToDelete);
+
+            Assert.IsTrue(result);
+            _mockQuizRepository.Verify(repo => repo.GetQuizById(quizIdToDelete), Times.Once);
+            _mockQuizRepository.Verify(repo => repo.DeleteQuiz(quizIdToDelete), Times.Once);
+        }
     }
 }
