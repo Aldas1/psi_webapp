@@ -105,7 +105,12 @@ namespace QuizAppApi.Repositories
 
         public void DeleteQuiz(int id)
         {
-            _quizzes.RemoveAt(id);
+            var quiz = _quizzes.FirstOrDefault(q => q.Id == id);
+            if (quiz != null)
+            {
+                _quizzes.Remove(quiz);
+                UpdateDataFile();
+            }
         }
     }
 }
