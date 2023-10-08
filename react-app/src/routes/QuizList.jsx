@@ -23,6 +23,15 @@ export default function QuizList() {
               >
                 Solo Play
               </Button>
+              <Button
+                onClick={() => {
+                  fetch(`/api/quizzes/${q.id}`, { method: "DELETE" }).then(window.location.reload());
+                }}
+                variant="contained"
+                color="error"
+              >
+                Delete
+              </Button>
               <Divider />
             </ListItem>
             <Divider />
