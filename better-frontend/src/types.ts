@@ -7,6 +7,7 @@ interface QuizCreationQuestionRequestDto {
   questionText: string;
   questionType: QuestionTypeDto;
   questionParameters: QuestionParametersDto;
+  id?: number;
 }
 
 interface QuizCreationRequestDto {
