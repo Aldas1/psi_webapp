@@ -162,16 +162,16 @@ namespace QuizAppApi.Services
             return response;
         }
 
-        public QuizDeletionResponseDTO DeleteQuiz(int id)
+        public bool DeleteQuiz(int id)
         {
             var quiz = _quizRepository.GetQuizById(id);
             if (quiz == null)
             {
-                return new QuizDeletionResponseDTO { Status = "Failed. Quiz not found." };
+                return false;
             }
 
             _quizRepository.DeleteQuiz(id);
-            return new QuizDeletionResponseDTO { Status = "Success" };
+            return true;
         }
     }
 }

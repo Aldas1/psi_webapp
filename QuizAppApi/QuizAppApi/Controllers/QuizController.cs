@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 
@@ -52,9 +51,18 @@ namespace QuizAppApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<QuizDeletionResponseDTO> DeleteQuiz(int id)
+        public ActionResult DeleteQuiz(int id)
         {
-            return _quizService.DeleteQuiz(id);
+            bool response = _quizService.DeleteQuiz(id);
+            if (response)
+            {
+                return Ok();
+
+            } else
+            {
+                return BadRequest();
+
+            }
         }
     }
 }
