@@ -1,4 +1,11 @@
-import { Flex, IconButton, useColorMode, Heading } from "@chakra-ui/react";
+import {
+  Flex,
+  IconButton,
+  useColorMode,
+  Heading,
+  HStack,
+  Button,
+} from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link as ReactRouterLink } from "react-router-dom";
 
@@ -26,7 +33,12 @@ function Header() {
       <ReactRouterLink to="/">
         <Heading>Quiz App</Heading>
       </ReactRouterLink>
-      <DarkModeToggle />
+      <HStack>
+        <DarkModeToggle />
+        <ReactRouterLink to="/createQuiz">
+          <Button>Create Quiz</Button>
+        </ReactRouterLink>
+      </HStack>
     </Flex>
   );
 }
