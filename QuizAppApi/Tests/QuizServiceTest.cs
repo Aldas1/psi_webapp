@@ -141,5 +141,19 @@ namespace Tests
             _mockQuizRepository.Verify(repo => repo.GetQuizById(quizIdToDelete), Times.Once);
             _mockQuizRepository.Verify(repo => repo.DeleteQuiz(quizIdToDelete), Times.Once);
         }
+
+        [Test]
+        public void GetQuiz_ReturnsProperQuiz()
+        {
+            int quizId = 10;
+            var quiz = new Quiz { Id = quizId, Name = "Cool name" };
+            _mockQuizRepository.Setup(repo => repo.GetQuizById(quizId)).Returns(quiz);
+
+            var result = _quizService.GetQuiz(quizId);
+            
+            Assert.AreEqual(quiz.Name, result.Name);
+            Assert.AreEqual(quiz.Id, result.Id);
+            _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
+        }
     }
 }
