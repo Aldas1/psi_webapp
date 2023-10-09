@@ -13,6 +13,7 @@ interface QuizCreationQuestionRequestDto {
 interface QuizCreationRequestDto {
   name: string;
   questions: QuizCreationQuestionRequestDto[];
+  id?: number;
 }
 
 interface QuizCreationResponseDto {

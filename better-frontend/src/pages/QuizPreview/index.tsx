@@ -16,6 +16,7 @@ function generateQuiz(
   questionsResponse: QuestionResponseDto[]
 ): QuizCreationRequestDto {
   return {
+    id: quizResponse.id,
     name: quizResponse.name,
     questions: questionsResponse,
   };

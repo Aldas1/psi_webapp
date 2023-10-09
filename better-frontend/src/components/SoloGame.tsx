@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   AnswerSubmitRequestDto,
+  AnswerSubmitResponseDto,
   QuestionParametersDto,
   QuizCreationQuestionRequestDto,
   QuizCreationRequestDto,
@@ -21,6 +22,7 @@ import {
   Progress,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { submitAnswers } from "../api/quizzes";
 
 function SingleChoiceControls({
   parameters,
@@ -32,7 +34,7 @@ function SingleChoiceControls({
   onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
 }) {
   const options = parameters.options ?? [];
-  const correctName = answer?.optionName || options.join("-");
+  const correctName = answer?.optionName || options.join("-") + "---"; // some weird radio button being already selected
 
   return (
     <Box>
@@ -83,13 +85,43 @@ function QuestionDisplay({
   );
 }
 
+function Results({
+  quiz,
+  results,
+}: {
+  quiz: QuizCreationRequestDto;
+  results: AnswerSubmitResponseDto;
+}) {
+  if (results.status !== "success") {
+    return "Internal error";
+  }
+
+  return (
+    <>
+      <Heading textAlign="center">Score: {results.score}</Heading>
+      <Heading textAlign="center" size="sm">
+        {results.correctlyAnswered} / {quiz.questions.length} answered correctly
+      </Heading>
+    </>
+  );
+}
+
 function SoloGame({ quiz }: { quiz: QuizCreationRequestDto }) {
   const [answers, setAnswers] = useState<AnswerSubmitRequestDto[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [results, setResults] = useState<AnswerSubmitResponseDto | null>(null);
 
   const answer = answers.find(
     (a) => a.questionId === quiz.questions[currentQuestionIndex].id
   );
+
+  if (results) {
+    return (
+      <Container maxWidth="3xl">
+        <Results quiz={quiz} results={results} />
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="3xl">
@@ -108,6 +140,10 @@ function SoloGame({ quiz }: { quiz: QuizCreationRequestDto }) {
             icon={<ChevronLeftIcon />}
           />
           <IconButton
+            onClick={async () => {
+              const results = await submitAnswers(quiz.id ?? 0, answers);
+              setResults(results);
+            }}
             aria-label="Submit"
             flex="1"
             variant="ghost"
