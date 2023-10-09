@@ -10,6 +10,10 @@ namespace QuizAppApi.Utils
     {
         public override void WriteJson(JsonWriter writer, Question? value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                return;
+            }
             var jo = JObject.FromObject(value);
             jo.WriteTo(writer);
         }
@@ -18,7 +22,8 @@ namespace QuizAppApi.Utils
             JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            if (jo["Type"] != null && Enum.TryParse(jo["Type"].Value<string>(), out QuestionType questionType))
+            var type = jo["Type"];
+            if (type != null && Enum.TryParse(type.Value<string>(), out QuestionType questionType))
             {
                 switch (questionType)
                 {
