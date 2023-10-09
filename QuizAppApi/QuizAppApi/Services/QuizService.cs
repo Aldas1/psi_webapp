@@ -190,24 +190,32 @@ namespace QuizAppApi.Services
                 switch (question)
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
-                        var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
-                        if (selectedOption != null)
+                        var selectedOptionSingle = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
+                        if (selectedOptionSingle != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, selectedOptionSingle))
                         {
-                            var isCorrect = SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, selectedOption);
-
-                            if (isCorrect)
-                            {
-                                correctAnswers++;
-                            }
+                            correctAnswers++;
                         }
                         break;
 
                     case MultipleChoiceQuestion multipleChoiceQuestion:
-                        // TODO: Implement multiple choice answer checking
+                        if (answer.OptionNames != null)
+                        {
+                            List<Option> newOptions = new List<Option>();
+                            foreach(var selectedOptionMulti in answer.OptionNames)
+                            {
+                                newOptions.Add(multipleChoiceQuestion.Options.FirstOrDefault(o => o.Name == selectedOptionMulti));
+                            }
+                            MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, newOptions);
+                            correctAnswers++;
+                        }
                         break;
 
                     case OpenTextQuestion openTextQuestion:
-                        // TODO: Implement text answer checking
+                        var answerText = answer.AnswerText;
+                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText))
+                        {
+                            correctAnswers++;
+                        }
                         break;
                 }
             }
