@@ -32,6 +32,18 @@ namespace QuizAppApi.Controllers
             return Ok(quizzes);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<QuizResponseDTO> GetQuiz(int id)
+        {
+            var quiz = _quizService.GetQuiz(id);
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(quiz);
+        }
+
         // TODO: Add details
         [HttpGet("{id}/questions")]
         public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)

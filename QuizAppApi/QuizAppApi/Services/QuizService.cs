@@ -108,6 +108,17 @@ namespace QuizAppApi.Services
             return quizzes.Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
         }
 
+        public QuizResponseDTO? GetQuiz(int id)
+        {
+            var quiz = _quizRepository.GetQuizById(id);
+            if (quiz == null)
+            {
+                return null;
+            }
+
+            return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
+        }
+
         public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
             var response = new AnswerSubmitResponseDTO();
