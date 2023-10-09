@@ -25,7 +25,12 @@ namespace QuizAppApi.Utils
         
         public static Quiz CloneQuiz(Quiz quiz)
         {
-            return (Quiz)DeserializeQuiz(SerializeQuiz(quiz));
+            var newQuiz = DeserializeQuiz(SerializeQuiz(quiz));
+            if (newQuiz == null)
+            {
+                throw new InvalidOperationException("Unexpected null during serialization process");
+            }
+            return newQuiz;
         }
         
         
