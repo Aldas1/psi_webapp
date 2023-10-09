@@ -33,6 +33,16 @@ namespace QuizAppApi.Services
                             Text = question.QuestionText
                         };
 
+                        newSingleChoiceQuestion.Options = new List<Option>();
+                        foreach (var option in question.QuestionParameters.Options)
+                        {
+                            Option newOption = new Option
+                            {
+                                Name = option
+                            };
+                            newSingleChoiceQuestion.Options.Add(newOption);
+                        }
+
                         int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
                         if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
                         {
@@ -43,48 +53,54 @@ namespace QuizAppApi.Services
                             Name = question.QuestionParameters.Options[correctOptionIndex]
                         };
 
-                        newSingleChoiceQuestion.Options = new List<Option>();
-
-                        foreach (var option in question.QuestionParameters.Options)
-                        {
-                            Option newOption = new Option();
-                            newOption.Name = option;
-                            newSingleChoiceQuestion.Options.Add(newOption);
-                        }
-
                         newQuiz.Questions.Add(newSingleChoiceQuestion);
                         break;
+
                     case QuestionType.MultipleChoiceQuestion:
                         var newMultipleChoiceQuestion = new MultipleChoiceQuestion
                         {
                             Text = question.QuestionText
                         };
 
-                        newMultipleChoiceQuestion.CorrectOptions = new List<Option>();
-                        foreach (var index in question.QuestionParameters.CorrectOptionIndexes)
-                        {
-
-                        }
-
-
                         newMultipleChoiceQuestion.Options = new List<Option>();
-
                         foreach (var option in question.QuestionParameters.Options)
                         {
-                            Option newOption = new Option();
-                            newOption.Name = option;
+                            Option newOption = new Option
+                            {
+                                Name = option
+                            };
                             newMultipleChoiceQuestion.Options.Add(newOption);
                         }
 
+                        newMultipleChoiceQuestion.CorrectOptions = new List<Option>();
+                        int optionCount = question.QuestionParameters.Options.Count;
+                        foreach (var index in question.QuestionParameters.CorrectOptionIndexes)
+                        {
+                            if (index < 0 || index >= optionCount)
+                            {
+                                return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
+                            }
+
+                            Option newCorrectOption = new Option
+                            {
+                                Name = question.QuestionParameters.Options.ElementAt(index)
+                            };
+                            newMultipleChoiceQuestion.CorrectOptions.Add(newCorrectOption);
+                        }
+
+                        newQuiz.Questions.Add(newMultipleChoiceQuestion);
                         break;
+
                     case QuestionType.OpenTextQuestion:
-                        var newOpenTextQuestion = new OpenTextQuestion 
-                        { 
+                        var newOpenTextQuestion = new OpenTextQuestion
+                        {
                             Text = question.QuestionText
                         };
 
-
+                        newOpenTextQuestion.Text = question.QuestionText;
+                        newQuiz.Questions.Add(newOpenTextQuestion);
                         break;
+
                     default:
                         return new QuizCreationResponseDTO { Status = "Question type not found" };
                 }
