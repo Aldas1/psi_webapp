@@ -94,7 +94,8 @@ namespace QuizAppApi.Services
                     case QuestionType.OpenTextQuestion:
                         var newOpenTextQuestion = new OpenTextQuestion
                         {
-                            Text = question.QuestionText
+                            Text = question.QuestionText,
+                            CorrectAnswer = question.QuestionParameters.CorrectText,
                         };
 
                         newOpenTextQuestion.Text = question.QuestionText;
@@ -137,6 +138,14 @@ namespace QuizAppApi.Services
                         {
                             Options = singleChoiceQuestion.Options.Select(opt => opt.Name).ToList(),
                         };
+                        questions.Add(questionResponse);
+                        break;
+                    case OpenTextQuestion openTextQuestion:
+                        questionResponse.QuestionParameters = new QuestionParametersDTO();
+                        questions.Add(questionResponse);
+                        break;
+                    case MultipleChoiceQuestion multipleChoiceQuestion:
+                        questionResponse.QuestionParameters = new QuestionParametersDTO { Options = multipleChoiceQuestion.Options.Select(opt => opt.Name).ToList() };
                         questions.Add(questionResponse);
                         break;
                 }
