@@ -69,7 +69,9 @@ function SingleChoiceQuestionEditor({
   return (
     <>
       <RadioGroup
-        value={correctOptionIndex?.toString()}
+        value={
+          preview ? options.join("-") + "-" : correctOptionIndex?.toString()
+        }
         isDisabled={preview}
         onChange={(v) =>
           onParametersChange({
