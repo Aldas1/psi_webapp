@@ -3,6 +3,7 @@ using NUnit.Framework;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
 
 namespace Tests
@@ -12,12 +13,22 @@ namespace Tests
     {
         private IQuizService? _quizService;
         private Mock<IQuizRepository>? _mockQuizRepository;
+        private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
+        private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
+        private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
 
         [SetUp]
         public void Setup()
         {
             _mockQuizRepository = new Mock<IQuizRepository>();
-            _quizService = new QuizService(_mockQuizRepository.Object);
+            _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
+            _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
+            _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+            _quizService = new QuizService(
+                _mockQuizRepository.Object,
+                _mockSingleChoiceQuestionDTOConverterService.Object,
+                _mockMultipleChoiceQuestionDTOConverterService.Object,
+                _mockOpenTextQuestionDTOConverterService.Object);
         }
 
         [TearDown]
@@ -53,6 +64,7 @@ namespace Tests
 
             // Mock repository setup
             _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
+            _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
 
             // Act
             var result = _quizService.CreateQuiz(request);
@@ -83,7 +95,7 @@ namespace Tests
             // Add assertions for other properties as needed
             _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called
         }
-        
+
         [Test]
         public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
         {
@@ -134,7 +146,7 @@ namespace Tests
             var quizToDelete = new Quiz { Id = quizIdToDelete, Name = "Quiz that will soon be *poof*" };
 
             _mockQuizRepository.Setup(repo => repo.GetQuizById(quizIdToDelete)).Returns(quizToDelete);
-            
+
             var result = _quizService.DeleteQuiz(quizIdToDelete);
 
             Assert.IsTrue(result);
@@ -150,7 +162,7 @@ namespace Tests
             _mockQuizRepository.Setup(repo => repo.GetQuizById(quizId)).Returns(quiz);
 
             var result = _quizService.GetQuiz(quizId);
-            
+
             Assert.AreEqual(quiz.Name, result.Name);
             Assert.AreEqual(quiz.Id, result.Id);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
