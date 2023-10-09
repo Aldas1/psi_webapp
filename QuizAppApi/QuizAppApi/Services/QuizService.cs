@@ -25,10 +25,10 @@ namespace QuizAppApi.Services
             foreach (var question in request.Questions)
             {
 
-                switch(QuestionTypeConverter.FromString(question.QuestionType))
+                switch (QuestionTypeConverter.FromString(question.QuestionType))
                 {
                     case QuestionType.SingleChoiceQuestion:
-                        var newQuestion = new SingleChoiceQuestion
+                        var newSingleChoiceQuestion = new SingleChoiceQuestion
                         {
                             Text = question.QuestionText
                         };
@@ -38,25 +38,52 @@ namespace QuizAppApi.Services
                         {
                             return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
                         }
-                        newQuestion.CorrectOption = new Option
+                        newSingleChoiceQuestion.CorrectOption = new Option
                         {
                             Name = question.QuestionParameters.Options[correctOptionIndex]
                         };
 
-                        newQuestion.Options = new List<Option>();
+                        newSingleChoiceQuestion.Options = new List<Option>();
 
                         foreach (var option in question.QuestionParameters.Options)
                         {
                             Option newOption = new Option();
                             newOption.Name = option;
-                            newQuestion.Options.Add(newOption);
+                            newSingleChoiceQuestion.Options.Add(newOption);
                         }
 
-                        newQuiz.Questions.Add(newQuestion);
+                        newQuiz.Questions.Add(newSingleChoiceQuestion);
                         break;
                     case QuestionType.MultipleChoiceQuestion:
+                        var newMultipleChoiceQuestion = new MultipleChoiceQuestion
+                        {
+                            Text = question.QuestionText
+                        };
+
+                        newMultipleChoiceQuestion.CorrectOptions = new List<Option>();
+                        foreach (var index in question.QuestionParameters.CorrectOptionIndexes)
+                        {
+
+                        }
+
+
+                        newMultipleChoiceQuestion.Options = new List<Option>();
+
+                        foreach (var option in question.QuestionParameters.Options)
+                        {
+                            Option newOption = new Option();
+                            newOption.Name = option;
+                            newMultipleChoiceQuestion.Options.Add(newOption);
+                        }
+
                         break;
-                    case QuestionType.OpenTextQuestion: 
+                    case QuestionType.OpenTextQuestion:
+                        var newOpenTextQuestion = new OpenTextQuestion 
+                        { 
+                            Text = question.QuestionText
+                        };
+
+
                         break;
                     default:
                         return new QuizCreationResponseDTO { Status = "Question type not found" };
@@ -64,7 +91,7 @@ namespace QuizAppApi.Services
             }
 
             Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
-            
+
             if (createdQuiz == null)
             {
                 return new QuizCreationResponseDTO { Status = "failed" };
@@ -129,7 +156,9 @@ namespace QuizAppApi.Services
             {
                 response.Status = "failed";
                 return response;
-            } else {
+            }
+            else
+            {
                 response.Status = "success";
             }
 
