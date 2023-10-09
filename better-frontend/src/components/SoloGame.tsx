@@ -16,6 +16,9 @@ import {
   RadioGroup,
   Radio,
   Progress,
+  Input,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
@@ -50,6 +53,62 @@ function SingleChoiceControls({
   );
 }
 
+function MultipleChoiceControls({
+  parameters,
+  answer,
+  onAnswerChange = () => undefined,
+}: {
+  parameters: QuestionParametersDto;
+  answer?: AnswerSubmitRequestDto;
+  onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
+}) {
+  const options = parameters.options ?? [];
+  const correctNames = answer?.optionNames || [];
+
+  return (
+    <Box>
+      <CheckboxGroup
+        value={correctNames}
+        onChange={(v) =>
+          onAnswerChange({
+            optionNames: v.map((opt) => opt.toString()),
+            questionId: 0,
+          })
+        }
+      >
+        <VStack align="flex-start">
+          {options.map((opt, i) => (
+            <Checkbox value={opt} key={i}>
+              {opt}
+            </Checkbox>
+          ))}
+        </VStack>
+      </CheckboxGroup>
+    </Box>
+  );
+}
+
+function OpenTextControls({
+  answer,
+  onAnswerChange = () => undefined,
+}: {
+  parameters: QuestionParametersDto;
+  answer?: AnswerSubmitRequestDto;
+  onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
+}) {
+  const answerText = answer?.answerText || "";
+
+  return (
+    <Input
+      value={answerText}
+      placeholder="Type your answer"
+      onChange={(e) =>
+        onAnswerChange({ answerText: e.target.value, questionId: 0 })
+      }
+    />
+  );
+}
+
 function QuestionDisplay({
   question,
   answer,
@@ -62,6 +121,14 @@ function QuestionDisplay({
   let Controls;
   switch (question.questionType) {
     case "singleChoiceQuestion":
+      Controls = SingleChoiceControls;
+      break;
+    case "openTextQuestion":
+      Controls = OpenTextControls;
+      break;
+    case "multipleChoiceQuestion":
+      Controls = MultipleChoiceControls;
+      break;
     default:
       Controls = SingleChoiceControls;
       break;

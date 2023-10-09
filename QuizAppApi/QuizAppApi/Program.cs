@@ -1,4 +1,5 @@
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models.Questions;
 using QuizAppApi.Repositories;
 using QuizAppApi.Services;
 
@@ -15,6 +16,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<IQuestionDTOConverterService<SingleChoiceQuestion>, SingleChoiceQuestionDTOConverterService>();
+builder.Services.AddScoped<IQuestionDTOConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDTOConverterService>();
+builder.Services.AddScoped<IQuestionDTOConverterService<OpenTextQuestion>, OpenTextQuestionDTOConverterService>();
 builder.Services.AddSingleton<IQuizRepository, InMemoryQuizRepository>();
 
 var app = builder.Build();

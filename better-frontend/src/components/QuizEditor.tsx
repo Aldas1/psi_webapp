@@ -26,6 +26,8 @@ import {
   Flex,
   RadioGroup,
   Radio,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { QuestionTypeDto } from "../types";
@@ -36,10 +38,19 @@ function createQuestionParameters(
 ): QuestionParametersDto {
   switch (type) {
     case "singleChoiceQuestion":
+      return {
+        options: [""],
+        correctOptionIndex: 0,
+      };
+    case "multipleChoiceQuestion":
+      return {
+        options: [""],
+        correctOptionIndexes: [0],
+      };
+    case "openTextQuestion":
     default:
       return {
-        options: ["Sample option"],
-        correctOptionIndex: 0,
+        correctText: "",
       };
   }
 }
@@ -135,6 +146,118 @@ function SingleChoiceQuestionEditor({
   );
 }
 
+function MultipleChoiceQuestionEditor({
+  parameters,
+  onParametersChange = () => undefined,
+  preview = false,
+}: {
+  parameters: QuestionParametersDto;
+  onParametersChange?: (newParameters: QuestionParametersDto) => void;
+  preview?: boolean;
+}) {
+  const options = parameters.options ?? [""];
+  const correctOptionIndexesNums = parameters.correctOptionIndexes ?? [];
+  const correctOptionIndexes = correctOptionIndexesNums.map((o) =>
+    o.toString()
+  );
+
+  return (
+    <>
+      <CheckboxGroup
+        value={preview ? [] : correctOptionIndexes}
+        isDisabled={preview}
+        onChange={(v) =>
+          onParametersChange({
+            ...parameters,
+            correctOptionIndexes: v.map((sv) => {
+              if (typeof sv === "string") {
+                return parseInt(sv);
+              }
+              return sv;
+            }),
+          })
+        }
+      >
+        <VStack align="start">
+          {options.map((o, i) => (
+            <HStack key={i}>
+              <Checkbox value={i.toString()}></Checkbox>
+              {preview ? (
+                <Text>{o}</Text>
+              ) : (
+                <>
+                  <Input
+                    maxLength={30}
+                    value={o}
+                    placeholder="Option"
+                    onChange={(e) =>
+                      onParametersChange({
+                        ...parameters,
+                        options: options.map((opt, optI) =>
+                          optI === i ? e.target.value : opt
+                        ),
+                      })
+                    }
+                  />
+                  <IconButton
+                    aria-label="Delete option"
+                    icon={<DeleteIcon />}
+                    onClick={() => {
+                      onParametersChange({
+                        ...parameters,
+                        options: options.filter((_opt, optI) => optI !== i),
+                        correctOptionIndexes: [],
+                      });
+                    }}
+                  />
+                </>
+              )}
+            </HStack>
+          ))}
+        </VStack>
+      </CheckboxGroup>
+      {!preview && (
+        <IconButton
+          aria-label="Add option"
+          variant="ghost"
+          icon={<AddIcon />}
+          onClick={() => {
+            onParametersChange({
+              ...parameters,
+              options: [...options, ""],
+            });
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function OpenTextQuestionEditor({
+  parameters,
+  onParametersChange = () => undefined,
+  preview = false,
+}: {
+  parameters: QuestionParametersDto;
+  onParametersChange?: (newParameters: QuestionParametersDto) => void;
+  preview?: boolean;
+}) {
+  const value = parameters.correctText ?? "";
+
+  if (preview) return "";
+
+  return (
+    <Input
+      maxLength={40}
+      placeholder="Correct answer"
+      value={value}
+      onChange={(e) =>
+        onParametersChange({ ...parameters, correctText: e.target.value })
+      }
+    />
+  );
+}
+
 function QuestionEditor({
   question,
   onQuestionChange = () => undefined,
@@ -148,6 +271,12 @@ function QuestionEditor({
   switch (question.questionType) {
     case "singleChoiceQuestion":
       ParametersEditor = SingleChoiceQuestionEditor;
+      break;
+    case "multipleChoiceQuestion":
+      ParametersEditor = MultipleChoiceQuestionEditor;
+      break;
+    case "openTextQuestion":
+      ParametersEditor = OpenTextQuestionEditor;
       break;
     default:
       ParametersEditor = SingleChoiceQuestionEditor;
@@ -194,6 +323,32 @@ function QuestionEditor({
                 }
               >
                 Single choice question
+              </MenuItem>
+              <MenuItem
+                onClick={() =>
+                  onQuestionChange({
+                    ...question,
+                    questionType: "multipleChoiceQuestion",
+                    questionParameters: createQuestionParameters(
+                      "multipleChoiceQuestion"
+                    ),
+                  })
+                }
+              >
+                Multiple choice question
+              </MenuItem>
+
+              <MenuItem
+                onClick={() =>
+                  onQuestionChange({
+                    ...question,
+                    questionType: "openTextQuestion",
+                    questionParameters:
+                      createQuestionParameters("openTextQuestion"),
+                  })
+                }
+              >
+                Open text question
               </MenuItem>
             </MenuList>
           </Menu>
@@ -255,7 +410,8 @@ function QuizEditor({
               <AccordionItem key={i}>
                 <AccordionButton>
                   <Box flex="1" textAlign="left">
-                    Question #{i + 1}
+                    Question #{i + 1}{" "}
+                    {!preview && ` (${formatQuestionType(q.questionType)})`}
                   </Box>
                   <AccordionIcon />
                 </AccordionButton>
