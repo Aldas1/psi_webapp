@@ -19,13 +19,17 @@ namespace QuizAppApi.Repositories
             var data = new InMemoryQuizRepositoryLocalStorage { NextId = _nextId, Quizzes = _quizzes };
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(DataPath));
+                var directoryName = Path.GetDirectoryName(DataPath);
+                if (directoryName != null)
+                {
+                    Directory.CreateDirectory(directoryName);
+                }
                 using var streamWriter = File.CreateText(DataPath);
                 using var jsonTextWriter = new JsonTextWriter(streamWriter);
                 var serializer = JsonSerializer.Create(QuizSerialization.SerializerSettings);
                 serializer.Serialize(jsonTextWriter, data);
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 Console.Error.WriteLineAsync("Failed writing a file");
             }
@@ -39,8 +43,8 @@ namespace QuizAppApi.Repositories
                 using var jsonTextReader = new JsonTextReader(streamReader);
                 var serializer = JsonSerializer.Create(QuizSerialization.SerializerSettings);
                 var data = serializer.Deserialize<InMemoryQuizRepositoryLocalStorage>(jsonTextReader);
-                _nextId = data.NextId;
-                return data.Quizzes.ToList();
+                _nextId = data == null ? 0 : data.NextId;
+                return (data == null ? new List<Quiz>() : data.Quizzes.ToList());
             }
             catch (Exception e)
             {
