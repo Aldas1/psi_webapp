@@ -26,6 +26,8 @@ import {
   Flex,
   RadioGroup,
   Radio,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { QuestionTypeDto } from "../types";
@@ -37,8 +39,13 @@ function createQuestionParameters(
   switch (type) {
     case "singleChoiceQuestion":
       return {
-        options: ["Sample option"],
+        options: [""],
         correctOptionIndex: 0,
+      };
+    case "multipleChoiceQuestion":
+      return {
+        options: [""],
+        correctOptionIndexes: [0],
       };
     case "openTextQuestion":
     default:
@@ -139,6 +146,93 @@ function SingleChoiceQuestionEditor({
   );
 }
 
+function MultipleChoiceQuestionEditor({
+  parameters,
+  onParametersChange = () => undefined,
+  preview = false,
+}: {
+  parameters: QuestionParametersDto;
+  onParametersChange?: (newParameters: QuestionParametersDto) => void;
+  preview?: boolean;
+}) {
+  const options = parameters.options ?? [""];
+  const correctOptionIndexesNums = parameters.correctOptionIndexes ?? [];
+  const correctOptionIndexes = correctOptionIndexesNums.map((o) =>
+    o.toString()
+  );
+
+  return (
+    <>
+      <CheckboxGroup
+        value={preview ? [] : correctOptionIndexes}
+        isDisabled={preview}
+        onChange={(v) =>
+          onParametersChange({
+            ...parameters,
+            correctOptionIndexes: v.map((sv) => {
+              if (typeof sv === "string") {
+                return parseInt(sv);
+              }
+              return sv;
+            }),
+          })
+        }
+      >
+        <VStack align="start">
+          {options.map((o, i) => (
+            <HStack key={i}>
+              <Checkbox value={i.toString()}></Checkbox>
+              {preview ? (
+                <Text>{o}</Text>
+              ) : (
+                <>
+                  <Input
+                    maxLength={30}
+                    value={o}
+                    placeholder="Option"
+                    onChange={(e) =>
+                      onParametersChange({
+                        ...parameters,
+                        options: options.map((opt, optI) =>
+                          optI === i ? e.target.value : opt
+                        ),
+                      })
+                    }
+                  />
+                  <IconButton
+                    aria-label="Delete option"
+                    icon={<DeleteIcon />}
+                    onClick={() => {
+                      onParametersChange({
+                        ...parameters,
+                        options: options.filter((_opt, optI) => optI !== i),
+                        correctOptionIndexes: [],
+                      });
+                    }}
+                  />
+                </>
+              )}
+            </HStack>
+          ))}
+        </VStack>
+      </CheckboxGroup>
+      {!preview && (
+        <IconButton
+          aria-label="Add option"
+          variant="ghost"
+          icon={<AddIcon />}
+          onClick={() => {
+            onParametersChange({
+              ...parameters,
+              options: [...options, ""],
+            });
+          }}
+        />
+      )}
+    </>
+  );
+}
+
 function OpenTextQuestionEditor({
   parameters,
   onParametersChange = () => undefined,
@@ -177,6 +271,9 @@ function QuestionEditor({
   switch (question.questionType) {
     case "singleChoiceQuestion":
       ParametersEditor = SingleChoiceQuestionEditor;
+      break;
+    case "multipleChoiceQuestion":
+      ParametersEditor = MultipleChoiceQuestionEditor;
       break;
     case "openTextQuestion":
       ParametersEditor = OpenTextQuestionEditor;
@@ -227,6 +324,20 @@ function QuestionEditor({
               >
                 Single choice question
               </MenuItem>
+              <MenuItem
+                onClick={() =>
+                  onQuestionChange({
+                    ...question,
+                    questionType: "multipleChoiceQuestion",
+                    questionParameters: createQuestionParameters(
+                      "multipleChoiceQuestion"
+                    ),
+                  })
+                }
+              >
+                Multiple choice question
+              </MenuItem>
+
               <MenuItem
                 onClick={() =>
                   onQuestionChange({

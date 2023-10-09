@@ -29,6 +29,7 @@ type QuestionTypeDto =
 interface QuestionParametersDto {
   options?: string[];
   correctOptionIndex?: number;
+  correctOptionIndexes?: number[];
   correctText?: string;
 }
 
