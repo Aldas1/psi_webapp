@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Radio,
   Progress,
+  Input,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
@@ -50,6 +51,27 @@ function SingleChoiceControls({
   );
 }
 
+function OpenTextControls({
+  answer,
+  onAnswerChange = () => undefined,
+}: {
+  parameters: QuestionParametersDto;
+  answer?: AnswerSubmitRequestDto;
+  onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
+}) {
+  const answerText = answer?.answerText || "";
+
+  return (
+    <Input
+      value={answerText}
+      placeholder="Type your answer"
+      onChange={(e) =>
+        onAnswerChange({ answerText: e.target.value, questionId: 0 })
+      }
+    />
+  );
+}
+
 function QuestionDisplay({
   question,
   answer,
@@ -62,6 +84,11 @@ function QuestionDisplay({
   let Controls;
   switch (question.questionType) {
     case "singleChoiceQuestion":
+      Controls = SingleChoiceControls;
+      break;
+    case "openTextQuestion":
+      Controls = OpenTextControls;
+      break;
     default:
       Controls = SingleChoiceControls;
       break;

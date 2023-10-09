@@ -36,10 +36,14 @@ function createQuestionParameters(
 ): QuestionParametersDto {
   switch (type) {
     case "singleChoiceQuestion":
-    default:
       return {
         options: ["Sample option"],
         correctOptionIndex: 0,
+      };
+    case "openTextQuestion":
+    default:
+      return {
+        correctText: "",
       };
   }
 }
@@ -135,6 +139,31 @@ function SingleChoiceQuestionEditor({
   );
 }
 
+function OpenTextQuestionEditor({
+  parameters,
+  onParametersChange = () => undefined,
+  preview = false,
+}: {
+  parameters: QuestionParametersDto;
+  onParametersChange?: (newParameters: QuestionParametersDto) => void;
+  preview?: boolean;
+}) {
+  const value = parameters.correctText ?? "";
+
+  if (preview) return "";
+
+  return (
+    <Input
+      maxLength={40}
+      placeholder="Correct answer"
+      value={value}
+      onChange={(e) =>
+        onParametersChange({ ...parameters, correctText: e.target.value })
+      }
+    />
+  );
+}
+
 function QuestionEditor({
   question,
   onQuestionChange = () => undefined,
@@ -148,6 +177,9 @@ function QuestionEditor({
   switch (question.questionType) {
     case "singleChoiceQuestion":
       ParametersEditor = SingleChoiceQuestionEditor;
+      break;
+    case "openTextQuestion":
+      ParametersEditor = OpenTextQuestionEditor;
       break;
     default:
       ParametersEditor = SingleChoiceQuestionEditor;
@@ -194,6 +226,18 @@ function QuestionEditor({
                 }
               >
                 Single choice question
+              </MenuItem>
+              <MenuItem
+                onClick={() =>
+                  onQuestionChange({
+                    ...question,
+                    questionType: "openTextQuestion",
+                    questionParameters:
+                      createQuestionParameters("openTextQuestion"),
+                  })
+                }
+              >
+                Open text question
               </MenuItem>
             </MenuList>
           </Menu>
@@ -255,7 +299,8 @@ function QuizEditor({
               <AccordionItem key={i}>
                 <AccordionButton>
                   <Box flex="1" textAlign="left">
-                    Question #{i + 1}
+                    Question #{i + 1}{" "}
+                    {!preview && ` (${formatQuestionType(q.questionType)})`}
                   </Box>
                   <AccordionIcon />
                 </AccordionButton>

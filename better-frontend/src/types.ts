@@ -29,6 +29,7 @@ type QuestionTypeDto =
 interface QuestionParametersDto {
   options?: string[];
   correctOptionIndex?: number;
+  correctText?: string;
 }
 
 interface QuestionResponseDto {
@@ -40,7 +41,8 @@ interface QuestionResponseDto {
 
 interface AnswerSubmitRequestDto {
   questionId: number;
-  optionName: string;
+  optionName?: string;
+  answerText?: string;
 }
 
 interface AnswerSubmitResponseDto {
