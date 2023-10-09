@@ -1,9 +1,11 @@
+// AnswerCheckerService.cs
+using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using System.Collections.Generic;
 
 namespace QuizAppApi.Services
 {
-    public class AnswerCheckerService
+    public class AnswerCheckerService : IAnswerCheckerService
     {
         public bool CheckSingleChoiceAnswer(SingleChoiceQuestion question, string answer)
         {
