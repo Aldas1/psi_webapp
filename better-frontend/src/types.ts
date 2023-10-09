@@ -43,6 +43,7 @@ interface QuestionResponseDto {
 interface AnswerSubmitRequestDto {
   questionId: number;
   optionName?: string;
+  optionNames?: string[];
   answerText?: string;
 }
 

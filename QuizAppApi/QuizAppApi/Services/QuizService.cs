@@ -156,8 +156,10 @@ namespace QuizAppApi.Services
                     case MultipleChoiceQuestion multipleChoiceQuestion:
                         if (answer.OptionNames != null)
                         {
-                            MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList());
-                            correctAnswers++;
+                            if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
+                            {
+                                correctAnswers++;
+                            }
                         }
                         break;
 

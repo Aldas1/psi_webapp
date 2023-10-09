@@ -6,7 +6,7 @@ namespace QuizAppApi.Utils
     {
         public static bool IsCorrect(MultipleChoiceQuestion question, ICollection<Option> answer)
         {
-            var correctAnswers = new HashSet<Option>(question.CorrectOptions);
+            var correctAnswers = new HashSet<Option>(question.CorrectOptions, new OptionEqualityComparer());
             
             return correctAnswers.SetEquals(answer);
         }

@@ -17,6 +17,8 @@ import {
   Radio,
   Progress,
   Input,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
@@ -47,6 +49,41 @@ function SingleChoiceControls({
           ))}
         </VStack>
       </RadioGroup>
+    </Box>
+  );
+}
+
+function MultipleChoiceControls({
+  parameters,
+  answer,
+  onAnswerChange = () => undefined,
+}: {
+  parameters: QuestionParametersDto;
+  answer?: AnswerSubmitRequestDto;
+  onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
+}) {
+  const options = parameters.options ?? [];
+  const correctNames = answer?.optionNames || [];
+
+  return (
+    <Box>
+      <CheckboxGroup
+        value={correctNames}
+        onChange={(v) =>
+          onAnswerChange({
+            optionNames: v.map((opt) => opt.toString()),
+            questionId: 0,
+          })
+        }
+      >
+        <VStack align="flex-start">
+          {options.map((opt, i) => (
+            <Checkbox value={opt} key={i}>
+              {opt}
+            </Checkbox>
+          ))}
+        </VStack>
+      </CheckboxGroup>
     </Box>
   );
 }
@@ -88,6 +125,9 @@ function QuestionDisplay({
       break;
     case "openTextQuestion":
       Controls = OpenTextControls;
+      break;
+    case "multipleChoiceQuestion":
+      Controls = MultipleChoiceControls;
       break;
     default:
       Controls = SingleChoiceControls;
