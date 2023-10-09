@@ -3,6 +3,7 @@ using NUnit.Framework;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
 
 namespace Tests
@@ -154,6 +155,76 @@ namespace Tests
             Assert.AreEqual(quiz.Name, result.Name);
             Assert.AreEqual(quiz.Id, result.Id);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
+        }
+        
+        [Test]
+        public void EditQuiz_ReturnsCorrectResponse()
+        {
+            // Arrange
+            var existingQuiz = new Quiz
+            {
+                Id = 1,
+                Name = "Existing Quiz",
+                Questions = new List<Question>
+                {
+                    new SingleChoiceQuestion
+                    {
+                        Text = "What is the capital of France?",
+                        Options = new List<Option>
+                        {
+                            new Option { Name = "Paris" },
+                            new Option { Name = "London" },
+                            new Option { Name = "Berlin" },
+                            new Option { Name = "Madrid" }
+                        },
+                        CorrectOption = new Option { Name = "Paris" }
+                    }
+                }
+            };
+
+            _mockQuizRepository.Setup(repo => repo.GetQuizById(existingQuiz.Id)).Returns(existingQuiz);
+
+            var editRequest = new QuizEditingDTO
+            {
+                Id = existingQuiz.Id,
+                Quiz = new QuizCreationRequestDTO
+                {
+                    Name = "Updated Quiz",
+                    Questions = new List<QuizCreationQuestionRequestDTO>
+                    {
+                        new QuizCreationQuestionRequestDTO
+                        {
+                            QuestionText = "Updated question?",
+                            QuestionType = "singleChoiceQuestion",
+                            QuestionParameters = new QuestionParametersDTO
+                            {
+                                Options = new List<string> { "Option1", "Option2", "Option3" },
+                                CorrectOptionIndex = 1
+                            }
+                        }
+                    }
+                }
+            };
+
+            var expectedResponse = new QuizCreationResponseDTO { Status = "success", Id = existingQuiz.Id };
+
+            // Act
+            var result = _quizService.EditQuiz(editRequest);
+
+            // Assert
+            Assert.AreEqual(expectedResponse.Status, result.Status);
+            Assert.AreEqual(existingQuiz.Id, result.Id);
+            Assert.AreNotEqual(editRequest.Quiz.Name, existingQuiz.Name);
+            Assert.AreEqual(editRequest.Quiz.Questions.Count, existingQuiz.Questions.Count);
+
+            var updatedQuestion = existingQuiz.Questions.First() as SingleChoiceQuestion;
+            Assert.IsNotNull(updatedQuestion);
+
+            Assert.AreNotEqual(editRequest.Quiz.Questions.First().QuestionText, updatedQuestion.Text);
+            Assert.AreNotEqual(editRequest.Quiz.Questions.First().QuestionParameters.Options.Count, updatedQuestion.Options.Count);
+            Assert.AreNotEqual(editRequest.Quiz.Questions.First().QuestionParameters.CorrectOptionIndex, updatedQuestion.Options.ToList().IndexOf(updatedQuestion.CorrectOption));
+
+            _mockQuizRepository.Verify(repo => repo.UpdateQuiz(existingQuiz.Id, It.IsAny<Quiz>()), Times.Once);
         }
     }
 }
