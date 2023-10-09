@@ -74,6 +74,63 @@ namespace QuizAppApi.Services
 
             return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
+        
+        public QuizCreationResponseDTO EditQuiz(QuizEditingDTO editRequest)
+        {
+            var existingQuiz = _quizRepository.GetQuizById(editRequest.Id);
+
+            if (existingQuiz == null)
+            {
+                return new QuizCreationResponseDTO { Status = "failed", Id = editRequest.Id };
+            }
+
+            // Similar logic as CreateQuiz to update the existing quiz
+            var updatedQuiz = new Quiz();
+            updatedQuiz.Name = editRequest.Quiz.Name;
+            updatedQuiz.Questions = new List<Question>();
+
+            foreach (var question in editRequest.Quiz.Questions)
+            {
+                switch (question.QuestionType)
+                {
+                    case "singleChoiceQuestion":
+                        var updatedQuestion = new SingleChoiceQuestion
+                        {
+                            Text = question.QuestionText,
+                            Options = new List<Option>(),
+                            CorrectOption = null // To be set later
+                        };
+
+                        foreach (var option in question.QuestionParameters.Options)
+                        {
+                            var updatedOption = new Option { Name = option };
+                            updatedQuestion.Options.Add(updatedOption);
+                        }
+
+                        int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
+                        if (correctOptionIndex >= 0 && correctOptionIndex < question.QuestionParameters.Options.Count)
+                        {
+                            updatedQuestion.CorrectOption = new Option()
+                            {
+                                Name = question.QuestionParameters.Options[correctOptionIndex]
+                            };
+                        }
+
+                        updatedQuiz.Questions.Add(updatedQuestion);
+                        break;
+                    case "multipleChoiceQuestion":
+                        break;
+                    case "openTextQuestion": 
+                        break;
+                    default:
+                        return new QuizCreationResponseDTO { Status = "Question type not found" };
+                }
+            }
+                
+            _quizRepository.UpdateQuiz(existingQuiz.Id, updatedQuiz);
+
+            return new QuizCreationResponseDTO { Status = "success", Id = existingQuiz.Id };
+        }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
         {

@@ -20,6 +20,22 @@ namespace QuizAppApi.Controllers
         {
             return _quizService.CreateQuiz(request);
         }
+        
+        [HttpPut]
+        public IActionResult EditQuiz([FromBody] QuizEditingDTO editRequest)
+        {
+            var response = _quizService.EditQuiz(editRequest);
+
+            if (response.Status == "success")
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
             
         [HttpGet]
         public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()

@@ -5,6 +5,7 @@ namespace QuizAppApi.Interfaces
     public interface IQuizService
     {
         QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request);
+        QuizCreationResponseDTO EditQuiz(QuizEditingDTO editRequest);
         IEnumerable<QuestionResponseDTO>? GetQuestions(int id);
         IEnumerable<QuizResponseDTO> GetQuizzes();
         QuizResponseDTO? GetQuiz(int id);
