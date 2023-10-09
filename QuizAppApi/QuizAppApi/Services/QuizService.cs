@@ -32,20 +32,24 @@ namespace QuizAppApi.Services
                         {
                             Text = question.QuestionText
                         };
-
-                        int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
-                        if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
+                        var parameters = question.QuestionParameters;
+                        if (parameters.CorrectOptionIndex == null || parameters.Options == null)
+                        {
+                            return new QuizCreationResponseDTO { Status = "Required question information is not provided" };
+                        }
+                        int correctOptionIndex = (int)parameters.CorrectOptionIndex;
+                        if (correctOptionIndex < 0 || correctOptionIndex >= parameters.Options.Count)
                         {
                             return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
                         }
                         newQuestion.CorrectOption = new Option
                         {
-                            Name = question.QuestionParameters.Options[correctOptionIndex]
+                            Name = parameters.Options[correctOptionIndex]
                         };
 
                         newQuestion.Options = new List<Option>();
 
-                        foreach (var option in question.QuestionParameters.Options)
+                        foreach (var option in parameters.Options)
                         {
                             Option newOption = new Option();
                             newOption.Name = option;
@@ -63,7 +67,7 @@ namespace QuizAppApi.Services
                 }
             }
 
-            Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
+            Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
             
             if (createdQuiz == null)
             {
