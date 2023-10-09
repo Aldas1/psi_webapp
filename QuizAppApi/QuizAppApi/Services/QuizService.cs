@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
@@ -10,104 +11,49 @@ namespace QuizAppApi.Services
     public class QuizService : IQuizService
     {
         private readonly IQuizRepository _quizRepository;
+        private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
+        private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
+        private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
 
-        public QuizService(IQuizRepository quizRepository)
+        public QuizService(
+            IQuizRepository quizRepository,
+            IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
+            IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
+            IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
         {
             _quizRepository = quizRepository;
+            _singleChoiceDTOConverter = singleChoiceDTOConverter;
+            _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
+            _openTextDTOConverter = openTextDTOConverter;
         }
+
 
         public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
         {
-            Quiz newQuiz = new Quiz();
-            newQuiz.Name = request.Name;
-            newQuiz.Questions = new List<Question>();
-
+            var newQuiz = new Quiz { Name = request.Name };
             foreach (var question in request.Questions)
             {
-
+                Question? generatedQuestion = null;
                 switch (QuestionTypeConverter.FromString(question.QuestionType))
                 {
                     case QuestionType.SingleChoiceQuestion:
-                        var newSingleChoiceQuestion = new SingleChoiceQuestion
-                        {
-                            Text = question.QuestionText
-                        };
-
-                        newSingleChoiceQuestion.Options = new List<Option>();
-                        foreach (var option in question.QuestionParameters.Options)
-                        {
-                            Option newOption = new Option
-                            {
-                                Name = option
-                            };
-                            newSingleChoiceQuestion.Options.Add(newOption);
-                        }
-
-                        int correctOptionIndex = (int)question.QuestionParameters.CorrectOptionIndex;
-                        if (correctOptionIndex < 0 || correctOptionIndex >= question.QuestionParameters.Options.Count)
-                        {
-                            return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
-                        }
-                        newSingleChoiceQuestion.CorrectOption = new Option
-                        {
-                            Name = parameters.Options[correctOptionIndex]
-                        };
-
-                        newQuiz.Questions.Add(newSingleChoiceQuestion);
+                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
                         break;
-
                     case QuestionType.MultipleChoiceQuestion:
-                        var newMultipleChoiceQuestion = new MultipleChoiceQuestion
-                        {
-                            Text = question.QuestionText
-                        };
-
-                        newMultipleChoiceQuestion.Options = new List<Option>();
-                        foreach (var option in question.QuestionParameters.Options)
-                        {
-                            Option newOption = new Option
-                            {
-                                Name = option
-                            };
-                            newMultipleChoiceQuestion.Options.Add(newOption);
-                        }
-
-                        newMultipleChoiceQuestion.CorrectOptions = new List<Option>();
-                        int optionCount = question.QuestionParameters.Options.Count;
-                        foreach (var index in question.QuestionParameters.CorrectOptionIndexes)
-                        {
-                            if (index < 0 || index >= optionCount)
-                            {
-                                return new QuizCreationResponseDTO { Status = "Correct option index out of options list bounds" };
-                            }
-
-                            Option newCorrectOption = new Option
-                            {
-                                Name = question.QuestionParameters.Options.ElementAt(index)
-                            };
-                            newMultipleChoiceQuestion.CorrectOptions.Add(newCorrectOption);
-                        }
-
-                        newQuiz.Questions.Add(newMultipleChoiceQuestion);
+                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
                         break;
-
                     case QuestionType.OpenTextQuestion:
-                        var newOpenTextQuestion = new OpenTextQuestion
-                        {
-                            Text = question.QuestionText,
-                            CorrectAnswer = question.QuestionParameters.CorrectText,
-                        };
-
-                        newOpenTextQuestion.Text = question.QuestionText;
-                        newQuiz.Questions.Add(newOpenTextQuestion);
+                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
                         break;
-
-                    default:
-                        return new QuizCreationResponseDTO { Status = "Question type not found" };
                 }
+                if (generatedQuestion == null)
+                {
+                    return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                }
+                generatedQuestion.Text = question.QuestionText;
+                newQuiz.Questions.Add(generatedQuestion);
             }
-
-            Quiz createdQuiz = _quizRepository.AddQuiz(newQuiz);
+            Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
             if (createdQuiz == null)
             {
@@ -126,31 +72,32 @@ namespace QuizAppApi.Services
             {
                 return null;
             }
-            var questions = new List<QuestionResponseDTO>();
-            foreach (var question in quiz.Questions)
+            return quiz.Questions.Select(question =>
             {
-                var questionResponse = new QuestionResponseDTO
-                { Id = question.Id, QuestionText = question.Text, QuestionType = QuestionTypeConverter.ToString(question.Type) };
+                QuestionParametersDTO generatedParameters;
                 switch (question)
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
-                        questionResponse.QuestionParameters = new QuestionParametersDTO
-                        {
-                            Options = singleChoiceQuestion.Options.Select(opt => opt.Name).ToList(),
-                        };
-                        questions.Add(questionResponse);
-                        break;
-                    case OpenTextQuestion openTextQuestion:
-                        questionResponse.QuestionParameters = new QuestionParametersDTO();
-                        questions.Add(questionResponse);
+                        generatedParameters = _singleChoiceDTOConverter.GenerateParameters(singleChoiceQuestion);
                         break;
                     case MultipleChoiceQuestion multipleChoiceQuestion:
-                        questionResponse.QuestionParameters = new QuestionParametersDTO { Options = multipleChoiceQuestion.Options.Select(opt => opt.Name).ToList() };
-                        questions.Add(questionResponse);
+                        generatedParameters = _multipleChoiceDTOConverter.GenerateParameters(multipleChoiceQuestion);
                         break;
+                    case OpenTextQuestion openTextQuestion:
+                        generatedParameters = _openTextDTOConverter.GenerateParameters(openTextQuestion);
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
-            }
-            return questions;
+                return new QuestionResponseDTO
+                {
+                    QuestionText = question.Text,
+                    Id = question.Id,
+                    QuestionType = QuestionTypeConverter.ToString(question.Type),
+                    QuestionParameters = generatedParameters
+                };
+
+            });
         }
 
         public IEnumerable<QuizResponseDTO> GetQuizzes()
@@ -209,12 +156,7 @@ namespace QuizAppApi.Services
                     case MultipleChoiceQuestion multipleChoiceQuestion:
                         if (answer.OptionNames != null)
                         {
-                            List<Option> newOptions = new List<Option>();
-                            foreach(var selectedOptionMulti in answer.OptionNames)
-                            {
-                                newOptions.Add(multipleChoiceQuestion.Options.FirstOrDefault(o => o.Name == selectedOptionMulti));
-                            }
-                            MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, newOptions);
+                            MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList());
                             correctAnswers++;
                         }
                         break;
