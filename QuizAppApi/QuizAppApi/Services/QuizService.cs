@@ -50,7 +50,7 @@ namespace QuizAppApi.Services
                         }
                         newSingleChoiceQuestion.CorrectOption = new Option
                         {
-                            Name = question.QuestionParameters.Options[correctOptionIndex]
+                            Name = parameters.Options[correctOptionIndex]
                         };
 
                         newQuiz.Questions.Add(newSingleChoiceQuestion);

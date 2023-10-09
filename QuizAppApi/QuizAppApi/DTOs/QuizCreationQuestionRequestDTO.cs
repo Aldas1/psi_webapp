@@ -2,8 +2,8 @@
 {
     public class QuizCreationQuestionRequestDTO
     {
-        public string QuestionText { get; set; }
-        public string QuestionType { get; set; }
-        public QuestionParametersDTO QuestionParameters { get; set; }
+        public string QuestionText { get; set; } = string.Empty;
+        public string QuestionType { get; set; } = string.Empty;
+        public QuestionParametersDTO QuestionParameters { get; set; } = new QuestionParametersDTO();
     }
 }
