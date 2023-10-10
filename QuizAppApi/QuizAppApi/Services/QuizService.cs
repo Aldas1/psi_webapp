@@ -165,7 +165,7 @@ namespace QuizAppApi.Services
 
                     case OpenTextQuestion openTextQuestion:
                         var answerText = answer.AnswerText;
-                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText))
+                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText, trimWhitespace: true))
                         {
                             correctAnswers++;
                         }
