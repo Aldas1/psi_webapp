@@ -147,7 +147,7 @@ namespace QuizAppApi.Services
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
                         var selectedOptionSingle = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
-                        if (selectedOptionSingle != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, selectedOptionSingle))
+                        if (selectedOptionSingle != null && SingleChoiceAnswerChecker.IsCorrect(question: singleChoiceQuestion, answer: selectedOptionSingle))
                         {
                             correctAnswers++;
                         }
@@ -156,7 +156,7 @@ namespace QuizAppApi.Services
                     case MultipleChoiceQuestion multipleChoiceQuestion:
                         if (answer.OptionNames != null)
                         {
-                            if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
+                            if (MultipleChoiceAnswerChecker.IsCorrect(question: multipleChoiceQuestion, answer: answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
                             {
                                 correctAnswers++;
                             }
@@ -165,7 +165,7 @@ namespace QuizAppApi.Services
 
                     case OpenTextQuestion openTextQuestion:
                         var answerText = answer.AnswerText;
-                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText))
+                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(question: openTextQuestion, answer: answerText))
                         {
                             correctAnswers++;
                         }
