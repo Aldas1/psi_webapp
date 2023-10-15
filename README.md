@@ -19,6 +19,24 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 This repo contains two projects: the web api written using ASP.NET (`QuizAppApi`) and react frontend using Vite (`react-app`).
 You first need to run web api and, after that, run the frontend.
 
+### DB setup
+
+We use mssql server dbms. Make sure to install it, a viable option is to use [Docker image](https://hub.docker.com/_/microsoft-mssql-server).
+No matter how you setup your dbms, you need to get the connection string, it may look like this:
+```
+Server=127.0.0.1,1433; Database=Master; User Id=SA; Password=REALLY_SECURE_PASSWORD; Encrypt=False; TrustServerCertificate=True;
+```
+[This video](https://www.youtube.com/watch?v=EmV_IBYIlyo&list=PL82C6-O4XrHdiS10BLh23x71ve9mQCln0&index=5) may help when setting up the db.
+
+Connection string is added via secret:
+```bash
+cd QuizAppApi/QuizAppApi
+dotnet user-secrets init
+dotnet user-secrets set "ConnectionString" "YOUR_CONNECTION_STRING"
+```
+
+Make sure to [apply migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli) (You can google on how to do that)
+
 ### Backend setup
 
 If you are using an ide, setup should be straightforward. You can also run it via cli:
@@ -46,6 +64,7 @@ Please check the [react-app README](react-app/README.md)
   - [Description](#description)
   - [Tech stack](#tech-stack)
   - [Development setup](#development-setup)
+    - [DB setup](#db-setup)
     - [Backend setup](#backend-setup)
     - [Backend tests](#backend-tests)
     - [Frontend setup](#frontend-setup)
