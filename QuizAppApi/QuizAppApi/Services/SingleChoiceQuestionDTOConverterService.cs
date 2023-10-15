@@ -18,14 +18,14 @@ namespace QuizAppApi.Services
 
             return new SingleChoiceQuestion
             {
-                Options = options.Select(o => new Option { Name = o }).ToList(),
-                CorrectOption = new Option { Name = options[(int)correctOptionIndex] }
+                SingleChoiceOptions = options.Select(o => new SingleChoiceOption { Name = o }).ToList(),
+                CorrectOptionName = options[(int)correctOptionIndex]
             };
         }
 
         public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
         {
-            return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
+            return new QuestionParametersDTO { Options = question.SingleChoiceOptions.Select(opt => opt.Name).ToList() };
         }
     }
 }
