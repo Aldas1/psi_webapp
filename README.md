@@ -16,7 +16,7 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 
 ## Development setup
 
-This repo contains two projects: the web api written using ASP.NET (`QuizAppApi`) and react frontend using Vite (`react-app`).
+This repo contains two projects: the web api written using ASP.NET (`QuizAppApi`) and react frontend using Vite (`better-frontend`).
 You first need to run web api and, after that, run the frontend.
 
 ### Backend setup
@@ -38,7 +38,11 @@ dotnet test
 
 ### Frontend setup
 
-Please check the [react-app README](react-app/README.md)
+```bash
+cd better-frontend/
+npm install
+npm run dev
+```
 
 ## Table of contents
 
@@ -58,8 +62,6 @@ Please check the [react-app README](react-app/README.md)
     - [Commit naming](#commit-naming)
       - [Example](#example-1)
   - [Repository rules](#repository-rules)
-  - [Tree](#tree)
-    - [Notes](#notes)
   - [Authors](#authors)
 
 ## Branching strategy
@@ -103,27 +105,6 @@ Commit messages should begin with one of the following:
 
 - Approver count
   - Main: 1
-
-## Tree
-
-```bash
-.
-├── QuizAppApi
-│   ├── QuizAppApi
-│   └── QuizAppApi.sln
-├── react-app
-│   ├── index.html
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── README.md
-│   ├── src
-│   └── vite.config.js
-└── README.md
-```
-
-### Notes
-
-- Misc folder is used for storing images and miscellaneous items.
 
 ## Authors
 
