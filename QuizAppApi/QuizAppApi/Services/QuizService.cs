@@ -65,6 +65,12 @@ namespace QuizAppApi.Services
             return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
+        public QuizCreationResponseDTO UpdateQuiz(QuizCreationRequestDTO editRequest)
+        {
+            
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
         {
             var quiz = _quizRepository.GetQuizById(id);
