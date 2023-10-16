@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.AspNetCore.SignalR;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
@@ -65,10 +66,42 @@ namespace QuizAppApi.Services
             return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
-        public QuizCreationResponseDTO UpdateQuiz(QuizCreationRequestDTO editRequest)
+        public QuizCreationResponseDTO UpdateQuiz(int id, QuizCreationRequestDTO editRequest)
         {
-            
-            throw new NotImplementedException();
+            var newQuiz = new Quiz { Name = editRequest.Name };
+            foreach (var question in editRequest.Questions)
+            {
+                Question? generatedQuestion = null;
+                switch (QuestionTypeConverter.FromString(question.QuestionType))
+                {
+                    case QuestionType.SingleChoiceQuestion:
+                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                    case QuestionType.MultipleChoiceQuestion:
+                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                    case QuestionType.OpenTextQuestion:
+                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                }
+
+                if (generatedQuestion == null)
+                {
+                    return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                }
+
+                generatedQuestion.Text = question.QuestionText;
+                newQuiz.Questions.Add(generatedQuestion);
+            }
+
+            Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
+
+            if (updatedQuiz == null)
+            {
+                return new QuizCreationResponseDTO { Status = "failed" };
+            }
+
+            return new QuizCreationResponseDTO { Status = "success", Id = id};
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
