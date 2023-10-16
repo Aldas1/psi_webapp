@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
@@ -20,6 +21,22 @@ namespace QuizAppApi.Repositories
             return entity;
         }
 
+        public Quiz? UpdateQuiz(int id, Quiz quiz)
+        {
+            Quiz oldQuiz = GetQuizById(id);
+            if (oldQuiz is not null)
+            {
+                _context.Quizzes.Entry(oldQuiz).CurrentValues.SetValues(quiz);
+                int changes = _context.SaveChanges();
+
+                if (changes > 0)
+                {
+                    return quiz;
+                }
+            }
+            return null;
+        }
+
         public IEnumerable<Quiz> GetQuizzes()
         {
             return _context.Quizzes;
@@ -28,11 +45,6 @@ namespace QuizAppApi.Repositories
         public Quiz? GetQuizById(int id)
         {
             return _context.Quizzes.FirstOrDefault(q => q.Id == id);
-        }
-
-        public Quiz? UpdateQuiz(int id, Quiz quiz)
-        {
-            throw new NotImplementedException();
         }
 
         public void DeleteQuiz(int id)

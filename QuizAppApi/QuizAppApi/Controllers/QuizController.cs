@@ -22,9 +22,9 @@ namespace QuizAppApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<QuizCreationRequestDTO> UpdateQuiz([FromBody] QuizCreationRequestDTO editRequest)
+        public ActionResult<QuizCreationRequestDTO> UpdateQuiz(int id, [FromBody] QuizCreationRequestDTO editRequest)
         {
-            var response = _quizService.UpdateQuiz(editRequest);
+            var response = _quizService.UpdateQuiz(id, editRequest);
 
             if (response.Status == "success")
             {
