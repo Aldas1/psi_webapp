@@ -74,6 +74,12 @@ function QuizPreview() {
             <Button onClick={() => setInGame(true)}>Solo game</Button>
           )}
           <Button
+            colorScheme="purple"
+            onClick={() => navigate(`/quizzes/${id}`)}
+          >
+            Edit quiz
+          </Button>
+          <Button
             colorScheme="red"
             onClick={async () => {
               await deleteQuiz(id);
