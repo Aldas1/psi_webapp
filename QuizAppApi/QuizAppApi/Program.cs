@@ -12,14 +12,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
         System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
 
-// Register AnswerCheckerService as a scoped service
-builder.Services.AddScoped<AnswerCheckerService>();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddSingleton<IQuizRepository, InMemoryQuizRepository>();
+builder.Services.AddScoped<IStrictAnswerCheckerService, StrictAnswerCheckerService>();
 
 var app = builder.Build();
 
