@@ -146,8 +146,7 @@ namespace QuizAppApi.Services
                 switch (question)
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
-                        var selectedOptionSingle = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
-                        if (selectedOptionSingle != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, selectedOptionSingle))
+                        if (answer.OptionName != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, answer.OptionName))
                         {
                             correctAnswers++;
                         }
@@ -156,7 +155,7 @@ namespace QuizAppApi.Services
                     case MultipleChoiceQuestion multipleChoiceQuestion:
                         if (answer.OptionNames != null)
                         {
-                            if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
+                            if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new MultipleChoiceOption { Name = opt }).ToList()))
                             {
                                 correctAnswers++;
                             }

@@ -4,9 +4,9 @@ namespace QuizAppApi.Utils
 {
     public static class SingleChoiceAnswerChecker
     {
-        public static bool IsCorrect(SingleChoiceQuestion question, Option answer)
+        public static bool IsCorrect(SingleChoiceQuestion question, string answer)
         {
-            return answer.Name == question.CorrectOption.Name;
+            return answer == question.CorrectOptionName;
         }
     }
 }

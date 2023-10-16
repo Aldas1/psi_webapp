@@ -11,21 +11,27 @@ namespace QuizAppApi.Services
             var options = questionDTO.Options;
             var correctOptionIndexes = questionDTO.CorrectOptionIndexes;
 
-            if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 || correctOptionIndexes.Max() >= options.Count)
+            if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
+                correctOptionIndexes.Max() >= options.Count)
             {
                 return null;
             }
 
+            var generatedOptions = options.Select(o => new MultipleChoiceOption { Name = o }).ToList();
+            foreach (var i in correctOptionIndexes)
+            {
+                generatedOptions[i].Correct = true;
+            }
+
             return new MultipleChoiceQuestion
             {
-                Options = options.Select(o => new Option { Name = o }).ToList(),
-                CorrectOptions = correctOptionIndexes.Select(i => new Option { Name = options[(int)i] }).ToList()
+                MultipleChoiceOptions = generatedOptions
             };
         }
 
         public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
         {
-            return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
+            return new QuestionParametersDTO { Options = question.MultipleChoiceOptions.Select(opt => opt.Name).ToList() };
         }
     }
 }
