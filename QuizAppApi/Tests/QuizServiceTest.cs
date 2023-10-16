@@ -17,7 +17,8 @@ namespace Tests
         public void Setup()
         {
             _mockQuizRepository = new Mock<IQuizRepository>();
-            var strictAnswerCheckerService = new StrictAnswerCheckerService();
+            _quizService = new QuizService(_mockQuizRepository.Object);
+            var answerCheckerService = new AnswerCheckerService();
         }
 
         [TearDown]

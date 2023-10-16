@@ -10,12 +10,12 @@ namespace QuizAppApi.Services
     public class QuizService : IQuizService
     {
         private readonly IQuizRepository _quizRepository;
-        private readonly IStrictAnswerCheckerService _strcitAnswerCheckerService;
+        private readonly IAnswerCheckerService _answerCheckerService;
 
-        public QuizService(IQuizRepository quizRepository, IStrictAnswerCheckerService strictAnswerCheckerService)
+        public QuizService(IQuizRepository quizRepository, IAnswerCheckerService answerCheckerService)
         {
             _quizRepository = quizRepository;
-            _strcitAnswerCheckerService = strictAnswerCheckerService;
+            _answerCheckerService = answerCheckerService;
 
         }
 
