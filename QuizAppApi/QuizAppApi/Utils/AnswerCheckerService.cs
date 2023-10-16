@@ -1,4 +1,3 @@
-// AnswerCheckerService.cs
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using System.Collections.Generic;

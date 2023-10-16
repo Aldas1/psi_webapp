@@ -1,4 +1,3 @@
-// IAnswerCheckerService.cs
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Interfaces

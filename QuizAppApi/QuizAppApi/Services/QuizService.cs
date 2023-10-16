@@ -140,7 +140,7 @@ namespace QuizAppApi.Services
                         var selectedOption = singleChoiceQuestion.Options.FirstOrDefault(o => o.Name == answer.OptionName);
                         if (selectedOption != null)
                         {
-                            var isCorrect = SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, selectedOption);
+                            var isCorrect = _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, selectedOption.Name);
 
                             if (isCorrect)
                             {
