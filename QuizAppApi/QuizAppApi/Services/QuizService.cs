@@ -1,5 +1,3 @@
-using Azure.Core;
-using Microsoft.AspNetCore.SignalR;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
@@ -68,7 +66,15 @@ namespace QuizAppApi.Services
 
         public QuizCreationResponseDTO UpdateQuiz(int id, QuizCreationRequestDTO editRequest)
         {
-            var newQuiz = new Quiz { Name = editRequest.Name };
+            var newQuiz = _quizRepository.GetQuizById(id);
+            if (newQuiz == null)
+            {
+                return new QuizCreationResponseDTO { Status = "Quiz not found" };
+            }
+
+            newQuiz.Name = editRequest.Name;
+            newQuiz.Questions.Clear();
+
             foreach (var question in editRequest.Questions)
             {
                 Question? generatedQuestion = null;
@@ -101,7 +107,7 @@ namespace QuizAppApi.Services
                 return new QuizCreationResponseDTO { Status = "failed" };
             }
 
-            return new QuizCreationResponseDTO { Status = "success", Id = id};
+            return new QuizCreationResponseDTO { Status = "success", Id = id };
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)

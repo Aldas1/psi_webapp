@@ -23,16 +23,10 @@ namespace QuizAppApi.Repositories
 
         public Quiz? UpdateQuiz(int id, Quiz quiz)
         {
-            Quiz oldQuiz = GetQuizById(id);
-            if (oldQuiz is not null)
+            _context.Quizzes.Update(quiz);
+            if(Save())
             {
-                _context.Quizzes.Entry(oldQuiz).CurrentValues.SetValues(quiz);
-                int changes = _context.SaveChanges();
-
-                if (changes > 0)
-                {
-                    return quiz;
-                }
+                return GetQuizById(id);
             }
             return null;
         }
@@ -55,6 +49,12 @@ namespace QuizAppApi.Repositories
                 _context.Quizzes.Remove(quiz);
                 _context.SaveChanges();
             }
+        }
+
+        public bool Save()
+        {
+            var changes = _context.SaveChanges();
+            return changes > 0;
         }
     }
 }
