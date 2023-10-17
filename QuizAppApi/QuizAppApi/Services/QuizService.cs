@@ -27,33 +27,33 @@ namespace QuizAppApi.Services
         }
 
 
-        public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
+        public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
         {
             var newQuiz = new Quiz { Name = request.Name };
 
             if (AddParseQuestions(newQuiz, request) == false)
             {
-                return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
             }
 
             Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
             if (createdQuiz == null)
             {
-                return new QuizCreationResponseDTO { Status = "failed" };
+                return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
             int createdQuizId = createdQuiz.Id;
 
-            return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
+            return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
-        public QuizCreationResponseDTO UpdateQuiz(int id, QuizCreationRequestDTO editRequest)
+        public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
         {
             var newQuiz = _quizRepository.GetQuizById(id);
             if (newQuiz == null)
             {
-                return new QuizCreationResponseDTO { Status = "Quiz not found" };
+                return new QuizManipulationResponseDTO { Status = "Quiz not found" };
             }
 
             newQuiz.Name = editRequest.Name;
@@ -61,17 +61,17 @@ namespace QuizAppApi.Services
 
             if(AddParseQuestions(newQuiz, editRequest) == false)
             {
-                return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
             }
 
             Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
 
             if (updatedQuiz == null)
             {
-                return new QuizCreationResponseDTO { Status = "failed" };
+                return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
-            return new QuizCreationResponseDTO { Status = "success", Id = id };
+            return new QuizManipulationResponseDTO { Status = "success", Id = id };
         }
 
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
@@ -199,7 +199,7 @@ namespace QuizAppApi.Services
             return true;
         }
 
-        private bool AddParseQuestions(Quiz quiz, QuizCreationRequestDTO request)
+        private bool AddParseQuestions(Quiz quiz, QuizManipulationRequestDTO request)
         {
             foreach (var question in request.Questions)
             {
