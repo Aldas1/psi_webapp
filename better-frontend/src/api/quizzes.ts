@@ -3,8 +3,8 @@ import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
   QuestionResponseDto,
-  QuizManipulationRequestDto,
-  QuizManipulationResponseDto,
+  QuizCreationRequestDto,
+  QuizCreationResponseDto,
   QuizResponseDto,
 } from "../types";
 
@@ -25,16 +25,16 @@ async function getQuestions(id: number) {
   return response.data;
 }
 
-async function createQuiz(quiz: QuizManipulationRequestDto) {
-  const response = await axios.post<QuizManipulationResponseDto>(
+async function createQuiz(quiz: QuizCreationRequestDto) {
+  const response = await axios.post<QuizCreationResponseDto>(
     "/api/quizzes",
     quiz
   );
   return response.data;
 }
 
-async function updateQuiz(id: number, quiz: QuizManipulationRequestDto) {
-  const response = await axios.put<QuizManipulationResponseDto>(
+async function updateQuiz(id: number, quiz: QuizCreationRequestDto) {
+  const response = await axios.put<QuizCreationResponseDto>(
     `/api/quizzes/${id}`,
     quiz
   );
