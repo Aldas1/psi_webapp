@@ -23,7 +23,6 @@ namespace QuizAppApi.Repositories
 
         public Quiz? UpdateQuiz(int id, Quiz quiz)
         {
-            _context.Quizzes.Update(quiz);
             if(Save())
             {
                 return GetQuizById(id);
