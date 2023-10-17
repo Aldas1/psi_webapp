@@ -4,7 +4,7 @@ import { deleteQuiz, getQuestions, getQuiz } from "../../api/quizzes";
 import { Button, HStack, Spinner } from "@chakra-ui/react";
 import {
   QuestionResponseDto,
-  QuizCreationRequestDto,
+  QuizManipulationRequestDto,
   QuizResponseDto,
 } from "../../types";
 import QuizEditor from "../../components/QuizEditor";
@@ -14,7 +14,7 @@ import SoloGame from "../../components/SoloGame";
 function generateQuiz(
   quizResponse: QuizResponseDto,
   questionsResponse: QuestionResponseDto[]
-): QuizCreationRequestDto {
+): QuizManipulationRequestDto {
   return {
     id: quizResponse.id,
     name: quizResponse.name,
