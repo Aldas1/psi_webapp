@@ -16,13 +16,13 @@ namespace QuizAppApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<QuizCreationResponseDTO> CreateQuiz([FromBody] QuizCreationRequestDTO request)
+        public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
         {
             return _quizService.CreateQuiz(request);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<QuizCreationRequestDTO> UpdateQuiz(int id, [FromBody] QuizCreationRequestDTO updateRequest)
+        public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
         {
             var response = _quizService.UpdateQuiz(id, updateRequest);
 

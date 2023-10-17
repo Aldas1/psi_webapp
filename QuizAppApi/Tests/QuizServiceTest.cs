@@ -43,12 +43,12 @@ namespace Tests
         public void CreateQuiz_ReturnsCorrectResponse()
         {
             // Arrange
-            var request = new QuizCreationRequestDTO
+            var request = new QuizManipulationRequestDTO
             {
                 Name = "Test Quiz",
-                Questions = new List<QuizCreationQuestionRequestDTO>
+                Questions = new List<QuizManipulationQuestionRequestDTO>
                 {
-                    new QuizCreationQuestionRequestDTO
+                    new QuizManipulationQuestionRequestDTO
                     {
                         QuestionText = "What is the capital of France?",
                         QuestionType = "singleChoiceQuestion",
@@ -60,7 +60,7 @@ namespace Tests
                     }
                 }
             };
-            var expectedResponse = new QuizCreationResponseDTO { Status = "success", Id = 1 };
+            var expectedResponse = new QuizManipulationResponseDTO { Status = "success", Id = 1 };
 
             // Mock repository setup
             _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });

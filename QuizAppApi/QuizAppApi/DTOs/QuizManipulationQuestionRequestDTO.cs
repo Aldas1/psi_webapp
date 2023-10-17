@@ -1,6 +1,6 @@
 ﻿namespace QuizAppApi.DTOs
 {
-    public class QuizCreationQuestionRequestDTO
+    public class QuizManipulationQuestionRequestDTO
     {
         public string QuestionText { get; set; } = string.Empty;
         public string QuestionType { get; set; } = string.Empty;
