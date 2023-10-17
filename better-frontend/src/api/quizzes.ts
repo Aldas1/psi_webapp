@@ -33,6 +33,14 @@ async function createQuiz(quiz: QuizCreationRequestDto) {
   return response.data;
 }
 
+async function updateQuiz(id: number, quiz: QuizCreationRequestDto) {
+  const response = await axios.put<QuizCreationResponseDto>(
+    `/api/quizzes/${id}`,
+    quiz
+  );
+  return response.data;
+}
+
 async function deleteQuiz(id: number) {
   return axios.delete(`/api/quizzes/${id}`);
 }
@@ -50,6 +58,7 @@ export {
   getQuiz,
   getQuestions,
   createQuiz,
+  updateQuiz,
   deleteQuiz,
   submitAnswers,
 };
