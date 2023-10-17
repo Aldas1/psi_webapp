@@ -5,23 +5,27 @@ using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
+using OpenAI_API;
 
 namespace QuizAppApi.Services
 {
     public class QuizService : IQuizService
     {
         private readonly IQuizRepository _quizRepository;
+        private readonly IChatGptService _chatGptService;
         private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
 
         public QuizService(
             IQuizRepository quizRepository,
+            IChatGptService chatGptService,
             IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
             IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
             IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
         {
             _quizRepository = quizRepository;
+            _chatGptService = chatGptService;
             _singleChoiceDTOConverter = singleChoiceDTOConverter;
             _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
             _openTextDTOConverter = openTextDTOConverter;
@@ -118,7 +122,7 @@ namespace QuizAppApi.Services
             return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
         }
 
-        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request, bool includeExplanations)
         {
             var response = new AnswerSubmitResponseDTO();
             var quiz = _quizRepository.GetQuizById(id);
@@ -133,6 +137,8 @@ namespace QuizAppApi.Services
             {
                 response.Status = "success";
             }
+            
+            var explanations = new List<ChatGptResponseDTO>();
 
             foreach (var answer in request)
             {
@@ -170,11 +176,22 @@ namespace QuizAppApi.Services
                         }
                         break;
                 }
+                
+                if (includeExplanations)
+                {
+                    // Generate explanations for both correct and incorrect answers
+                    var explanation = _chatGptService.GenerateExplanation(question.Text, answer.OptionName ?? answer.AnswerText);
+                    explanations.Add(new ChatGptResponseDTO { QuestionId = question.Id, Explanation = explanation });
+                }
             }
 
             response.CorrectlyAnswered = correctAnswers;
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
-
+            
+            if (includeExplanations && response.Status == "success")
+            {
+                response.Explanations = explanations;
+            }
             return response;
         }
 
