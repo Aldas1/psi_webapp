@@ -30,28 +30,12 @@ namespace QuizAppApi.Services
         public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
         {
             var newQuiz = new Quiz { Name = request.Name };
-            foreach (var question in request.Questions)
+
+            if (AddParseQuestions(newQuiz, request) == false)
             {
-                Question? generatedQuestion = null;
-                switch (QuestionTypeConverter.FromString(question.QuestionType))
-                {
-                    case QuestionType.SingleChoiceQuestion:
-                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.MultipleChoiceQuestion:
-                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.OpenTextQuestion:
-                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                }
-                if (generatedQuestion == null)
-                {
-                    return new QuizCreationResponseDTO { Status = "Invalid question data" };
-                }
-                generatedQuestion.Text = question.QuestionText;
-                newQuiz.Questions.Add(generatedQuestion);
+                return new QuizCreationResponseDTO { Status = "Invalid question data" };
             }
+
             Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
             if (createdQuiz == null)
@@ -75,29 +59,9 @@ namespace QuizAppApi.Services
             newQuiz.Name = editRequest.Name;
             newQuiz.Questions.Clear();
 
-            foreach (var question in editRequest.Questions)
+            if(AddParseQuestions(newQuiz, editRequest) == false)
             {
-                Question? generatedQuestion = null;
-                switch (QuestionTypeConverter.FromString(question.QuestionType))
-                {
-                    case QuestionType.SingleChoiceQuestion:
-                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.MultipleChoiceQuestion:
-                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.OpenTextQuestion:
-                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                }
-
-                if (generatedQuestion == null)
-                {
-                    return new QuizCreationResponseDTO { Status = "Invalid question data" };
-                }
-
-                generatedQuestion.Text = question.QuestionText;
-                newQuiz.Questions.Add(generatedQuestion);
+                return new QuizCreationResponseDTO { Status = "Invalid question data" };
             }
 
             Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
@@ -232,6 +196,35 @@ namespace QuizAppApi.Services
             }
 
             _quizRepository.DeleteQuiz(id);
+            return true;
+        }
+
+        private bool AddParseQuestions(Quiz quiz, QuizCreationRequestDTO request)
+        {
+            foreach (var question in request.Questions)
+            {
+                Question? generatedQuestion = null;
+                switch (QuestionTypeConverter.FromString(question.QuestionType))
+                {
+                    case QuestionType.SingleChoiceQuestion:
+                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                    case QuestionType.MultipleChoiceQuestion:
+                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                    case QuestionType.OpenTextQuestion:
+                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
+                        break;
+                }
+
+                if (generatedQuestion == null)
+                {
+                    return false;
+                }
+
+                generatedQuestion.Text = question.QuestionText;
+                quiz.Questions.Add(generatedQuestion);
+            }
             return true;
         }
     }
