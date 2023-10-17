@@ -16,7 +16,7 @@ namespace QuizAppApi.Repositories
 
         public Quiz? AddQuiz(Quiz quiz)
         {
-            var entity = _context.Quizzes.Add(quiz).Entity;
+            var entity =  _context.Quizzes.Add(quiz).Entity;
             _context.SaveChanges();
             return entity;
         }

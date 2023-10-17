@@ -3,8 +3,8 @@ import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
   QuestionParametersDto,
-  QuizManipulationQuestionRequestDto,
-  QuizManipulationRequestDto,
+  QuizCreationQuestionRequestDto,
+  QuizCreationRequestDto,
 } from "../types";
 import {
   Flex,
@@ -114,7 +114,7 @@ function QuestionDisplay({
   answer,
   onAnswerChange = () => undefined,
 }: {
-  question: QuizManipulationQuestionRequestDto;
+  question: QuizCreationQuestionRequestDto;
   answer?: AnswerSubmitRequestDto;
   onAnswerChange?: (newAnswer: AnswerSubmitRequestDto) => void;
 }) {
@@ -152,7 +152,7 @@ function Results({
   quiz,
   results,
 }: {
-  quiz: QuizManipulationRequestDto;
+  quiz: QuizCreationRequestDto;
   results: AnswerSubmitResponseDto;
 }) {
   if (results.status !== "success") {
@@ -169,7 +169,7 @@ function Results({
   );
 }
 
-function SoloGame({ quiz }: { quiz: QuizManipulationRequestDto }) {
+function SoloGame({ quiz }: { quiz: QuizCreationRequestDto }) {
   const [answers, setAnswers] = useState<AnswerSubmitRequestDto[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [results, setResults] = useState<AnswerSubmitResponseDto | null>(null);
