@@ -1,3 +1,4 @@
+using Azure.Core;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
@@ -29,44 +30,38 @@ namespace QuizAppApi.Services
 
         public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
         {
-            var newQuiz = new Quiz { Name = request.Name };
+            Quiz? generatedQuiz = GenerateQuiz(request);
 
-            if (AddParseQuestions(newQuiz, request) == false)
+            if (generatedQuiz is null)
             {
-                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
+                return new QuizManipulationResponseDTO { Status = "Quiz creation failed" };
             }
 
-            Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
+            Quiz? addedQuiz = _quizRepository.AddQuiz(generatedQuiz);
 
-            if (createdQuiz == null)
+            if (addedQuiz is null)
             {
                 return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
-            int createdQuizId = createdQuiz.Id;
+            int createdQuizId = addedQuiz.Id;
 
             return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
         }
 
-        public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
+        public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO updateRequest)
         {
-            var newQuiz = _quizRepository.GetQuizById(id);
-            if (newQuiz == null)
+            Quiz? generatedQuiz = GenerateQuiz(updateRequest);
+
+            if (generatedQuiz is null)
             {
-                return new QuizManipulationResponseDTO { Status = "Quiz not found" };
+                return new QuizManipulationResponseDTO { Status = "Quiz creation failed" };
             }
 
-            newQuiz.Name = editRequest.Name;
-            newQuiz.Questions.Clear();
+            generatedQuiz.Id = id;
+            Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, generatedQuiz);
 
-            if(AddParseQuestions(newQuiz, editRequest) == false)
-            {
-                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
-            }
-
-            Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
-
-            if (updatedQuiz == null)
+            if (updatedQuiz is null)
             {
                 return new QuizManipulationResponseDTO { Status = "failed" };
             }
@@ -77,7 +72,7 @@ namespace QuizAppApi.Services
         public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
         {
             var quiz = _quizRepository.GetQuizById(id);
-            if (quiz == null)
+            if (quiz is null)
             {
                 return null;
             }
@@ -119,7 +114,7 @@ namespace QuizAppApi.Services
         public QuizResponseDTO? GetQuiz(int id)
         {
             var quiz = _quizRepository.GetQuizById(id);
-            if (quiz == null)
+            if (quiz is null)
             {
                 return null;
             }
@@ -133,7 +128,7 @@ namespace QuizAppApi.Services
             var quiz = _quizRepository.GetQuizById(id);
             var correctAnswers = 0;
 
-            if (quiz == null)
+            if (quiz is null)
             {
                 response.Status = "failed";
                 return response;
@@ -147,7 +142,7 @@ namespace QuizAppApi.Services
             {
                 var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
 
-                if (question == null)
+                if (question is null)
                 {
                     continue;
                 }
@@ -190,7 +185,7 @@ namespace QuizAppApi.Services
         public bool DeleteQuiz(int id)
         {
             var quiz = _quizRepository.GetQuizById(id);
-            if (quiz == null)
+            if (quiz is null)
             {
                 return false;
             }
@@ -199,8 +194,10 @@ namespace QuizAppApi.Services
             return true;
         }
 
-        private bool AddParseQuestions(Quiz quiz, QuizManipulationRequestDTO request)
+        private Quiz? GenerateQuiz(QuizManipulationRequestDTO request)
         {
+            var newQuiz = new Quiz { Name = request.Name };
+
             foreach (var question in request.Questions)
             {
                 Question? generatedQuestion = null;
@@ -217,15 +214,15 @@ namespace QuizAppApi.Services
                         break;
                 }
 
-                if (generatedQuestion == null)
+                if (generatedQuestion is null)
                 {
-                    return false;
+                    return null;
                 }
 
                 generatedQuestion.Text = question.QuestionText;
-                quiz.Questions.Add(generatedQuestion);
+                newQuiz.Questions.Add(generatedQuestion);
             }
-            return true;
+            return newQuiz;
         }
     }
 }
