@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using System.Reflection.Metadata.Ecma335;
 
 namespace QuizAppApi.Repositories
 {
@@ -23,11 +24,19 @@ namespace QuizAppApi.Repositories
 
         public Quiz? UpdateQuiz(int id, Quiz quiz)
         {
-            if(Save())
+            var oldQuiz = GetQuizById(id);
+            if (oldQuiz is null)
             {
-                return GetQuizById(id);
+                return null;
             }
-            return null;
+
+            oldQuiz.Questions.Clear();
+            _context.Entry(oldQuiz).State = EntityState.Detached;
+
+            _context.Quizzes.Update(quiz);
+        
+            _context.SaveChanges();
+            return GetQuizById(id);
         }
 
         public IEnumerable<Quiz> GetQuizzes()

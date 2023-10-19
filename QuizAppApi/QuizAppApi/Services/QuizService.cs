@@ -44,9 +44,9 @@ namespace QuizAppApi.Services
                 return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
-            int createdQuizId = addedQuiz.Id;
+            int generatedQuizId = addedQuiz.Id;
 
-            return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
+            return new QuizManipulationResponseDTO { Status = "success", Id = generatedQuizId };
         }
 
         public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO updateRequest)
