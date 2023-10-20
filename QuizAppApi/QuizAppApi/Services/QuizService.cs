@@ -29,11 +29,11 @@ namespace QuizAppApi.Services
 
         public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
         {
-            var newQuiz = new Quiz { Name = request.Name };
+            var newQuiz = new Quiz();
 
-            if (AddParseQuestions(newQuiz, request) == false)
+            if (PopulateQuizFromDTO(newQuiz, request) == false)
             {
-                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
+                return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
             Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
@@ -56,12 +56,9 @@ namespace QuizAppApi.Services
                 return new QuizManipulationResponseDTO { Status = "Quiz not found" };
             }
 
-            newQuiz.Name = editRequest.Name;
-            newQuiz.Questions.Clear();
-
-            if(AddParseQuestions(newQuiz, editRequest) == false)
+            if(PopulateQuizFromDTO(newQuiz, editRequest) == false)
             {
-                return new QuizManipulationResponseDTO { Status = "Invalid question data" };
+                return new QuizManipulationResponseDTO { Status = "failed" };
             }
 
             Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
@@ -199,8 +196,11 @@ namespace QuizAppApi.Services
             return true;
         }
 
-        private bool AddParseQuestions(Quiz quiz, QuizManipulationRequestDTO request)
+        private bool PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
         {
+            quiz.Name = request.Name;
+            quiz.Questions.Clear();
+
             foreach (var question in request.Questions)
             {
                 Question? generatedQuestion = null;
