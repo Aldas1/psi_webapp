@@ -6,7 +6,7 @@ namespace QuizAppApi.Utils
     {
         public static bool IsCorrect(SingleChoiceQuestion question, string answer)
         {
-            return answer == question.CorrectOptionName;
+            return answer == question.Options.First(o => o.Correct).Name;
         }
     }
 }
