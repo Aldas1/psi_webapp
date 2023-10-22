@@ -7,20 +7,13 @@ namespace QuizAppApi.Services
 {
     public class ChatGptService : IChatGptService
     {
-        private readonly string _openAiApiKey;
-
-        public ChatGptService(string openAiApiKey)
-        {
-            _openAiApiKey = openAiApiKey ?? throw new ArgumentNullException(nameof(openAiApiKey));
-        }
-
         public string GenerateExplanation(string questionText, string chosenOption)
         {
             try
             {
-                var openAi = new OpenAIAPI(_openAiApiKey);
+                var openAi = new OpenAIAPI("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");
 
-                var prompt = $"Question: {questionText}\nAnswer: {chosenOption}\nExplanation:";
+                var prompt = $"Question: {questionText}\nAnswer: {chosenOption}\nExplain why this is wrong:";
                 var responses = openAi.Completions.CreateCompletionAsync(
                     model: "gpt-3.5-turbo-instruct",
                     prompt: prompt,

@@ -122,7 +122,7 @@ namespace QuizAppApi.Services
             return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
         }
 
-        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request, bool includeExplanations)
+        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
             var response = new AnswerSubmitResponseDTO();
             var quiz = _quizRepository.GetQuizById(id);
@@ -142,6 +142,7 @@ namespace QuizAppApi.Services
 
             foreach (var answer in request)
             {
+                bool includeExplanations = false;
                 var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
 
                 if (question == null)
@@ -156,6 +157,10 @@ namespace QuizAppApi.Services
                         {
                             correctAnswers++;
                         }
+                        else if (answer.OptionName != null)
+                        {
+                            includeExplanations = true;
+                        }
                         break;
 
                     case MultipleChoiceQuestion multipleChoiceQuestion:
@@ -165,6 +170,10 @@ namespace QuizAppApi.Services
                             {
                                 correctAnswers++;
                             }
+                            else
+                            {
+                                includeExplanations = true;
+                            }
                         }
                         break;
 
@@ -173,6 +182,10 @@ namespace QuizAppApi.Services
                         if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText, trimWhitespace: true))
                         {
                             correctAnswers++;
+                        }
+                        else if (answerText != null)
+                        {
+                            includeExplanations = true;
                         }
                         break;
                 }
@@ -188,7 +201,7 @@ namespace QuizAppApi.Services
             response.CorrectlyAnswered = correctAnswers;
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
             
-            if (includeExplanations && response.Status == "success")
+            if (response.Status == "success")
             {
                 response.Explanations = explanations;
             }

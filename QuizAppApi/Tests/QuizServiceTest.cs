@@ -12,6 +12,7 @@ namespace Tests
     public class QuizServiceTests
     {
         private IQuizService? _quizService;
+        private Mock<IChatGptService>? _mockChatGptService;
         private Mock<IQuizRepository>? _mockQuizRepository;
         private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
         private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
@@ -21,11 +22,13 @@ namespace Tests
         public void Setup()
         {
             _mockQuizRepository = new Mock<IQuizRepository>();
+            _mockChatGptService = new Mock<IChatGptService>();
             _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
             _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
             _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
             _quizService = new QuizService(
                 _mockQuizRepository.Object,
+                _mockChatGptService.Object,
                 _mockSingleChoiceQuestionDTOConverterService.Object,
                 _mockMultipleChoiceQuestionDTOConverterService.Object,
                 _mockOpenTextQuestionDTOConverterService.Object);

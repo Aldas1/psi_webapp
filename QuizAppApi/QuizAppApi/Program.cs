@@ -24,6 +24,7 @@ builder.Services
     .AddScoped<IQuestionDTOConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDTOConverterService>();
 builder.Services.AddScoped<IQuestionDTOConverterService<OpenTextQuestion>, OpenTextQuestionDTOConverterService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+builder.Services.AddScoped<IChatGptService, ChatGptService>();
 builder.Services.AddDbContext<QuizContext>(options =>
     options
         .UseLazyLoadingProxies()
