@@ -9,5 +9,6 @@ namespace QuizAppApi.Interfaces
         Quiz? GetQuizById(int id);
         Quiz? UpdateQuiz(int id, Quiz quiz);
         void DeleteQuiz(int id);
+        void Save();
     }
 }
