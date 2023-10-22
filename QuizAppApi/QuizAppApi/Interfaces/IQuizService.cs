@@ -8,7 +8,7 @@ namespace QuizAppApi.Interfaces
         IEnumerable<QuestionResponseDTO>? GetQuestions(int id);
         IEnumerable<QuizResponseDTO> GetQuizzes();
         QuizResponseDTO? GetQuiz(int id);
-        AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request);
+        Task<AnswerSubmitResponseDTO> SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request);
         bool DeleteQuiz(int id);
     }
 }

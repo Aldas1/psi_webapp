@@ -2,6 +2,6 @@ namespace QuizAppApi.Interfaces
 {
     public interface IChatGptService
     {
-        string GenerateExplanation(string questionText, string chosenOption);
+        Task<string> GenerateExplanationAsync(string questionText, string chosenOption);
     }
 }

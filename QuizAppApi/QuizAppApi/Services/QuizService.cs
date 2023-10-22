@@ -122,7 +122,7 @@ namespace QuizAppApi.Services
             return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
         }
 
-        public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+        public async Task<AnswerSubmitResponseDTO> SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
         {
             var response = new AnswerSubmitResponseDTO();
             var quiz = _quizRepository.GetQuizById(id);
@@ -193,14 +193,14 @@ namespace QuizAppApi.Services
                 if (includeExplanations)
                 {
                     // Generate explanations for both correct and incorrect answers
-                    var explanation = _chatGptService.GenerateExplanation(question.Text, answer.OptionName ?? answer.AnswerText);
+                    var explanation = await _chatGptService.GenerateExplanationAsync(question.Text, answer.OptionName ?? answer.AnswerText);
                     explanations.Add(new ChatGptResponseDTO { QuestionId = question.Id, Explanation = explanation });
                 }
             }
 
             response.CorrectlyAnswered = correctAnswers;
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
-            
+
             if (response.Status == "success")
             {
                 response.Explanations = explanations;
