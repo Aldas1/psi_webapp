@@ -11,9 +11,9 @@ namespace QuizAppApi.Services
         {
             try
             {
-                var openAi = new OpenAIAPI("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");
+                var openAi = new OpenAIAPI(APIAuthentication.LoadFromPath("../.openai"));
 
-                var prompt = $"Question: {questionText}\nAnswer: {chosenOption}\nExplanation:";
+                var prompt = $"Question: {questionText}\nAnswer: {chosenOption}\nExplain why this is wrong:";
                 var responses = await openAi.Completions.CreateCompletionAsync(
                     model: "gpt-3.5-turbo-instruct",
                     prompt: prompt,

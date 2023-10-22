@@ -62,6 +62,11 @@ npm install
 npm run dev
 ```
 
+### OpenAI API setup
+
+1) Create ```.openai``` file in ```QuizAppApi/QuizAppApi``` directory
+2) Edit ```.openai``` file to look like this: ```OPENAI_API_KEY='YOUR_API_KEY'```
+
 ## Table of contents
 
 - [Quiz app](#quiz-app)
