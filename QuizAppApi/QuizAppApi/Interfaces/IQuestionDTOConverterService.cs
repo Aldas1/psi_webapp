@@ -1,11 +1,10 @@
 ﻿using QuizAppApi.DTOs;
 using QuizAppApi.Models;
 
-namespace QuizAppApi.Interfaces
+namespace QuizAppApi.Interfaces;
+
+public interface IQuestionDTOConverterService<TQuestion> where TQuestion : Question
 {
-    public interface IQuestionDTOConverterService<TQuestion> where TQuestion : Question
-    {
-        TQuestion? CreateFromParameters(QuestionParametersDTO questionDTO);
-        QuestionParametersDTO GenerateParameters(TQuestion question);
-    }
+    TQuestion CreateFromParameters(QuestionParametersDTO questionDTO);
+    QuestionParametersDTO GenerateParameters(TQuestion question);
 }

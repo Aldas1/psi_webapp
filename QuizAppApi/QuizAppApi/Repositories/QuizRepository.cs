@@ -3,16 +3,16 @@ using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 
-namespace QuizAppApi.Repositories
-{
-    public class QuizRepository : IQuizRepository
-    {
-        private readonly QuizContext _context;
+namespace QuizAppApi.Repositories;
 
-        public QuizRepository(QuizContext context)
-        {
-            _context = context;
-        }
+public class QuizRepository : IQuizRepository
+{
+    private readonly QuizContext _context;
+
+    public QuizRepository(QuizContext context)
+    {
+        _context = context;
+    }
 
         public Quiz? AddQuiz(Quiz quiz)
         {
@@ -32,10 +32,10 @@ namespace QuizAppApi.Repositories
             return _context.Quizzes;
         }
 
-        public Quiz? GetQuizById(int id)
-        {
-            return _context.Quizzes.FirstOrDefault(q => q.Id == id);
-        }
+    public Quiz? GetQuizById(int id)
+    {
+        return _context.Quizzes.FirstOrDefault(q => q.Id == id);
+    }
 
         public void DeleteQuiz(int id)
         {
@@ -47,9 +47,8 @@ namespace QuizAppApi.Repositories
             }
         }
 
-        public void Save()
-        {
-            _context.SaveChanges();
-        }
+    public void Save()
+    {
+        _context.SaveChanges();
     }
 }

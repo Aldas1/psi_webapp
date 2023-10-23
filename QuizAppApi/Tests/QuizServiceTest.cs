@@ -6,38 +6,38 @@ using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
 
-namespace Tests
+namespace Tests;
+
+[TestFixture]
+public class QuizServiceTests
 {
-    [TestFixture]
-    public class QuizServiceTests
+    private IQuizService? _quizService;
+    private Mock<IQuizRepository>? _mockQuizRepository;
+    private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
+    private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
+    private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+
+    [SetUp]
+    public void Setup()
     {
-        private IQuizService? _quizService;
-        private Mock<IQuizRepository>? _mockQuizRepository;
-        private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
-        private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
-        private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+        _mockQuizRepository = new Mock<IQuizRepository>();
+        _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
+        _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
+        _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+        _quizService = new QuizService(
+            _mockQuizRepository.Object,
+            _mockSingleChoiceQuestionDTOConverterService.Object,
+            _mockMultipleChoiceQuestionDTOConverterService.Object,
+            _mockOpenTextQuestionDTOConverterService.Object);
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-            _mockQuizRepository = new Mock<IQuizRepository>();
-            _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
-            _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
-            _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
-            _quizService = new QuizService(
-                _mockQuizRepository.Object,
-                _mockSingleChoiceQuestionDTOConverterService.Object,
-                _mockMultipleChoiceQuestionDTOConverterService.Object,
-                _mockOpenTextQuestionDTOConverterService.Object);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            // Reset the mock after each test
-            _mockQuizRepository = null;
-            _quizService = null;
-        }
+    [TearDown]
+    public void TearDown()
+    {
+        // Reset the mock after each test
+        _mockQuizRepository = null;
+        _quizService = null;
+    }
 
         [Test]
         public void CreateQuiz_ReturnsCorrectResponse()
@@ -62,110 +62,109 @@ namespace Tests
             };
             var expectedResponse = new QuizManipulationResponseDTO { Status = "success", Id = 1 };
 
-            // Mock repository setup
-            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
-            _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+        // Mock repository setup
+        _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
+        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
 
-            // Act
-            var result = _quizService.CreateQuiz(request);
+        // Act
+        var result = _quizService.CreateQuiz(request);
 
-            // Assert
-            Assert.AreEqual(expectedResponse.Status, result.Status);
-            Assert.AreEqual(expectedResponse.Id, result.Id);
-            _mockQuizRepository.Verify(repo => repo.AddQuiz(It.IsAny<Quiz>()), Times.Once);
-        }
+        // Assert
+        Assert.AreEqual(expectedResponse.Status, result.Status);
+        Assert.AreEqual(expectedResponse.Id, result.Id);
+        _mockQuizRepository.Verify(repo => repo.AddQuiz(It.IsAny<Quiz>()), Times.Once);
+    }
 
-        [Test]
-        public void GetQuiz_ReturnsCorrectQuiz()
+    [Test]
+    public void GetQuiz_ReturnsCorrectQuiz()
+    {
+        // Mock repository setup
+        var createdQuiz = new Quiz { Id = 1, Name = "Test Quiz" };
+        _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(createdQuiz);
+
+        // Ensure that GetQuizzes returns the expected list of quizzes
+        var expectedQuizzes = new List<Quiz> { createdQuiz };
+        _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(expectedQuizzes);
+
+        // Act
+        var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Id == createdQuiz.Id);
+
+        // Assert
+        Assert.IsNotNull(createdQuiz); // Ensure quiz is created successfully
+        Assert.IsNotNull(result); // Ensure result is not null
+        // Add assertions for other properties as needed
+        _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called
+    }
+
+    [Test]
+    public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
+    {
+        // Arrange
+        var answerRequest = new List<AnswerSubmitRequestDTO>
         {
-            // Mock repository setup
-            var createdQuiz = new Quiz { Id = 1, Name = "Test Quiz" };
-            _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(createdQuiz);
+            new AnswerSubmitRequestDTO { QuestionId = 1, OptionName = "Paris" }
+        };
+        var expectedResponse = new AnswerSubmitResponseDTO { Status = "failed" };
 
-            // Ensure that GetQuizzes returns the expected list of quizzes
-            var expectedQuizzes = new List<Quiz> { createdQuiz };
-            _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(expectedQuizzes);
+        // Mock repository setup
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
 
-            // Act
-            var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Id == createdQuiz.Id);
+        // Act
+        var result = _quizService.SubmitAnswers(1, answerRequest);
 
-            // Assert
-            Assert.IsNotNull(createdQuiz); // Ensure quiz is created successfully
-            Assert.IsNotNull(result); // Ensure result is not null
-            // Add assertions for other properties as needed
-            _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once); // Verify that GetQuizzes is called
-        }
+        // Assert
+        Assert.AreEqual(expectedResponse.Status, result.Status);
+        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+    }
 
-        [Test]
-        public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
+    [Test]
+    public void GetQuizzes_ReturnsCorrectQuizzes()
+    {
+        // Arrange
+        var quizzes = new List<Quiz>
         {
-            // Arrange
-            var answerRequest = new List<AnswerSubmitRequestDTO>
-            {
-                new AnswerSubmitRequestDTO { QuestionId = 1, OptionName = "Paris" }
-            };
-            var expectedResponse = new AnswerSubmitResponseDTO { Status = "failed" };
+            new Quiz { Id = 1, Name = "Quiz 1" },
+            new Quiz { Id = 2, Name = "Quiz 2" }
+        };
 
-            // Mock repository setup
-            _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
+        // Mock repository setup
+        _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(quizzes);
 
-            // Act
-            var result = _quizService.SubmitAnswers(1, answerRequest);
+        // Act
+        var result = _quizService.GetQuizzes();
 
-            // Assert
-            Assert.AreEqual(expectedResponse.Status, result.Status);
-            _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
-        }
+        // Assert
+        Assert.AreEqual(quizzes.Count, result.Count());
+        Assert.AreEqual(quizzes[0].Name, result.First().Name);
+        Assert.AreEqual(quizzes[1].Name, result.Skip(1).First().Name);
+    }
 
-        [Test]
-        public void GetQuizzes_ReturnsCorrectQuizzes()
-        {
-            // Arrange
-            var quizzes = new List<Quiz>
-            {
-                new Quiz { Id = 1, Name = "Quiz 1" },
-                new Quiz { Id = 2, Name = "Quiz 2" }
-            };
+    [Test]
+    public void DeleteQuiz_DeletesCorrectQuiz()
+    {
+        int quizIdToDelete = 1;
+        var quizToDelete = new Quiz { Id = quizIdToDelete, Name = "Quiz that will soon be *poof*" };
 
-            // Mock repository setup
-            _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(quizzes);
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(quizIdToDelete)).Returns(quizToDelete);
 
-            // Act
-            var result = _quizService.GetQuizzes();
+        var result = _quizService.DeleteQuiz(quizIdToDelete);
 
-            // Assert
-            Assert.AreEqual(quizzes.Count, result.Count());
-            Assert.AreEqual(quizzes[0].Name, result.First().Name);
-            Assert.AreEqual(quizzes[1].Name, result.Skip(1).First().Name);
-        }
+        Assert.IsTrue(result);
+        _mockQuizRepository.Verify(repo => repo.GetQuizById(quizIdToDelete), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.DeleteQuiz(quizIdToDelete), Times.Once);
+    }
 
-        [Test]
-        public void DeleteQuiz_DeletesCorrectQuiz()
-        {
-            int quizIdToDelete = 1;
-            var quizToDelete = new Quiz { Id = quizIdToDelete, Name = "Quiz that will soon be *poof*" };
+    [Test]
+    public void GetQuiz_ReturnsProperQuiz()
+    {
+        int quizId = 10;
+        var quiz = new Quiz { Id = quizId, Name = "Cool name" };
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(quizId)).Returns(quiz);
 
-            _mockQuizRepository.Setup(repo => repo.GetQuizById(quizIdToDelete)).Returns(quizToDelete);
+        var result = _quizService.GetQuiz(quizId);
 
-            var result = _quizService.DeleteQuiz(quizIdToDelete);
-
-            Assert.IsTrue(result);
-            _mockQuizRepository.Verify(repo => repo.GetQuizById(quizIdToDelete), Times.Once);
-            _mockQuizRepository.Verify(repo => repo.DeleteQuiz(quizIdToDelete), Times.Once);
-        }
-
-        [Test]
-        public void GetQuiz_ReturnsProperQuiz()
-        {
-            int quizId = 10;
-            var quiz = new Quiz { Id = quizId, Name = "Cool name" };
-            _mockQuizRepository.Setup(repo => repo.GetQuizById(quizId)).Returns(quiz);
-
-            var result = _quizService.GetQuiz(quizId);
-
-            Assert.AreEqual(quiz.Name, result.Name);
-            Assert.AreEqual(quiz.Id, result.Id);
-            _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
-        }
+        Assert.AreEqual(quiz.Name, result.Name);
+        Assert.AreEqual(quiz.Id, result.Id);
+        _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
     }
 }

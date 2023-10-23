@@ -1,9 +1,8 @@
 ﻿using QuizAppApi.Enums;
 
-namespace QuizAppApi.Models.Questions
+namespace QuizAppApi.Models.Questions;
+
+public class SingleChoiceQuestion : OptionQuestion
 {
-    public class SingleChoiceQuestion : OptionQuestion
-    {
-        public override QuestionType Type { get => QuestionType.SingleChoiceQuestion; }
-    }
+    public override QuestionType Type { get => QuestionType.SingleChoiceQuestion; }
 }

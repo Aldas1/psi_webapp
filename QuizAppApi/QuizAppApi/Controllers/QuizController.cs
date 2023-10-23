@@ -2,18 +2,18 @@
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
 
-namespace QuizAppApi.Controllers
-{
-    [ApiController]
-    [Route("quizzes")]
-    public class QuizController : ControllerBase
-    {
-        private readonly IQuizService _quizService;
+namespace QuizAppApi.Controllers;
 
-        public QuizController(IQuizService quizService)
-        {
-            _quizService = quizService;
-        }
+[ApiController]
+[Route("quizzes")]
+public class QuizController : ControllerBase
+{
+    private readonly IQuizService _quizService;
+
+    public QuizController(IQuizService quizService)
+    {
+        _quizService = quizService;
+    }
 
         [HttpPost]
         public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
@@ -38,49 +38,47 @@ namespace QuizAppApi.Controllers
             return Ok(quizzes);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<QuizResponseDTO> GetQuiz(int id)
+    [HttpGet("{id}")]
+    public ActionResult<QuizResponseDTO> GetQuiz(int id)
+    {
+        var quiz = _quizService.GetQuiz(id);
+        if (quiz == null)
         {
-            var quiz = _quizService.GetQuiz(id);
-            if (quiz == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(quiz);
+            return NotFound();
         }
 
-        // TODO: Add details
-        [HttpGet("{id}/questions")]
-        public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
+        return Ok(quiz);
+    }
+    
+    [HttpGet("{id}/questions")]
+    public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
+    {
+        var questions = _quizService.GetQuestions(id);
+        if (questions == null)
         {
-            var questions = _quizService.GetQuestions(id);
-            if (questions == null)
-            {
-                return NotFound();
-            }
-            return Ok(questions);
+            return NotFound();
         }
+        return Ok(questions);
+    }
 
-        [HttpPost("{id}/submit")]
-        public ActionResult<AnswerSubmitResponseDTO> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
+    [HttpPost("{id}/submit")]
+    public ActionResult<AnswerSubmitResponseDTO> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
+    {
+        return _quizService.SubmitAnswers(id, request);
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult DeleteQuiz(int id)
+    {
+        bool response = _quizService.DeleteQuiz(id);
+        if (response)
         {
-            return _quizService.SubmitAnswers(id, request);
-        }
+            return Ok();
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteQuiz(int id)
+        } else
         {
-            bool response = _quizService.DeleteQuiz(id);
-            if (response)
-            {
-                return Ok();
+            return BadRequest();
 
-            } else
-            {
-                return BadRequest();
-
-            }
         }
     }
 }
