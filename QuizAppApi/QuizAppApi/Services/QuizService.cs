@@ -31,7 +31,7 @@ namespace QuizAppApi.Services
         {
             var newQuiz = new Quiz();
 
-            if (PopulateQuizFromDTO(newQuiz, request) == false)
+            if (!PopulateQuizFromDTO(newQuiz, request))
             {
                 return new QuizManipulationResponseDTO { Status = "failed" };
             }
@@ -56,7 +56,7 @@ namespace QuizAppApi.Services
                 return new QuizManipulationResponseDTO { Status = "Quiz not found" };
             }
 
-            if(PopulateQuizFromDTO(newQuiz, editRequest) == false)
+            if(!PopulateQuizFromDTO(newQuiz, editRequest))
             {
                 return new QuizManipulationResponseDTO { Status = "failed" };
             }

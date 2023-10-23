@@ -23,11 +23,8 @@ namespace QuizAppApi.Repositories
 
         public Quiz? UpdateQuiz(int id, Quiz quiz)
         {
-            if(Save())
-            {
-                return GetQuizById(id);
-            }
-            return null;
+            Save();
+            return GetQuizById(id);
         }
 
         public IEnumerable<Quiz> GetQuizzes()
@@ -50,10 +47,9 @@ namespace QuizAppApi.Repositories
             }
         }
 
-        public bool Save()
+        public void Save()
         {
-            var changes = _context.SaveChanges();
-            return changes > 0;
+            _context.SaveChanges();
         }
     }
 }

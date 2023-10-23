@@ -24,16 +24,7 @@ namespace QuizAppApi.Controllers
         [HttpPut("{id}")]
         public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
         {
-            var response = _quizService.UpdateQuiz(id, updateRequest);
-
-            if (response.Status == "success")
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return _quizService.UpdateQuiz(id, updateRequest);
         }
 
         [HttpGet]
