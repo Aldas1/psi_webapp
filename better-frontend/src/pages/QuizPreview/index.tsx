@@ -51,19 +51,27 @@ function QuizPreview() {
   const quizMutation = useMutation({
     mutationFn: async (newQuiz: QuizManipulationRequestDto) => {
       await updateQuiz(id, newQuiz);
-      setQuizForEdit(null);
       queryClient.invalidateQueries(["quiz", id]);
       queryClient.invalidateQueries(["questions", id]);
     },
-    onError: () => {
-      setQuizForEdit(null);
+    onError: (err: Error) => {
       toast({
         title: "Quiz edit failed",
-        description: "Whoops!",
+        description: `Whoops! ${err.message}`,
         status: "error",
         duration: 5000,
         isClosable: true,
       });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Quiz edit success",
+        description: `Congrats! Go solve it!`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      setQuizForEdit(null);
     },
   });
 

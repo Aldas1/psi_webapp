@@ -38,6 +38,9 @@ async function updateQuiz(id: number, quiz: QuizManipulationRequestDto) {
     `/api/quizzes/${id}`,
     quiz
   );
+  if (response.data.status !== "success") {
+    throw new Error(response.data.status);
+  }
   return response.data;
 }
 
