@@ -100,7 +100,7 @@ namespace Tests
         }
 
         [Test]
-        public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
+        public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz()
         {
             // Arrange
             var answerRequest = new List<AnswerSubmitRequestDTO>
@@ -113,12 +113,13 @@ namespace Tests
             _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
 
             // Act
-            var result = _quizService.SubmitAnswers(1, answerRequest);
+            var result = await _quizService.SubmitAnswers(1, answerRequest);
 
             // Assert
             Assert.AreEqual(expectedResponse.Status, result.Status);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
         }
+
 
 
         [Test]
