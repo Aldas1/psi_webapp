@@ -1,13 +1,12 @@
-﻿namespace QuizAppApi.Enums
+﻿namespace QuizAppApi.Enums;
+
+public enum QuestionType
 {
-    public enum QuestionType
-    {
-        SingleChoiceQuestion,
+    SingleChoiceQuestion,
 
-        MultipleChoiceQuestion,
+    MultipleChoiceQuestion,
 
-        OpenTextQuestion,
+    OpenTextQuestion,
 
-        Unknown
-    }
+    Unknown
 }

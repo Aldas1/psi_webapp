@@ -1,12 +1,11 @@
 using QuizAppApi.Models.Questions;
 
-namespace QuizAppApi.Utils
+namespace QuizAppApi.Utils;
+
+public static class SingleChoiceAnswerChecker
 {
-    public static class SingleChoiceAnswerChecker
+    public static bool IsCorrect(SingleChoiceQuestion question, string answer)
     {
-        public static bool IsCorrect(SingleChoiceQuestion question, string answer)
-        {
-            return answer == question.Options.First(o => o.Correct).Name;
-        }
+        return answer == question.Options.First(o => o.Correct).Name;
     }
 }

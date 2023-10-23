@@ -1,12 +1,11 @@
-﻿namespace QuizAppApi
+﻿namespace QuizAppApi;
+
+public static class Config
 {
-    public static class Config
+    public struct QuestionTypeValues
     {
-        public struct QuestionTypeValues
-        {
-            public const string SingleChoiceQuestionApiString = "singleChoiceQuestion";
-            public const string MultipleChoiceQuestionApiString = "multipleChoiceQuestion";
-            public const string OpenTextQuestionApiString = "openTextQuestion";
-        }
+        public const string SingleChoiceQuestionApiString = "singleChoiceQuestion";
+        public const string MultipleChoiceQuestionApiString = "multipleChoiceQuestion";
+        public const string OpenTextQuestionApiString = "openTextQuestion";
     }
 }
