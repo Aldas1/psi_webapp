@@ -68,7 +68,7 @@ OpenAI API key is added via secret:
 ```bash
 cd QuizAppApi/QuizAppApi
 dotnet user-secrets init
-dotnet user-secrets set "OpenAiAPIKey" "YOUR_API_KEY
+dotnet user-secrets set "OpenAiAPIKey" "YOUR_API_KEY"
 ```
 
 ## Table of contents
