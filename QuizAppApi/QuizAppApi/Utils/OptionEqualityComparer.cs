@@ -3,15 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace QuizAppApi.Utils
 {
-    public class MultipleChoiceOptionEqualityComparer : IEqualityComparer<MultipleChoiceOption>
+    public class OptionEqualityComparer : IEqualityComparer<Option>
     {
-        public bool Equals(MultipleChoiceOption? x, MultipleChoiceOption? y)
+        public bool Equals(Option? x, Option? y)
         {
             if (x is null || y is null) return false;
             return x.Name == y.Name;
         }
 
-        public int GetHashCode([DisallowNull] MultipleChoiceOption obj)
+        public int GetHashCode([DisallowNull] Option obj)
         {
             return obj.Name.GetHashCode();
         }

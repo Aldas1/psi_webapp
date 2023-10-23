@@ -1,7 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
-import { deleteQuiz, getQuestions, getQuiz } from "../../api/quizzes";
-import { Button, HStack, Spinner } from "@chakra-ui/react";
+import {
+  deleteQuiz,
+  getQuestions,
+  getQuiz,
+  updateQuiz,
+} from "../../api/quizzes";
+import { Button, HStack, Spinner, useToast } from "@chakra-ui/react";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -23,12 +28,16 @@ function generateQuiz(
 }
 
 function QuizPreview() {
+  const toast = useToast();
   const params = useParams();
   const id = parseInt(params.id ?? "0");
 
   const [inGame, setInGame] = useState(false);
+  const [quizForEdit, setQuizForEdit] =
+    useState<QuizManipulationRequestDto | null>(null);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const quizQuery = useQuery({
     queryKey: ["quiz", id],
@@ -38,6 +47,26 @@ function QuizPreview() {
     queryKey: ["questions", id],
     queryFn: () => getQuestions(id),
   });
+
+  const quizMutation = useMutation({
+    mutationFn: async (newQuiz: QuizManipulationRequestDto) => {
+      await updateQuiz(id, newQuiz);
+      setQuizForEdit(null);
+      queryClient.invalidateQueries(["quiz", id]);
+      queryClient.invalidateQueries(["questions", id]);
+    },
+    onError: () => {
+      setQuizForEdit(null);
+      toast({
+        title: "Quiz edit failed",
+        description: "Whoops!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+  });
+
   const quizData = quizQuery.data;
   const quizIsLoading = quizQuery.isLoading;
   const quizIsError = quizQuery.isError;
@@ -66,13 +95,22 @@ function QuizPreview() {
 
   return (
     <QuizEditor
-      quiz={quiz}
-      preview
+      quiz={quizForEdit ?? quiz}
+      preview={quizForEdit === null}
+      onQuizChange={(newQuiz) => setQuizForEdit(newQuiz)}
+      onSubmit={() => {
+        if (quizForEdit) {
+          quizMutation.mutate(quizForEdit);
+        }
+      }}
       previewBody={
         <HStack>
           {quiz.questions.length > 0 && (
             <Button onClick={() => setInGame(true)}>Solo game</Button>
           )}
+          <Button colorScheme="purple" onClick={() => setQuizForEdit(quiz)}>
+            Edit quiz
+          </Button>
           <Button
             colorScheme="purple"
             onClick={() => navigate(`/quizzes/${id}`)}

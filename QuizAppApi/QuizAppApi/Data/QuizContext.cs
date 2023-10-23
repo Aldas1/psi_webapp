@@ -12,24 +12,19 @@ namespace QuizAppApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SingleChoiceOption>().HasKey(o => new
+            modelBuilder.Entity<Option>().HasKey(o => new
             {
                 o.Name,
-                o.SingleChoiceQuestionId
-            });
-            modelBuilder.Entity<MultipleChoiceOption>().HasKey(o => new
-            {
-                o.Name,
-                o.MultipleChoiceQuestionId
+                o.QuestionId
             });
         }
 
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<OptionQuestion> OptionQuestions { get; set; }
         public DbSet<SingleChoiceQuestion> SingleChoiceQuestions { get; set; }
         public DbSet<MultipleChoiceQuestion> MultipleChoiceQuestions { get; set; }
         public DbSet<OpenTextQuestion> OpenTextQuestions { get; set; }
-        public DbSet<SingleChoiceOption> SingleChoiceOptions { get; set; }
-        public DbSet<MultipleChoiceOption> MultipleChoiceOptions { get; set; }
+        public DbSet<Option> Options { get; set; }
     }
 }

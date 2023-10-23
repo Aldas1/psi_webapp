@@ -17,7 +17,7 @@ namespace QuizAppApi.Services
                 return null;
             }
 
-            var generatedOptions = options.Select(o => new MultipleChoiceOption { Name = o }).ToList();
+            var generatedOptions = options.Select(o => new Option { Name = o }).ToList();
             foreach (var i in correctOptionIndexes)
             {
                 generatedOptions[i].Correct = true;
@@ -25,13 +25,13 @@ namespace QuizAppApi.Services
 
             return new MultipleChoiceQuestion
             {
-                MultipleChoiceOptions = generatedOptions
+                Options = generatedOptions
             };
         }
 
         public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
         {
-            return new QuestionParametersDTO { Options = question.MultipleChoiceOptions.Select(opt => opt.Name).ToList() };
+            return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
         }
     }
 }
