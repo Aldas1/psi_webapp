@@ -112,12 +112,6 @@ function QuizPreview() {
             Edit quiz
           </Button>
           <Button
-            colorScheme="purple"
-            onClick={() => navigate(`/quizzes/${id}`)}
-          >
-            Edit quiz
-          </Button>
-          <Button
             colorScheme="red"
             onClick={async () => {
               await deleteQuiz(id);
