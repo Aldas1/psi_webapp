@@ -1,3 +1,4 @@
+
 using Moq;
 using NUnit.Framework;
 using QuizAppApi.DTOs;
@@ -16,6 +17,9 @@ namespace Tests
         private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
         private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
         private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+        private Mock<IAnswerCheckerService>? _mockAnswerCheckerService;
+        private IAnswerCheckerService? _answerCheckerService;
+
 
         [SetUp]
         public void Setup()
@@ -24,12 +28,18 @@ namespace Tests
             _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
             _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
             _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+            _mockAnswerCheckerService = new Mock<IAnswerCheckerService>();
+
             _quizService = new QuizService(
                 _mockQuizRepository.Object,
                 _mockSingleChoiceQuestionDTOConverterService.Object,
                 _mockMultipleChoiceQuestionDTOConverterService.Object,
-                _mockOpenTextQuestionDTOConverterService.Object);
+                _mockOpenTextQuestionDTOConverterService.Object,
+                _mockAnswerCheckerService.Object);
+
+            _answerCheckerService = new AnswerCheckerService();
         }
+            
 
         [TearDown]
         public void TearDown()
@@ -167,5 +177,62 @@ namespace Tests
             Assert.AreEqual(quiz.Id, result.Id);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
         }
+
+        [Test]
+        public void CheckAnswers()
+        {
+            // Arrange
+            var singleChoiceQuestion = new SingleChoiceQuestion
+            {
+                CorrectOptionName = "Paris"
+            };
+
+            var multipleChoiceOptions = new List<MultipleChoiceOption>
+            {
+                new MultipleChoiceOption { Name = "Paris" },
+                new MultipleChoiceOption { Name = "London" },
+                new MultipleChoiceOption { Name = "Berlin" }
+            };
+
+            var multipleChoiceQuestion = new MultipleChoiceQuestion
+            {
+                MultipleChoiceOptions = multipleChoiceOptions
+            };
+
+            var openTextQuestion = new OpenTextQuestion
+            {
+                CorrectAnswer = "Paris"
+            };
+
+            var answerCheckerService = _answerCheckerService;
+
+            //_mockAnswerCheckerService.Setup(service => service.CheckSingleChoiceAnswer(It.IsAny<SingleChoiceQuestion>(), It.IsAny<string>()))
+            //.Returns(true);
+
+            // Act and Assert
+
+            Assert.IsTrue(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
+            Assert.IsFalse(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
+
+            var correctMultipleChoiceAnswer = new List<MultipleChoiceOption>
+            {
+                new MultipleChoiceOption { Name = "London" },
+                new MultipleChoiceOption { Name = "Berlin" },
+                new MultipleChoiceOption { Name = "Paris" }
+            };
+
+            Assert.IsTrue(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
+
+            var incorrectMultipleChoiceAnswer = new List<MultipleChoiceOption>
+            {
+                new MultipleChoiceOption { Name = "London" },
+                new MultipleChoiceOption { Name = "Berlin" }
+            };
+            Assert.IsFalse(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
+
+            Assert.IsTrue(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
+            Assert.IsFalse(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.JSInterop.Infrastructure;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
@@ -14,17 +15,20 @@ namespace QuizAppApi.Services
         private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
+        private readonly IAnswerCheckerService _answerCheckerService;
 
         public QuizService(
             IQuizRepository quizRepository,
             IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
             IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-            IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
+            IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
+            IAnswerCheckerService answerCheckerService)
         {
             _quizRepository = quizRepository;
             _singleChoiceDTOConverter = singleChoiceDTOConverter;
             _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
             _openTextDTOConverter = openTextDTOConverter;
+            _answerCheckerService = answerCheckerService;
         }
 
 
@@ -142,11 +146,11 @@ namespace QuizAppApi.Services
                 {
                     continue;
                 }
-
+                
                 switch (question)
                 {
                     case SingleChoiceQuestion singleChoiceQuestion:
-                        if (answer.OptionName != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, answer.OptionName))
+                        if (answer.OptionName != null && _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, answer.OptionName))
                         {
                             correctAnswers++;
                         }
@@ -155,7 +159,7 @@ namespace QuizAppApi.Services
                     case MultipleChoiceQuestion multipleChoiceQuestion:
                         if (answer.OptionNames != null)
                         {
-                            if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new MultipleChoiceOption { Name = opt }).ToList()))
+                            if (_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, answer.OptionNames.Select(optName => new Option { Name = optName }).ToList()))
                             {
                                 correctAnswers++;
                             }
@@ -164,7 +168,7 @@ namespace QuizAppApi.Services
 
                     case OpenTextQuestion openTextQuestion:
                         var answerText = answer.AnswerText;
-                        if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText, trimWhitespace: true))
+                        if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText))
                         {
                             correctAnswers++;
                         }
