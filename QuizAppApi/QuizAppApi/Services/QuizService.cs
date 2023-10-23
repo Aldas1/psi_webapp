@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
+using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
@@ -33,25 +34,30 @@ public class QuizService : IQuizService
         var newQuiz = new Quiz { Name = request.Name };
         foreach (var question in request.Questions)
         {
-            Question? generatedQuestion = null;
-            switch (QuestionTypeConverter.FromString(question.QuestionType))
+            try
             {
-                case QuestionType.SingleChoiceQuestion:
-                    generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
-                case QuestionType.MultipleChoiceQuestion:
-                    generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
-                case QuestionType.OpenTextQuestion:
-                    generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
+                Question? generatedQuestion = QuestionTypeConverter.FromString(question.QuestionType) switch
+                {
+                    QuestionType.SingleChoiceQuestion => _singleChoiceDTOConverter.CreateFromParameters(
+                        question.QuestionParameters),
+                    QuestionType.MultipleChoiceQuestion => _multipleChoiceDTOConverter.CreateFromParameters(
+                        question.QuestionParameters),
+                    QuestionType.OpenTextQuestion =>
+                        _openTextDTOConverter.CreateFromParameters(question.QuestionParameters),
+                    _ => null
+                };
+                if (generatedQuestion == null)
+                {
+                    return new QuizCreationResponseDTO { Status = "Unknown question type" };
+                }
+
+                generatedQuestion.Text = question.QuestionText;
+                newQuiz.Questions.Add(generatedQuestion);
             }
-            if (generatedQuestion == null)
+            catch (DTOConversionException e)
             {
-                return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                return new QuizCreationResponseDTO { Status = e.Message };
             }
-            generatedQuestion.Text = question.QuestionText;
-            newQuiz.Questions.Add(generatedQuestion);
         }
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
