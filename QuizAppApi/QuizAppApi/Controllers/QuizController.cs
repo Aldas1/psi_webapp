@@ -43,8 +43,7 @@ public class QuizController : ControllerBase
 
         return Ok(quiz);
     }
-
-    // TODO: Add details
+    
     [HttpGet("{id}/questions")]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {

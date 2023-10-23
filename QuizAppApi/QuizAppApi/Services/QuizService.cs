@@ -72,32 +72,34 @@ public class QuizService : IQuizService
         {
             return null;
         }
-        return quiz.Questions.Select(question =>
+
+        var generatedQuestions = new List<QuestionResponseDTO>();
+        foreach (var question in quiz.Questions)
         {
-            QuestionParametersDTO generatedParameters;
-            switch (question)
+            var generatedParameters = question switch
             {
-                case SingleChoiceQuestion singleChoiceQuestion:
-                    generatedParameters = _singleChoiceDTOConverter.GenerateParameters(singleChoiceQuestion);
-                    break;
-                case MultipleChoiceQuestion multipleChoiceQuestion:
-                    generatedParameters = _multipleChoiceDTOConverter.GenerateParameters(multipleChoiceQuestion);
-                    break;
-                case OpenTextQuestion openTextQuestion:
-                    generatedParameters = _openTextDTOConverter.GenerateParameters(openTextQuestion);
-                    break;
-                default:
-                    throw new NotImplementedException();
+                SingleChoiceQuestion singleChoiceQuestion => _singleChoiceDTOConverter.GenerateParameters(
+                    singleChoiceQuestion),
+                MultipleChoiceQuestion multipleChoiceQuestion => _multipleChoiceDTOConverter.GenerateParameters(
+                    multipleChoiceQuestion),
+                OpenTextQuestion openTextQuestion => _openTextDTOConverter.GenerateParameters(openTextQuestion),
+                _ => null
+            };
+
+            if (generatedParameters == null)
+            {
+                return null;
             }
-            return new QuestionResponseDTO
+            generatedQuestions.Add(new QuestionResponseDTO
             {
                 QuestionText = question.Text,
                 Id = question.Id,
                 QuestionType = QuestionTypeConverter.ToString(question.Type),
                 QuestionParameters = generatedParameters
-            };
+            });
+        }
 
-        });
+        return generatedQuestions;
     }
 
     public IEnumerable<QuizResponseDTO> GetQuizzes()
