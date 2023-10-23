@@ -187,16 +187,13 @@ namespace Tests
                 CorrectOptionName = "Paris"
             };
 
-            var multipleChoiceOptions = new List<MultipleChoiceOption>
-            {
-                new MultipleChoiceOption { Name = "Paris" },
-                new MultipleChoiceOption { Name = "London" },
-                new MultipleChoiceOption { Name = "Berlin" }
-            };
+            var option1 = new Option { Name = "Paris", Correct = true };
+            var option2 = new Option { Name = "London", Correct = false };
+            var option3 = new Option { Name = "Berlin", Correct = false };
 
             var multipleChoiceQuestion = new MultipleChoiceQuestion
             {
-                MultipleChoiceOptions = multipleChoiceOptions
+                Options = new List<Option> { option1, option2, option3 }
             };
 
             var openTextQuestion = new OpenTextQuestion
@@ -206,33 +203,31 @@ namespace Tests
 
             var answerCheckerService = _answerCheckerService;
 
-            //_mockAnswerCheckerService.Setup(service => service.CheckSingleChoiceAnswer(It.IsAny<SingleChoiceQuestion>(), It.IsAny<string>()))
-            //.Returns(true);
-
             // Act and Assert
 
             Assert.IsTrue(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
             Assert.IsFalse(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
 
-            var correctMultipleChoiceAnswer = new List<MultipleChoiceOption>
+            var correctMultipleChoiceAnswer = new List<Option>
             {
-                new MultipleChoiceOption { Name = "London" },
-                new MultipleChoiceOption { Name = "Berlin" },
-                new MultipleChoiceOption { Name = "Paris" }
+                new Option { Name = "London", Correct = false },
+                new Option { Name = "Berlin", Correct = false },
+                new Option { Name = "Paris", Correct = true }
             };
 
             Assert.IsTrue(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
 
-            var incorrectMultipleChoiceAnswer = new List<MultipleChoiceOption>
+            var incorrectMultipleChoiceAnswer = new List<Option>
             {
-                new MultipleChoiceOption { Name = "London" },
-                new MultipleChoiceOption { Name = "Berlin" }
+                new Option { Name = "London", Correct = false },
+                new Option { Name = "Berlin", Correct = false }
             };
             Assert.IsFalse(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
 
             Assert.IsTrue(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
             Assert.IsFalse(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
         }
+
 
     }
 }

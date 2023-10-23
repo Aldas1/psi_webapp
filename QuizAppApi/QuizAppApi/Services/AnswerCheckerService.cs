@@ -17,9 +17,9 @@ namespace QuizAppApi.Services
         {
             //var correctAnswers = new HashSet<MultipleChoiceOption>(question.MultipleChoiceOptions);
             var correctAnswers = new HashSet<Option>(question.Options.Where(opt => opt.Correct), new OptionEqualityComparer());
+            var updatedAnswer = new HashSet<Option>(answer.Where(opt => opt.Correct), new OptionEqualityComparer());
 
-
-            return correctAnswers.SetEquals(answer);
+            return correctAnswers.SetEquals(updatedAnswer);
         }
 
         public bool CheckOpenTextAnswer(OpenTextQuestion question, string answer)
