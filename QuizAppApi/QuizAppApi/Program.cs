@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
@@ -7,16 +9,18 @@ using QuizAppApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition =
         System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Configuration.AddUserSecrets<Program>();
+
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services
     .AddScoped<IQuestionDTOConverterService<SingleChoiceQuestion>, SingleChoiceQuestionDTOConverterService>();
@@ -24,7 +28,13 @@ builder.Services
     .AddScoped<IQuestionDTOConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDTOConverterService>();
 builder.Services.AddScoped<IQuestionDTOConverterService<OpenTextQuestion>, OpenTextQuestionDTOConverterService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
-builder.Services.AddScoped<IChatGptService, ChatGptService>();
+builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var openAiApiKey = configuration["OpenAIApiKey"];
+    return new ExplanationService(openAiApiKey);
+});
+
 builder.Services.AddDbContext<QuizContext>(options =>
     options
         .UseLazyLoadingProxies()
@@ -40,9 +50,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

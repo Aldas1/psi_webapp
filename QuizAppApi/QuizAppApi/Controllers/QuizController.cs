@@ -10,7 +10,7 @@ namespace QuizAppApi.Controllers
     {
         private readonly IQuizService _quizService;
 
-        public QuizController(IQuizService quizService, IChatGptService chatGptService)
+        public QuizController(IQuizService quizService)
         {
             _quizService = quizService;
         }

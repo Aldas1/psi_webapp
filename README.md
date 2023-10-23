@@ -64,8 +64,12 @@ npm run dev
 
 ### OpenAI API setup
 
-1) Create ```.openai``` file in ```QuizAppApi/QuizAppApi``` directory
-2) Edit ```.openai``` file to look like this: ```OPENAI_API_KEY='YOUR_API_KEY'```
+OpenAI API key is added via secret:
+```bash
+cd QuizAppApi/QuizAppApi
+dotnet user-secrets init
+dotnet user-secrets set "OpenAiAPIKey" "YOUR_API_KEY
+```
 
 ## Table of contents
 

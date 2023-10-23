@@ -4,28 +4,27 @@ using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
-using QuizAppApi.Utils;
-using OpenAI_API;
+using QuizAppApi.Utils; 
 
 namespace QuizAppApi.Services
 {
     public class QuizService : IQuizService
     {
         private readonly IQuizRepository _quizRepository;
-        private readonly IChatGptService _chatGptService;
+        private readonly IExplanationService _explanationService;
         private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
         private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
 
         public QuizService(
             IQuizRepository quizRepository,
-            IChatGptService chatGptService,
+            IExplanationService explanationService,
             IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
             IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
             IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
         {
             _quizRepository = quizRepository;
-            _chatGptService = chatGptService;
+            _explanationService = explanationService;
             _singleChoiceDTOConverter = singleChoiceDTOConverter;
             _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
             _openTextDTOConverter = openTextDTOConverter;
@@ -138,11 +137,11 @@ namespace QuizAppApi.Services
                 response.Status = "success";
             }
             
-            var explanations = new List<ChatGptResponseDTO>();
+            var explanations = new List<ExplanationResponseDTO>();
+            bool includeExplanations = true;
 
             foreach (var answer in request)
             {
-                bool includeExplanations = false;
                 var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
 
                 if (question == null)
@@ -157,10 +156,6 @@ namespace QuizAppApi.Services
                         {
                             correctAnswers++;
                         }
-                        else if (answer.OptionName != null)
-                        {
-                            includeExplanations = true;
-                        }
                         break;
 
                     case MultipleChoiceQuestion multipleChoiceQuestion:
@@ -169,10 +164,6 @@ namespace QuizAppApi.Services
                             if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
                             {
                                 correctAnswers++;
-                            }
-                            else
-                            {
-                                includeExplanations = true;
                             }
                         }
                         break;
@@ -183,18 +174,37 @@ namespace QuizAppApi.Services
                         {
                             correctAnswers++;
                         }
-                        else if (answerText != null)
-                        {
-                            includeExplanations = true;
-                        }
                         break;
                 }
                 
                 if (includeExplanations)
                 {
-                    // Generate explanations for both correct and incorrect answers
-                    var explanation = await _chatGptService.GenerateExplanationAsync(question.Text, answer.OptionName ?? answer.AnswerText);
-                    explanations.Add(new ChatGptResponseDTO { QuestionId = question.Id, Explanation = explanation });
+                    switch (question)
+                    {
+                        case SingleChoiceQuestion singleChoiceQuestion:
+                            var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText);
+                            if (!string.IsNullOrEmpty(explanationSingleChoice) && !explanationSingleChoice.Contains("Explanation generation failed."))
+                            {
+                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationSingleChoice });
+                            }
+                            break;
+
+                        case MultipleChoiceQuestion multipleChoiceQuestion:
+                            var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>());
+                            if (!string.IsNullOrEmpty(explanationMultipleChoice) && !explanationMultipleChoice.Contains("Explanation generation failed."))
+                            {
+                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice });
+                            }
+                            break;
+
+                        case OpenTextQuestion openTextQuestion:
+                            var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "");
+                            if (!string.IsNullOrEmpty(explanationOpenText) && !explanationOpenText.Contains("Explanation generation failed."))
+                            {
+                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationOpenText });
+                            }
+                            break;
+                    }
                 }
             }
 

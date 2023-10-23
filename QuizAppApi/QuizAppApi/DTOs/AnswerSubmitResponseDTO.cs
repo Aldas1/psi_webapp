@@ -5,6 +5,6 @@
         public int Score { get; set; }
         public int CorrectlyAnswered { get; set; } // number of correctly answered questions
         public string? Status { get; set; } // "passed" or "failed"
-        public List<ChatGptResponseDTO> Explanations { get; set; } = new List<ChatGptResponseDTO>();
+        public List<ExplanationResponseDTO> Explanations { get; set; } = new List<ExplanationResponseDTO>();
     }
 }

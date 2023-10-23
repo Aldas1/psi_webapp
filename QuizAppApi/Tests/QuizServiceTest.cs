@@ -12,7 +12,7 @@ namespace Tests
     public class QuizServiceTests
     {
         private IQuizService? _quizService;
-        private Mock<IChatGptService>? _mockChatGptService;
+        private Mock<IExplanationService>? _mockChatGptService;
         private Mock<IQuizRepository>? _mockQuizRepository;
         private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
         private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
@@ -22,7 +22,7 @@ namespace Tests
         public void Setup()
         {
             _mockQuizRepository = new Mock<IQuizRepository>();
-            _mockChatGptService = new Mock<IChatGptService>();
+            _mockChatGptService = new Mock<IExplanationService>();
             _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
             _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
             _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
@@ -119,6 +119,7 @@ namespace Tests
             Assert.AreEqual(expectedResponse.Status, result.Status);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
         }
+
 
         [Test]
         public void GetQuizzes_ReturnsCorrectQuizzes()
