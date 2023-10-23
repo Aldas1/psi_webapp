@@ -2,33 +2,32 @@
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
-namespace QuizAppApi.Services
+namespace QuizAppApi.Services;
+
+public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
 {
-    public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
+    public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
     {
-        public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
+        var options = questionDTO.Options;
+        var correctOptionIndex = questionDTO.CorrectOptionIndex;
+
+        if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
+            correctOptionIndex >= options.Count)
         {
-            var options = questionDTO.Options;
-            var correctOptionIndex = questionDTO.CorrectOptionIndex;
-
-            if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
-                correctOptionIndex >= options.Count)
-            {
-                return null;
-            }
-
-            var correctOptionName = options[(int)correctOptionIndex];
-
-            return new SingleChoiceQuestion
-            {
-                Options = options.Select(o => new Option { Name = o, Correct = o == correctOptionName }).ToList(),
-            };
+            return null;
         }
 
-        public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+        var correctOptionName = options[(int)correctOptionIndex];
+
+        return new SingleChoiceQuestion
         {
-            return new QuestionParametersDTO
-                { Options = question.Options.Select(opt => opt.Name).ToList() };
-        }
+            Options = options.Select(o => new Option { Name = o, Correct = o == correctOptionName }).ToList(),
+        };
+    }
+
+    public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+    {
+        return new QuestionParametersDTO
+            { Options = question.Options.Select(opt => opt.Name).ToList() };
     }
 }

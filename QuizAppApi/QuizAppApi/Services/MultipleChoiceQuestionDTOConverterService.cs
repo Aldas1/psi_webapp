@@ -2,36 +2,35 @@
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
-namespace QuizAppApi.Services
+namespace QuizAppApi.Services;
+
+public class MultipleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<MultipleChoiceQuestion>
 {
-    public class MultipleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<MultipleChoiceQuestion>
+    public MultipleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
     {
-        public MultipleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
+        var options = questionDTO.Options;
+        var correctOptionIndexes = questionDTO.CorrectOptionIndexes;
+
+        if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
+            correctOptionIndexes.Max() >= options.Count)
         {
-            var options = questionDTO.Options;
-            var correctOptionIndexes = questionDTO.CorrectOptionIndexes;
-
-            if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
-                correctOptionIndexes.Max() >= options.Count)
-            {
-                return null;
-            }
-
-            var generatedOptions = options.Select(o => new Option { Name = o }).ToList();
-            foreach (var i in correctOptionIndexes)
-            {
-                generatedOptions[i].Correct = true;
-            }
-
-            return new MultipleChoiceQuestion
-            {
-                Options = generatedOptions
-            };
+            return null;
         }
 
-        public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
+        var generatedOptions = options.Select(o => new Option { Name = o }).ToList();
+        foreach (var i in correctOptionIndexes)
         {
-            return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
+            generatedOptions[i].Correct = true;
         }
+
+        return new MultipleChoiceQuestion
+        {
+            Options = generatedOptions
+        };
+    }
+
+    public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
+    {
+        return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
     }
 }
