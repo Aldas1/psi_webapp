@@ -28,49 +28,49 @@ public class QuizService : IQuizService
     }
 
 
-        public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
+    public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
+    {
+        var newQuiz = new Quiz();
+
+        if (!PopulateQuizFromDTO(newQuiz, request))
         {
-            var newQuiz = new Quiz();
-
-            if (!PopulateQuizFromDTO(newQuiz, request))
-            {
-                return new QuizManipulationResponseDTO { Status = "failed" };
-            }
-
-            Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
-
-            if (createdQuiz == null)
-            {
-                return new QuizManipulationResponseDTO { Status = "failed" };
-            }
-
-            int createdQuizId = createdQuiz.Id;
-
-            return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
+            return new QuizManipulationResponseDTO { Status = "failed" };
         }
 
-        public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
+        Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
+
+        if (createdQuiz == null)
         {
-            var newQuiz = _quizRepository.GetQuizById(id);
-            if (newQuiz == null)
-            {
-                return new QuizManipulationResponseDTO { Status = "Quiz not found" };
-            }
-
-            if(!PopulateQuizFromDTO(newQuiz, editRequest))
-            {
-                return new QuizManipulationResponseDTO { Status = "failed" };
-            }
-
-            Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
-
-            if (updatedQuiz == null)
-            {
-                return new QuizManipulationResponseDTO { Status = "failed" };
-            }
-
-            return new QuizManipulationResponseDTO { Status = "success", Id = id };
+            return new QuizManipulationResponseDTO { Status = "failed" };
         }
+
+        int createdQuizId = createdQuiz.Id;
+
+        return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
+    }
+
+    public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
+    {
+        var newQuiz = _quizRepository.GetQuizById(id);
+        if (newQuiz == null)
+        {
+            return new QuizManipulationResponseDTO { Status = "Quiz not found" };
+        }
+
+        if(!PopulateQuizFromDTO(newQuiz, editRequest))
+        {
+            return new QuizManipulationResponseDTO { Status = "failed" };
+        }
+
+        Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
+
+        if (updatedQuiz == null)
+        {
+            return new QuizManipulationResponseDTO { Status = "failed" };
+        }
+
+        return new QuizManipulationResponseDTO { Status = "success", Id = id };
+    }
 
     public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
     {
@@ -195,40 +195,39 @@ public class QuizService : IQuizService
             return false;
         }
 
-            _quizRepository.DeleteQuiz(id);
-            return true;
-        }
+        _quizRepository.DeleteQuiz(id);
+        return true;
+    }
 
-        private bool PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
+    private bool PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
+    {
+        quiz.Name = request.Name;
+        quiz.Questions.Clear();
+
+        foreach (var question in request.Questions)
         {
-            quiz.Name = request.Name;
-            quiz.Questions.Clear();
-
-            foreach (var question in request.Questions)
+            Question? generatedQuestion = null;
+            switch (QuestionTypeConverter.FromString(question.QuestionType))
             {
-                Question? generatedQuestion = null;
-                switch (QuestionTypeConverter.FromString(question.QuestionType))
-                {
-                    case QuestionType.SingleChoiceQuestion:
-                        generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.MultipleChoiceQuestion:
-                        generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                    case QuestionType.OpenTextQuestion:
-                        generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
-                        break;
-                }
-
-                if (generatedQuestion == null)
-                {
-                    return false;
-                }
-
-                generatedQuestion.Text = question.QuestionText;
-                quiz.Questions.Add(generatedQuestion);
+                case QuestionType.SingleChoiceQuestion:
+                    generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
+                case QuestionType.MultipleChoiceQuestion:
+                    generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
+                case QuestionType.OpenTextQuestion:
+                    generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
             }
-            return true;
+
+            if (generatedQuestion == null)
+            {
+                return false;
+            }
+
+            generatedQuestion.Text = question.QuestionText;
+            quiz.Questions.Add(generatedQuestion);
         }
+        return true;
     }
 }

@@ -31,18 +31,17 @@ public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterServ
         };
     }
 
-        public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+    public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+    {
+        return new QuestionParametersDTO
         {
-            return new QuestionParametersDTO
-            {
-                Options = question.Options.Select(opt => opt.Name).ToList(),
-                CorrectOptionIndex =
-            question.Options.Select((option, index) => new { Option = option, Index = index })
-            .Where(o => o.Option.Correct)
-            .Select(o => o.Index)
-            .ToList()
-            .First()
-            };
-        }
+            Options = question.Options.Select(opt => opt.Name).ToList(),
+            CorrectOptionIndex =
+                question.Options.Select((option, index) => new { Option = option, Index = index })
+                    .Where(o => o.Option.Correct)
+                    .Select(o => o.Index)
+                    .ToList()
+                    .First()
+        };
     }
 }
