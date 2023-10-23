@@ -1,34 +1,39 @@
 ﻿using QuizAppApi.DTOs;
+using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
-namespace QuizAppApi.Services
+namespace QuizAppApi.Services;
+
+public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
 {
-    public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
+    public SingleChoiceQuestion CreateFromParameters(QuestionParametersDTO questionDTO)
     {
-        public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
+        var options = questionDTO.Options;
+        var correctOptionIndex = questionDTO.CorrectOptionIndex;
+
+        if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
+            correctOptionIndex >= options.Count)
         {
-            var options = questionDTO.Options;
-            var correctOptionIndex = questionDTO.CorrectOptionIndex;
-
-            if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
-                correctOptionIndex >= options.Count)
-            {
-                return null;
-            }
-
-            var correctOptionName = options[(int)correctOptionIndex];
-
-            return new SingleChoiceQuestion
-            {
-                Options = options.Select(o => new Option { Name = o, Correct = o == correctOptionName }).ToList(),
-            };
+            throw new DTOConversionException("Client did not provide required info");
         }
 
-        public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+        if (options.Distinct().Count() != options.Count)
         {
-            return new QuestionParametersDTO
-                { Options = question.Options.Select(opt => opt.Name).ToList() };
+            throw new DTOConversionException("Duplicate options are not allowed");
         }
+
+        var correctOptionName = options[(int)correctOptionIndex];
+
+        return new SingleChoiceQuestion
+        {
+            Options = options.Select(o => new Option { Name = o, Correct = o == correctOptionName }).ToList(),
+        };
+    }
+
+    public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+    {
+        return new QuestionParametersDTO
+            { Options = question.Options.Select(opt => opt.Name).ToList() };
     }
 }
