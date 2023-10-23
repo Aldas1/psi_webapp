@@ -32,7 +32,8 @@ builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     var openAiApiKey = configuration["OpenAIApiKey"];
-    return new ExplanationService(openAiApiKey);
+    if (openAiApiKey != null) return new ExplanationService(openAiApiKey);
+    throw new Exception("OpenAI API key not found.");
 });
 
 builder.Services.AddDbContext<QuizContext>(options =>

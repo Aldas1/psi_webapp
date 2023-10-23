@@ -137,8 +137,9 @@ namespace QuizAppApi.Services
                 response.Status = "success";
             }
             
-            var explanations = new List<ExplanationResponseDTO>();
+            var explanations = new List<ExplanationDTO>();
             bool includeExplanations = true;
+            bool correctExplanationAnswer = false;
 
             foreach (var answer in request)
             {
@@ -155,6 +156,7 @@ namespace QuizAppApi.Services
                         if (answer.OptionName != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, answer.OptionName))
                         {
                             correctAnswers++;
+                            correctExplanationAnswer = true;
                         }
                         break;
 
@@ -164,6 +166,7 @@ namespace QuizAppApi.Services
                             if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
                             {
                                 correctAnswers++;
+                                correctExplanationAnswer = true;
                             }
                         }
                         break;
@@ -173,6 +176,7 @@ namespace QuizAppApi.Services
                         if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText, trimWhitespace: true))
                         {
                             correctAnswers++;
+                            correctExplanationAnswer = true;
                         }
                         break;
                 }
@@ -182,26 +186,26 @@ namespace QuizAppApi.Services
                     switch (question)
                     {
                         case SingleChoiceQuestion singleChoiceQuestion:
-                            var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText);
+                            var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText, correctExplanationAnswer);
                             if (!string.IsNullOrEmpty(explanationSingleChoice) && !explanationSingleChoice.Contains("Explanation generation failed."))
                             {
-                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationSingleChoice });
+                                explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationSingleChoice, Correct = correctExplanationAnswer });
                             }
                             break;
 
                         case MultipleChoiceQuestion multipleChoiceQuestion:
-                            var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>());
+                            var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>(), correctExplanationAnswer);
                             if (!string.IsNullOrEmpty(explanationMultipleChoice) && !explanationMultipleChoice.Contains("Explanation generation failed."))
                             {
-                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice });
+                                explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice, Correct = correctExplanationAnswer});
                             }
                             break;
 
                         case OpenTextQuestion openTextQuestion:
-                            var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "");
+                            var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "", correctExplanationAnswer);
                             if (!string.IsNullOrEmpty(explanationOpenText) && !explanationOpenText.Contains("Explanation generation failed."))
                             {
-                                explanations.Add(new ExplanationResponseDTO { QuestionId = question.Id, Explanation = explanationOpenText });
+                                explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationOpenText, Correct = correctExplanationAnswer});
                             }
                             break;
                     }
@@ -211,10 +215,8 @@ namespace QuizAppApi.Services
             response.CorrectlyAnswered = correctAnswers;
             response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
 
-            if (response.Status == "success")
-            {
-                response.Explanations = explanations;
-            }
+            response.Explanations = explanations;
+            
             return response;
         }
 

@@ -11,102 +11,55 @@ namespace QuizAppApi.Services
     {
         private readonly string _openAiApiKey;
 
-        public ExplanationService(string openAiApiKey)
+        public ExplanationService(string? openAiApiKey)
         {
             _openAiApiKey = openAiApiKey ?? throw new ArgumentNullException(nameof(openAiApiKey));
         }
+
+        private async Task<string?> AnswerGeneration(string question,string options, string? answer, string type)
+        {
+            try
+            {
+                var openAi = new OpenAIAPI(_openAiApiKey);
+
+                var prompt = $"Question: {question}\nAvailable answer options: {options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
+                var responses = await openAi.Completions.CreateCompletionAsync(
+                    model: "gpt-3.5-turbo-instruct",
+                    prompt: prompt,
+                    max_tokens: 150
+                );
+
+                if (responses?.Completions == null)
+                    return "Explanation generation failed.";
+
+                var explanationResponses = new List<string>();
+
+                foreach (var response in responses.Completions)
+                {
+                    explanationResponses.Add(response.Text.Trim());
+                }
+
+                return string.Join("\n", explanationResponses);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         
-        public async Task<string> GenerateExplanationAsync(SingleChoiceQuestion question, string chosenOption)
+        public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption, bool correct)
         {
-            try
-            {
-                var openAi = new OpenAIAPI(_openAiApiKey);
-
-                var prompt = $"Question: {question.Text}\nAnswer: {chosenOption}\nExplain this answer (keep the explanation short):";
-                var responses = await openAi.Completions.CreateCompletionAsync(
-                    model: "gpt-3.5-turbo-instruct",
-                    prompt: prompt,
-                    max_tokens: 150
-                );
-
-                if (responses == null || responses.Completions == null)
-                    return "Explanation generation failed.";
-
-                var explanationResponses = new List<string>();
-
-                foreach (var response in responses.Completions)
-                {
-                    explanationResponses.Add(response.Text.Trim());
-                }
-
-                return string.Join("\n", explanationResponses);
-            }
-            catch (Exception ex)
-            {
-                return $"Explanation generation error: {ex.Message}";
-            }
+            return await AnswerGeneration(question.Text,string.Join(", ", question.Options), chosenOption, "single choice question");
         }
 
-        public async Task<string> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions)
+        public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions, bool correct)
         {
-            try
-            {
-                var openAi = new OpenAIAPI(_openAiApiKey);
-
-                var prompt = $"Question: {question.Text}\nAnswer: {string.Join(", ", chosenOptions)}\nExplain this answer (keep the explanation short):";
-                var responses = await openAi.Completions.CreateCompletionAsync(
-                    model: "gpt-3.5-turbo-instruct",
-                    prompt: prompt,
-                    max_tokens: 150
-                );
-
-                if (responses == null || responses.Completions == null)
-                    return "Explanation generation failed.";
-
-                var explanationResponses = new List<string>();
-
-                foreach (var response in responses.Completions)
-                {
-                    explanationResponses.Add(response.Text.Trim());
-                }
-
-                return string.Join("\n", explanationResponses);
-            }
-            catch (Exception ex)
-            {
-                return $"Explanation generation error: {ex.Message}";
-            }
+            return await AnswerGeneration(question.Text, string.Join(", ", question.Options), string.Join(", ", chosenOptions), "multiple choice question");
         }
 
-        public async Task<string> GenerateExplanationAsync(OpenTextQuestion question, string answerText)
+        public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText, bool correct)
         {
-            try
-            {
-                var openAi = new OpenAIAPI(_openAiApiKey);
-
-                var prompt = $"Question: {question.Text}\nAnswer: {answerText}\nExplain this answer (keep the explanation short):";
-                var responses = await openAi.Completions.CreateCompletionAsync(
-                    model: "gpt-3.5-turbo-instruct",
-                    prompt: prompt,
-                    max_tokens: 150
-                );
-
-                if (responses == null || responses.Completions == null)
-                    return "Explanation generation failed.";
-
-                var explanationResponses = new List<string>();
-
-                foreach (var response in responses.Completions)
-                {
-                    explanationResponses.Add(response.Text.Trim());
-                }
-
-                return string.Join("\n", explanationResponses);
-            }
-            catch (Exception ex)
-            {
-                return $"Explanation generation error: {ex.Message}";
-            }
+            return await AnswerGeneration(question.Text, "", answerText, "open text question");
         }
     }
 }
