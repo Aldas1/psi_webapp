@@ -9,14 +9,9 @@ namespace QuizAppApi.Services
         public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
         {
             var options = questionDTO.Options;
-            if (options == null && options.Distinct().Count() == options.Count)
-            {
-                return null;
-            }
-
             var correctOptionIndex = questionDTO.CorrectOptionIndex;
 
-            if (correctOptionIndex == null || correctOptionIndex < 0 ||
+            if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
                 correctOptionIndex >= options.Count)
             {
                 return null;
