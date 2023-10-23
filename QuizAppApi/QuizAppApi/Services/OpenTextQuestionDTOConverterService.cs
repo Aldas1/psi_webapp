@@ -26,9 +26,8 @@ public class OpenTextQuestionDTOConverterService : IQuestionDTOConverterService<
         return new OpenTextQuestion { CorrectAnswer = correctText };
     }
 
-        public QuestionParametersDTO GenerateParameters(OpenTextQuestion question)
-        {
-            return new QuestionParametersDTO { CorrectText = question.CorrectAnswer };
-        }
+    public QuestionParametersDTO GenerateParameters(OpenTextQuestion question)
+    {
+        return new QuestionParametersDTO { CorrectText = question.CorrectAnswer };
     }
 }
