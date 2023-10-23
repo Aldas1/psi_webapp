@@ -9,13 +9,12 @@ namespace QuizAppApi.Services
         public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
         {
             var options = questionDTO.Options;
-            if (options == null && options.Distinct().Count() == options.Count)
+            if (options == null || options.Distinct().Count() != options.Count)
             {
                 return null;
             }
 
             var correctOptionIndex = questionDTO.CorrectOptionIndex;
-
             if (correctOptionIndex == null || correctOptionIndex < 0 ||
                 correctOptionIndex >= options.Count)
             {
@@ -33,7 +32,7 @@ namespace QuizAppApi.Services
         public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
         {
             return new QuestionParametersDTO
-                { Options = question.Options.Select(opt => opt.Name).ToList() };
+            { Options = question.Options.Select(opt => opt.Name).ToList() };
         }
     }
 }
