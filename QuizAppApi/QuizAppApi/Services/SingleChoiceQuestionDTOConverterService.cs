@@ -1,4 +1,5 @@
 ﻿using QuizAppApi.DTOs;
+using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
@@ -6,7 +7,7 @@ namespace QuizAppApi.Services;
 
 public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
 {
-    public SingleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
+    public SingleChoiceQuestion CreateFromParameters(QuestionParametersDTO questionDTO)
     {
         var options = questionDTO.Options;
         var correctOptionIndex = questionDTO.CorrectOptionIndex;
@@ -14,7 +15,12 @@ public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterServ
         if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
             correctOptionIndex >= options.Count)
         {
-            return null;
+            throw new DTOConversionException("Client did not provide required info");
+        }
+
+        if (options.Distinct().Count() != options.Count)
+        {
+            throw new DTOConversionException("Duplicate options are not allowed");
         }
 
         var correctOptionName = options[(int)correctOptionIndex];
