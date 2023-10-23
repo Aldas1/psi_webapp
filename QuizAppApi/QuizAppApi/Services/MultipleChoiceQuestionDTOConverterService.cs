@@ -9,9 +9,13 @@ namespace QuizAppApi.Services
         public MultipleChoiceQuestion? CreateFromParameters(QuestionParametersDTO questionDTO)
         {
             var options = questionDTO.Options;
+            if (options == null && options.Distinct().Count() == options.Count)
+            {
+                return null;
+            }
             var correctOptionIndexes = questionDTO.CorrectOptionIndexes;
 
-            if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
+            if (correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
                 correctOptionIndexes.Max() >= options.Count)
             {
                 return null;
