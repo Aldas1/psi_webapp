@@ -28,7 +28,15 @@ namespace QuizAppApi.Services
         public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
         {
             return new QuestionParametersDTO
-                { Options = question.Options.Select(opt => opt.Name).ToList() };
+            {
+                Options = question.Options.Select(opt => opt.Name).ToList(),
+                CorrectOptionIndex =
+            question.Options.Select((option, index) => new { Option = option, Index = index })
+            .Where(o => o.Option.Correct)
+            .Select(o => o.Index)
+            .ToList()
+            .First()
+            };
         }
     }
 }

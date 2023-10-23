@@ -20,7 +20,7 @@ namespace QuizAppApi.Services
 
         public QuestionParametersDTO GenerateParameters(OpenTextQuestion question)
         {
-            return new QuestionParametersDTO();
+            return new QuestionParametersDTO { CorrectText = question.CorrectAnswer };
         }
     }
 }
