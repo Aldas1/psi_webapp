@@ -37,11 +37,11 @@ public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterServ
         {
             Options = question.Options.Select(opt => opt.Name).ToList(),
             CorrectOptionIndex =
-        question.Options.Select((option, index) => new { Option = option, Index = index })
-        .Where(o => o.Option.Correct)
-        .Select(o => o.Index)
-        .ToList()
-        .First()
+                question.Options.Select((option, index) => new { Option = option, Index = index })
+                    .Where(o => o.Option.Correct)
+                    .Select(o => o.Index)
+                    .ToList()
+                    .First()
         };
     }
 }

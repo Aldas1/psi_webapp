@@ -39,28 +39,28 @@ public class QuizServiceTests
         _quizService = null;
     }
 
-        [Test]
-        public void CreateQuiz_ReturnsCorrectResponse()
+    [Test]
+    public void CreateQuiz_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var request = new QuizManipulationRequestDTO
         {
-            // Arrange
-            var request = new QuizManipulationRequestDTO
+            Name = "Test Quiz",
+            Questions = new List<QuizManipulationQuestionRequestDTO>
             {
-                Name = "Test Quiz",
-                Questions = new List<QuizManipulationQuestionRequestDTO>
+                new QuizManipulationQuestionRequestDTO
                 {
-                    new QuizManipulationQuestionRequestDTO
+                    QuestionText = "What is the capital of France?",
+                    QuestionType = "singleChoiceQuestion",
+                    QuestionParameters = new QuestionParametersDTO
                     {
-                        QuestionText = "What is the capital of France?",
-                        QuestionType = "singleChoiceQuestion",
-                        QuestionParameters = new QuestionParametersDTO
-                        {
-                            Options = new List<string> { "Paris", "London", "Berlin", "Madrid" },
-                            CorrectOptionIndex = 0
-                        }
+                        Options = new List<string> { "Paris", "London", "Berlin", "Madrid" },
+                        CorrectOptionIndex = 0
                     }
                 }
-            };
-            var expectedResponse = new QuizManipulationResponseDTO { Status = "success", Id = 1 };
+            }
+        };
+        var expectedResponse = new QuizManipulationResponseDTO { Status = "success", Id = 1 };
 
         // Mock repository setup
         _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
