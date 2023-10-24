@@ -1,3 +1,4 @@
+using Azure.Core;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
@@ -32,7 +33,14 @@ public class QuizService : IQuizService
     {
         var newQuiz = new Quiz();
 
-        PopulateQuizFromDTO(newQuiz, request);
+        try
+        {
+            PopulateQuizFromDTO(newQuiz, request);
+        }
+        catch (DTOConversionException e)
+        {
+            return new QuizManipulationResponseDTO { Status = e.Message };
+        }
 
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
@@ -54,7 +62,14 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDTO { Status = "Quiz not found" };
         }
 
-        PopulateQuizFromDTO(newQuiz, editRequest);
+        try
+        {
+            PopulateQuizFromDTO(newQuiz, editRequest);
+        }
+        catch (DTOConversionException e)
+        {
+            return new QuizManipulationResponseDTO { Status = e.Message };
+        }
 
         _quizRepository.Save();
         return new QuizManipulationResponseDTO { Status = "success", Id = id };
