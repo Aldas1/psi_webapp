@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.SignalR;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
-using QuizAppApi.Utils; 
+using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 
@@ -35,34 +34,43 @@ public class QuizService : IQuizService
         var newQuiz = new Quiz { Name = request.Name };
         foreach (var question in request.Questions)
         {
-            Question? generatedQuestion = null;
-            switch (QuestionTypeConverter.FromString(question.QuestionType))
+            try
             {
-                case QuestionType.SingleChoiceQuestion:
-                    generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
-                case QuestionType.MultipleChoiceQuestion:
-                    generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
-                case QuestionType.OpenTextQuestion:
-                    generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
-                    break;
+                Question? generatedQuestion = QuestionTypeConverter.FromString(question.QuestionType) switch
+                {
+                    QuestionType.SingleChoiceQuestion => _singleChoiceDTOConverter.CreateFromParameters(
+                        question.QuestionParameters),
+                    QuestionType.MultipleChoiceQuestion => _multipleChoiceDTOConverter.CreateFromParameters(
+                        question.QuestionParameters),
+                    QuestionType.OpenTextQuestion =>
+                        _openTextDTOConverter.CreateFromParameters(question.QuestionParameters),
+                    _ => null
+                };
+                if (generatedQuestion == null)
+                {
+                    return new QuizCreationResponseDTO { Status = "Unknown question type" };
+                }
+
+                generatedQuestion.Text = question.QuestionText;
+                newQuiz.Questions.Add(generatedQuestion);
             }
-            if (generatedQuestion == null)
+            catch (DTOConversionException e)
             {
-                return new QuizCreationResponseDTO { Status = "Invalid question data" };
+                return new QuizCreationResponseDTO { Status = e.Message };
             }
-            generatedQuestion.Text = question.QuestionText;
-            newQuiz.Questions.Add(generatedQuestion);
         }
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
+
         if (createdQuiz == null)
         {
             return new QuizCreationResponseDTO { Status = "failed" };
         }
+
         int createdQuizId = createdQuiz.Id;
+
         return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
     }
+
 
     public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
     {
@@ -136,7 +144,6 @@ public class QuizService : IQuizService
         }
         
         var explanations = new List<ExplanationDTO>();
-        bool includeExplanations = true;
         bool correctExplanationAnswer = false;
 
         foreach (var answer in request)
@@ -156,6 +163,8 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
+                    var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText, correctExplanationAnswer);
+                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationSingleChoice, Correct = correctExplanationAnswer });
                     break;
 
                 case MultipleChoiceQuestion multipleChoiceQuestion:
@@ -167,6 +176,8 @@ public class QuizService : IQuizService
                             correctExplanationAnswer = true;
                         }
                     }
+                    var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>(), correctExplanationAnswer);
+                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice, Correct = correctExplanationAnswer});
                     break;
 
                 case OpenTextQuestion openTextQuestion:
@@ -176,37 +187,9 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
+                    var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "", correctExplanationAnswer);
+                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationOpenText, Correct = correctExplanationAnswer});
                     break;
-            }
-            
-            if (includeExplanations)
-            {
-                switch (question)
-                {
-                    case SingleChoiceQuestion singleChoiceQuestion:
-                        var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText, correctExplanationAnswer);
-                        if (!string.IsNullOrEmpty(explanationSingleChoice) && !explanationSingleChoice.Contains("Explanation generation failed."))
-                        {
-                            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationSingleChoice, Correct = correctExplanationAnswer });
-                        }
-                        break;
-
-                    case MultipleChoiceQuestion multipleChoiceQuestion:
-                        var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>(), correctExplanationAnswer);
-                        if (!string.IsNullOrEmpty(explanationMultipleChoice) && !explanationMultipleChoice.Contains("Explanation generation failed."))
-                        {
-                            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice, Correct = correctExplanationAnswer});
-                        }
-                        break;
-
-                    case OpenTextQuestion openTextQuestion:
-                        var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "", correctExplanationAnswer);
-                        if (!string.IsNullOrEmpty(explanationOpenText) && !explanationOpenText.Contains("Explanation generation failed."))
-                        {
-                            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationOpenText, Correct = correctExplanationAnswer});
-                        }
-                        break;
-                }
             }
         }
 
