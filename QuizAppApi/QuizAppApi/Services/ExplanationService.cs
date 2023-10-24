@@ -48,13 +48,14 @@ public class ExplanationService : IExplanationService
     
     public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption)
     {
-        return await AnswerGeneration(question.Text,"Options: "+string.Join(", ", question.Options), chosenOption, "single choice question");
+        return await AnswerGeneration(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), chosenOption, "single choice question");
     }
 
     public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions)
     {
-        return await AnswerGeneration(question.Text, "Options: "+string.Join(", ", question.Options), string.Join(", ", chosenOptions), "multiple choice question");
+        return await AnswerGeneration(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), string.Join(", ", chosenOptions), "multiple choice question");
     }
+
 
     public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText)
     {
