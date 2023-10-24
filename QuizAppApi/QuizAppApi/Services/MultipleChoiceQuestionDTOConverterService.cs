@@ -37,6 +37,14 @@ public class MultipleChoiceQuestionDTOConverterService : IQuestionDTOConverterSe
 
     public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
     {
-        return new QuestionParametersDTO { Options = question.Options.Select(opt => opt.Name).ToList() };
+        return new QuestionParametersDTO
+        {
+            Options = question.Options.Select(opt => opt.Name).ToList(),
+            CorrectOptionIndexes =
+                    question.Options.Select((option, index) => new { Option = option, Index = index })
+                    .Where(o => o.Option.Correct)
+                    .Select(o => o.Index)
+                    .ToList()
+        };
     }
 }

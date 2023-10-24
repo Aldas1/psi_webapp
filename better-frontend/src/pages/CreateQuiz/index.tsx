@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QuizCreationRequestDto } from "../../types";
+import { QuizManipulationRequestDto } from "../../types";
 import QuizEditor from "../../components/QuizEditor";
 import { Heading, VStack } from "@chakra-ui/layout";
 import { createQuiz } from "../../api/quizzes";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 
 function CreateQuiz() {
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState<QuizCreationRequestDto>({
+  const [quiz, setQuiz] = useState<QuizManipulationRequestDto>({
     name: "",
     questions: [],
   });

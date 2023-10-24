@@ -8,8 +8,8 @@ import {
 } from "@chakra-ui/layout";
 import {
   QuestionParametersDto,
-  QuizCreationQuestionRequestDto,
-  QuizCreationRequestDto,
+  QuizManipulationQuestionRequestDto,
+  QuizManipulationRequestDto,
 } from "../types";
 import { Input } from "@chakra-ui/input";
 import { Button, IconButton } from "@chakra-ui/button";
@@ -263,8 +263,8 @@ function QuestionEditor({
   onQuestionChange = () => undefined,
   preview = false,
 }: {
-  question: QuizCreationQuestionRequestDto;
-  onQuestionChange?: (newQuestion: QuizCreationQuestionRequestDto) => void;
+  question: QuizManipulationQuestionRequestDto;
+  onQuestionChange?: (newQuestion: QuizManipulationQuestionRequestDto) => void;
   preview?: boolean;
 }) {
   let ParametersEditor;
@@ -372,8 +372,8 @@ function QuizEditor({
   previewBody,
   onSubmit = () => undefined,
 }: {
-  quiz: QuizCreationRequestDto;
-  onQuizChange?: (newQuiz: QuizCreationRequestDto) => void;
+  quiz: QuizManipulationRequestDto;
+  onQuizChange?: (newQuiz: QuizManipulationRequestDto) => void;
   preview?: boolean;
   previewBody?: ReactNode;
   onSubmit?: () => void;

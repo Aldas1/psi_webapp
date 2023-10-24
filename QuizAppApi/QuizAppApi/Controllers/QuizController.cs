@@ -16,11 +16,17 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<QuizCreationResponseDTO> CreateQuiz([FromBody] QuizCreationRequestDTO request)
+    public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
     {
         return _quizService.CreateQuiz(request);
     }
-            
+
+    [HttpPut("{id}")]
+    public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
+    {
+        return _quizService.UpdateQuiz(id, updateRequest);
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
     {
@@ -43,7 +49,7 @@ public class QuizController : ControllerBase
 
         return Ok(quiz);
     }
-    
+
     [HttpGet("{id}/questions")]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {
@@ -68,10 +74,10 @@ public class QuizController : ControllerBase
         if (response)
         {
             return Ok();
-        } else
+        }
+        else
         {
             return BadRequest();
-
         }
     }
 }

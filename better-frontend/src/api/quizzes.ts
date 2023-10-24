@@ -3,8 +3,8 @@ import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
   QuestionResponseDto,
-  QuizCreationRequestDto,
-  QuizCreationResponseDto,
+  QuizManipulationRequestDto,
+  QuizManipulationResponseDto,
   QuizResponseDto,
 } from "../types";
 
@@ -25,11 +25,22 @@ async function getQuestions(id: number) {
   return response.data;
 }
 
-async function createQuiz(quiz: QuizCreationRequestDto) {
-  const response = await axios.post<QuizCreationResponseDto>(
+async function createQuiz(quiz: QuizManipulationRequestDto) {
+  const response = await axios.post<QuizManipulationResponseDto>(
     "/api/quizzes",
     quiz
   );
+  return response.data;
+}
+
+async function updateQuiz(id: number, quiz: QuizManipulationRequestDto) {
+  const response = await axios.put<QuizManipulationResponseDto>(
+    `/api/quizzes/${id}`,
+    quiz
+  );
+  if (response.data.status !== "success") {
+    throw new Error(response.data.status);
+  }
   return response.data;
 }
 
@@ -50,6 +61,7 @@ export {
   getQuiz,
   getQuestions,
   createQuiz,
+  updateQuiz,
   deleteQuiz,
   submitAnswers,
 };

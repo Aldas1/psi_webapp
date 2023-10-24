@@ -3,20 +3,20 @@ interface QuizResponseDto {
   name: string;
 }
 
-interface QuizCreationQuestionRequestDto {
+interface QuizManipulationQuestionRequestDto {
   questionText: string;
   questionType: QuestionTypeDto;
   questionParameters: QuestionParametersDto;
   id?: number;
 }
 
-interface QuizCreationRequestDto {
+interface QuizManipulationRequestDto {
   name: string;
-  questions: QuizCreationQuestionRequestDto[];
+  questions: QuizManipulationQuestionRequestDto[];
   id?: number;
 }
 
-interface QuizCreationResponseDto {
+interface QuizManipulationResponseDto {
   status: string;
   id: number;
 }
@@ -56,9 +56,9 @@ interface AnswerSubmitResponseDto {
 export type {
   QuestionTypeDto,
   QuestionParametersDto,
-  QuizCreationRequestDto,
-  QuizCreationQuestionRequestDto,
-  QuizCreationResponseDto,
+  QuizManipulationRequestDto,
+  QuizManipulationQuestionRequestDto,
+  QuizManipulationResponseDto,
   QuizResponseDto,
   QuestionResponseDto,
   AnswerSubmitRequestDto,
