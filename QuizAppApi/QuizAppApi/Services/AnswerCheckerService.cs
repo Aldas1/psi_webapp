@@ -23,7 +23,6 @@ namespace QuizAppApi.Services
 
         public bool CheckMultipleChoiceAnswer(MultipleChoiceQuestion question, ICollection<Option> answer)
         {
-            //var correctAnswers = new HashSet<MultipleChoiceOption>(question.MultipleChoiceOptions);
             var correctAnswers = new HashSet<Option>(question.Options.Where(opt => opt.Correct), new OptionEqualityComparer());
             var updatedAnswer = new HashSet<Option>(answer.Where(opt => opt.Correct), new OptionEqualityComparer());
 
