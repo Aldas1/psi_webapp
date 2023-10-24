@@ -7,47 +7,46 @@ using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
 
-namespace Tests
+namespace Tests;
+
+[TestFixture]
+public class QuizServiceTests
 {
-    [TestFixture]
-    public class QuizServiceTests
+    private IQuizService? _quizService;
+    private Mock<IExplanationService>? _mockChatGptService;
+    private Mock<IQuizRepository>? _mockQuizRepository;
+    private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
+    private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
+    private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+    private Mock<IAnswerCheckerService>? _mockAnswerCheckerService;
+    private IAnswerCheckerService? _answerCheckerService;
+    [SetUp]
+    public void Setup()
     {
-        private IQuizService? _quizService;
-        private Mock<IQuizRepository>? _mockQuizRepository;
-        private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
-        private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
-        private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
-        private Mock<IAnswerCheckerService>? _mockAnswerCheckerService;
-        private IAnswerCheckerService? _answerCheckerService;
+        _mockQuizRepository = new Mock<IQuizRepository>();
+        _mockChatGptService = new Mock<IExplanationService>();
+        _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
+        _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
+        _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+        _mockAnswerCheckerService = new Mock<IAnswerCheckerService>();
+        _quizService = new QuizService(
+            _mockQuizRepository.Object,
+            _mockChatGptService.Object,
+            _mockSingleChoiceQuestionDTOConverterService.Object,
+            _mockMultipleChoiceQuestionDTOConverterService.Object,
+            _mockOpenTextQuestionDTOConverterService.Object,
+            _mockAnswerCheckerService.Object);
 
+        _answerCheckerService = new AnswerCheckerService();
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-            _mockQuizRepository = new Mock<IQuizRepository>();
-            _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
-            _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
-            _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
-            _mockAnswerCheckerService = new Mock<IAnswerCheckerService>();
-
-            _quizService = new QuizService(
-                _mockQuizRepository.Object,
-                _mockSingleChoiceQuestionDTOConverterService.Object,
-                _mockMultipleChoiceQuestionDTOConverterService.Object,
-                _mockOpenTextQuestionDTOConverterService.Object,
-                _mockAnswerCheckerService.Object);
-
-            _answerCheckerService = new AnswerCheckerService();
-        }
-            
-
-        [TearDown]
-        public void TearDown()
-        {
-            // Reset the mock after each test
-            _mockQuizRepository = null;
-            _quizService = null;
-        }
+    [TearDown]
+    public void TearDown()
+    {
+        // Reset the mock after each test
+        _mockQuizRepository = null;
+        _quizService = null;
+    }
 
     [Test]
     public void CreateQuiz_ReturnsCorrectResponse()
@@ -107,7 +106,7 @@ namespace Tests
     }
 
     [Test]
-    public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
+    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz()
     {
         // Arrange
         var answerRequest = new List<AnswerSubmitRequestDTO>
@@ -120,12 +119,14 @@ namespace Tests
         _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
 
         // Act
-        var result = _quizService.SubmitAnswers(1, answerRequest);
+        var result = await _quizService.SubmitAnswers(1, answerRequest);
 
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
         _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
     }
+
+
 
     [Test]
     public void GetQuizzes_ReturnsCorrectQuizzes()

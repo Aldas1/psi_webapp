@@ -8,31 +8,32 @@ using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
-namespace QuizAppApi.Services
+namespace QuizAppApi.Services;
+
+public class QuizService : IQuizService
 {
-    public class QuizService : IQuizService
+    private readonly IQuizRepository _quizRepository;
+    private readonly IExplanationService _explanationService;
+    private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
+    private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
+    private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
+    private readonly IAnswerCheckerService _answerCheckerService;
+
+    public QuizService(
+        IQuizRepository quizRepository,
+        IExplanationService explanationService,
+        IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
+        IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
+        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
+        IAnswerCheckerService answerCheckerService)
     {
-        private readonly IQuizRepository _quizRepository;
-        private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
-        private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
-        private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
-        private readonly IAnswerCheckerService _answerCheckerService;
-
-        public QuizService(
-            IQuizRepository quizRepository,
-            IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
-            IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-            IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
-            IAnswerCheckerService answerCheckerService)
-        {
-            _quizRepository = quizRepository;
-            _singleChoiceDTOConverter = singleChoiceDTOConverter;
-            _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
-            _openTextDTOConverter = openTextDTOConverter;
-            _answerCheckerService = answerCheckerService;
-        }
-
-
+        _quizRepository = quizRepository;
+        _explanationService = explanationService;
+        _singleChoiceDTOConverter = singleChoiceDTOConverter;
+        _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
+        _openTextDTOConverter = openTextDTOConverter;
+        _answerCheckerService = answerCheckerService;
+    }
     public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
     {
         var newQuiz = new Quiz { Name = request.Name };
@@ -74,6 +75,7 @@ namespace QuizAppApi.Services
 
         return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
     }
+
 
     public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
     {
@@ -130,11 +132,12 @@ namespace QuizAppApi.Services
         return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
     }
 
-    public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+    public async Task<AnswerSubmitResponseDTO> SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
     {
         var response = new AnswerSubmitResponseDTO();
         var quiz = _quizRepository.GetQuizById(id);
         var correctAnswers = 0;
+        var explanation = "";
 
         if (quiz == null)
         {
@@ -145,6 +148,9 @@ namespace QuizAppApi.Services
         {
             response.Status = "success";
         }
+        
+        var explanations = new List<ExplanationDTO>();
+        bool correctExplanationAnswer = false;
 
         foreach (var answer in request)
         {
@@ -187,6 +193,8 @@ namespace QuizAppApi.Services
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
 
+        response.Explanations = explanations;
+        
         return response;
     }
 
