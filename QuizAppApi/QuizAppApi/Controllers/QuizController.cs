@@ -15,28 +15,28 @@ public class QuizController : ControllerBase
         _quizService = quizService;
     }
 
-        [HttpPost]
-        public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
-        {
-            return _quizService.CreateQuiz(request);
-        }
+    [HttpPost]
+    public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
+    {
+        return _quizService.CreateQuiz(request);
+    }
 
-        [HttpPut("{id}")]
-        public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
-        {
-            return _quizService.UpdateQuiz(id, updateRequest);
-        }
+    [HttpPut("{id}")]
+    public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
+    {
+        return _quizService.UpdateQuiz(id, updateRequest);
+    }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
+    [HttpGet]
+    public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
+    {
+        var quizzes = _quizService.GetQuizzes();
+        if (quizzes == null)
         {
-            var quizzes = _quizService.GetQuizzes();
-            if (quizzes == null)
-            {
-                return NotFound();
-            }
-            return Ok(quizzes);
+            return NotFound();
         }
+        return Ok(quizzes);
+    }
 
     [HttpGet("{id}")]
     public ActionResult<QuizResponseDTO> GetQuiz(int id)
@@ -49,7 +49,7 @@ public class QuizController : ControllerBase
 
         return Ok(quiz);
     }
-    
+
     [HttpGet("{id}/questions")]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {
@@ -75,7 +75,8 @@ public class QuizController : ControllerBase
         {
             return Ok();
 
-        } else
+        }
+        else
         {
             return BadRequest();
 

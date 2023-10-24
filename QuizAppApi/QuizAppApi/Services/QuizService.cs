@@ -32,10 +32,7 @@ public class QuizService : IQuizService
     {
         var newQuiz = new Quiz();
 
-        if (!PopulateQuizFromDTO(newQuiz, request))
-        {
-            return new QuizManipulationResponseDTO { Status = "failed" };
-        }
+        PopulateQuizFromDTO(newQuiz, request);
 
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
@@ -57,18 +54,9 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDTO { Status = "Quiz not found" };
         }
 
-        if(!PopulateQuizFromDTO(newQuiz, editRequest))
-        {
-            return new QuizManipulationResponseDTO { Status = "failed" };
-        }
+        PopulateQuizFromDTO(newQuiz, editRequest);
 
-        Quiz? updatedQuiz = _quizRepository.UpdateQuiz(id, newQuiz);
-
-        if (updatedQuiz == null)
-        {
-            return new QuizManipulationResponseDTO { Status = "failed" };
-        }
-
+        _quizRepository.Save();
         return new QuizManipulationResponseDTO { Status = "success", Id = id };
     }
 
@@ -199,7 +187,7 @@ public class QuizService : IQuizService
         return true;
     }
 
-    private bool PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
+    private void PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
     {
         quiz.Name = request.Name;
         quiz.Questions.Clear();
@@ -222,12 +210,12 @@ public class QuizService : IQuizService
 
             if (generatedQuestion == null)
             {
-                return false;
+                throw new DTOConversionException("Failed to create a question");
             }
 
             generatedQuestion.Text = question.QuestionText;
             quiz.Questions.Add(generatedQuestion);
         }
-        return true;
     }
+
 }
