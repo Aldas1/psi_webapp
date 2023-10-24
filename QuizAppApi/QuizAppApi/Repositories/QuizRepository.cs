@@ -15,7 +15,7 @@ public class QuizRepository : IQuizRepository
 
     public Quiz? AddQuiz(Quiz quiz)
     {
-        var entity =  _context.Quizzes.Add(quiz).Entity;
+        var entity = _context.Quizzes.Add(quiz).Entity;
         _context.SaveChanges();
         return entity;
     }
@@ -28,11 +28,6 @@ public class QuizRepository : IQuizRepository
     public Quiz? GetQuizById(int id)
     {
         return _context.Quizzes.FirstOrDefault(q => q.Id == id);
-    }
-
-    public Quiz? UpdateQuiz(int id, Quiz quiz)
-    {
-        throw new NotImplementedException();
     }
 
     public void DeleteQuiz(int id)

@@ -29,46 +29,51 @@ public class QuizService : IQuizService
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
     }
-    public QuizCreationResponseDTO CreateQuiz(QuizCreationRequestDTO request)
-    {
-        var newQuiz = new Quiz { Name = request.Name };
-        foreach (var question in request.Questions)
-        {
-            try
-            {
-                Question? generatedQuestion = QuestionTypeConverter.FromString(question.QuestionType) switch
-                {
-                    QuestionType.SingleChoiceQuestion => _singleChoiceDTOConverter.CreateFromParameters(
-                        question.QuestionParameters),
-                    QuestionType.MultipleChoiceQuestion => _multipleChoiceDTOConverter.CreateFromParameters(
-                        question.QuestionParameters),
-                    QuestionType.OpenTextQuestion =>
-                        _openTextDTOConverter.CreateFromParameters(question.QuestionParameters),
-                    _ => null
-                };
-                if (generatedQuestion == null)
-                {
-                    return new QuizCreationResponseDTO { Status = "Unknown question type" };
-                }
 
-                generatedQuestion.Text = question.QuestionText;
-                newQuiz.Questions.Add(generatedQuestion);
-            }
-            catch (DTOConversionException e)
-            {
-                return new QuizCreationResponseDTO { Status = e.Message };
-            }
+    public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
+    {
+        var newQuiz = new Quiz();
+
+        try
+        {
+            PopulateQuizFromDTO(newQuiz, request);
         }
+        catch (DTOConversionException e)
+        {
+            return new QuizManipulationResponseDTO { Status = e.Message };
+        }
+
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
         if (createdQuiz == null)
         {
-            return new QuizCreationResponseDTO { Status = "failed" };
+            return new QuizManipulationResponseDTO { Status = "failed" };
         }
 
         int createdQuizId = createdQuiz.Id;
 
-        return new QuizCreationResponseDTO { Status = "success", Id = createdQuizId };
+        return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
+    }
+
+    public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
+    {
+        var newQuiz = _quizRepository.GetQuizById(id);
+        if (newQuiz == null)
+        {
+            return new QuizManipulationResponseDTO { Status = "Quiz not found" };
+        }
+
+        try
+        {
+            PopulateQuizFromDTO(newQuiz, editRequest);
+        }
+        catch (DTOConversionException e)
+        {
+            return new QuizManipulationResponseDTO { Status = e.Message };
+        }
+
+        _quizRepository.Save();
+        return new QuizManipulationResponseDTO { Status = "success", Id = id };
     }
 
 
@@ -211,4 +216,36 @@ public class QuizService : IQuizService
         _quizRepository.DeleteQuiz(id);
         return true;
     }
+
+    private void PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
+    {
+        quiz.Name = request.Name;
+        quiz.Questions.Clear();
+
+        foreach (var question in request.Questions)
+        {
+            Question? generatedQuestion = null;
+            switch (QuestionTypeConverter.FromString(question.QuestionType))
+            {
+                case QuestionType.SingleChoiceQuestion:
+                    generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
+                case QuestionType.MultipleChoiceQuestion:
+                    generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
+                case QuestionType.OpenTextQuestion:
+                    generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    break;
+            }
+
+            if (generatedQuestion == null)
+            {
+                throw new DTOConversionException("Failed to create a question");
+            }
+
+            generatedQuestion.Text = question.QuestionText;
+            quiz.Questions.Add(generatedQuestion);
+        }
+    }
+
 }
