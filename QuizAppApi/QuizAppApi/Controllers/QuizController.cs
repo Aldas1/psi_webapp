@@ -62,9 +62,9 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost("{id}/submit")]
-    public ActionResult<AnswerSubmitResponseDTO> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
+    public async Task<ActionResult<AnswerSubmitResponseDTO>> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
     {
-        return _quizService.SubmitAnswers(id, request);
+        return await _quizService.SubmitAnswers(id, request);
     }
 
     [HttpDelete("{id}")]
@@ -74,12 +74,10 @@ public class QuizController : ControllerBase
         if (response)
         {
             return Ok();
-
         }
         else
         {
             return BadRequest();
-
         }
     }
 }
