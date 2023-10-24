@@ -12,6 +12,7 @@ namespace Tests;
 public class QuizServiceTests
 {
     private IQuizService? _quizService;
+    private Mock<IExplanationService>? _mockChatGptService;
     private Mock<IQuizRepository>? _mockQuizRepository;
     private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
@@ -21,11 +22,13 @@ public class QuizServiceTests
     public void Setup()
     {
         _mockQuizRepository = new Mock<IQuizRepository>();
+        _mockChatGptService = new Mock<IExplanationService>();
         _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
         _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
         _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
         _quizService = new QuizService(
             _mockQuizRepository.Object,
+            _mockChatGptService.Object,
             _mockSingleChoiceQuestionDTOConverterService.Object,
             _mockMultipleChoiceQuestionDTOConverterService.Object,
             _mockOpenTextQuestionDTOConverterService.Object);
@@ -97,7 +100,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void SubmitAnswers_ReturnsErrorForNonexistentQuiz()
+    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz()
     {
         // Arrange
         var answerRequest = new List<AnswerSubmitRequestDTO>
@@ -110,12 +113,14 @@ public class QuizServiceTests
         _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
 
         // Act
-        var result = _quizService.SubmitAnswers(1, answerRequest);
+        var result = await _quizService.SubmitAnswers(1, answerRequest);
 
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
         _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
     }
+
+
 
     [Test]
     public void GetQuizzes_ReturnsCorrectQuizzes()
