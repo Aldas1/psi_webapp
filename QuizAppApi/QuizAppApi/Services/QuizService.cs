@@ -132,6 +132,7 @@ public class QuizService : IQuizService
         var response = new AnswerSubmitResponseDTO();
         var quiz = _quizRepository.GetQuizById(id);
         var correctAnswers = 0;
+        var explanation = "";
 
         if (quiz == null)
         {
@@ -163,8 +164,7 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
-                    var explanationSingleChoice = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText, correctExplanationAnswer);
-                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationSingleChoice, Correct = correctExplanationAnswer });
+                    explanation = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText);
                     break;
 
                 case MultipleChoiceQuestion multipleChoiceQuestion:
@@ -176,8 +176,7 @@ public class QuizService : IQuizService
                             correctExplanationAnswer = true;
                         }
                     }
-                    var explanationMultipleChoice = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>(), correctExplanationAnswer);
-                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationMultipleChoice, Correct = correctExplanationAnswer});
+                    explanation = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>());
                     break;
 
                 case OpenTextQuestion openTextQuestion:
@@ -187,10 +186,10 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
-                    var explanationOpenText = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "", correctExplanationAnswer);
-                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanationOpenText, Correct = correctExplanationAnswer});
+                    explanation = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "");
                     break;
             }
+            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanation, Correct = correctExplanationAnswer });
         }
 
         response.CorrectlyAnswered = correctAnswers;

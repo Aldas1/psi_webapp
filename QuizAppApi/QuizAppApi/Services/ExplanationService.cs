@@ -15,13 +15,13 @@ public class ExplanationService : IExplanationService
         _openAiApiKey = openAiApiKey ?? throw new ArgumentNullException(nameof(openAiApiKey));
     }
 
-    private async Task<string?> AnswerGeneration(string question,string options, string? answer, string type)
+    private async Task<string?> AnswerGeneration(string question, string options, string? answer, string type)
     {
         try
         {
             var openAi = new OpenAIAPI(_openAiApiKey);
 
-            var prompt = $"Question: {question}\nAvailable answer options: {options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
+            var prompt = $"Question: {question}\n{options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
             var responses = await openAi.Completions.CreateCompletionAsync(
                 model: "gpt-3.5-turbo-instruct",
                 prompt: prompt,
@@ -29,7 +29,7 @@ public class ExplanationService : IExplanationService
             );
 
             if (responses?.Completions == null)
-                return "Explanation generation failed.";
+                return null;
 
             var explanationResponses = new List<string>();
 
@@ -46,17 +46,17 @@ public class ExplanationService : IExplanationService
         }
     }
     
-    public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption, bool correct)
+    public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption)
     {
-        return await AnswerGeneration(question.Text,string.Join(", ", question.Options), chosenOption, "single choice question");
+        return await AnswerGeneration(question.Text,"Options: "+string.Join(", ", question.Options), chosenOption, "single choice question");
     }
 
-    public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions, bool correct)
+    public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions)
     {
-        return await AnswerGeneration(question.Text, string.Join(", ", question.Options), string.Join(", ", chosenOptions), "multiple choice question");
+        return await AnswerGeneration(question.Text, "Options: "+string.Join(", ", question.Options), string.Join(", ", chosenOptions), "multiple choice question");
     }
 
-    public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText, bool correct)
+    public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText)
     {
         return await AnswerGeneration(question.Text, "", answerText, "open text question");
     }
