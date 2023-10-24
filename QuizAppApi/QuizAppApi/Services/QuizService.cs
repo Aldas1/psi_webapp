@@ -1,4 +1,3 @@
-using Azure.Core;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
