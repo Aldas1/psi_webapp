@@ -44,5 +44,10 @@ namespace QuizAppApi.Repositories
                 _context.SaveChanges();
             }
         }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
     }
 }

@@ -184,7 +184,12 @@ namespace Tests
             // Arrange
             var singleChoiceQuestion = new SingleChoiceQuestion
             {
-                CorrectOptionName = "Paris"
+                Options = new List<Option>
+                {
+                    new Option { Name = "Paris", Correct = true },
+                    new Option { Name = "London", Correct = false },
+                    new Option { Name = "Berlin", Correct = false }
+                }
             };
 
             var option1 = new Option { Name = "Paris", Correct = true };

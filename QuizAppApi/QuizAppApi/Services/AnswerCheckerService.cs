@@ -10,7 +10,15 @@ namespace QuizAppApi.Services
     {
         public bool CheckSingleChoiceAnswer(SingleChoiceQuestion question, string answer)
         {
-            return answer == question.CorrectOptionName;
+            foreach (var option in question.Options)
+            {
+                if (option.Correct && option.Name == answer)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool CheckMultipleChoiceAnswer(MultipleChoiceQuestion question, ICollection<Option> answer)
