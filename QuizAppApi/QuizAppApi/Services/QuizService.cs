@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.JSInterop.Infrastructure;
 using QuizAppApi.DTOs;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
