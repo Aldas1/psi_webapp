@@ -29,9 +29,12 @@ namespace QuizAppApi.Services
             return correctAnswers.SetEquals(updatedAnswer);
         }
 
-        public bool CheckOpenTextAnswer(OpenTextQuestion question, string answer)
+        public bool CheckOpenTextAnswer(OpenTextQuestion question, string answerPara, bool useLowercaseComparison = false, bool trimWhitespace = false)
         {
-            return answer == question.CorrectAnswer;
+            var answer = trimWhitespace ? answerPara.Trim() : answerPara;
+            var correctAnswer = trimWhitespace ? question.CorrectAnswer.Trim() : question.CorrectAnswer;
+
+            return useLowercaseComparison ? answer.ToLower() == correctAnswer.ToLower() : answer == correctAnswer;
         }
     }
 }

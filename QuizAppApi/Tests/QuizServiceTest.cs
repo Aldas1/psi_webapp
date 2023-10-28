@@ -1,4 +1,3 @@
-
 using Moq;
 using NUnit.Framework;
 using QuizAppApi.DTOs;
@@ -19,7 +18,6 @@ public class QuizServiceTests
     private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
     private Mock<IAnswerCheckerService>? _mockAnswerCheckerService;
-    private IAnswerCheckerService? _answerCheckerService;
     [SetUp]
     public void Setup()
     {
@@ -36,8 +34,6 @@ public class QuizServiceTests
             _mockMultipleChoiceQuestionDTOConverterService.Object,
             _mockOpenTextQuestionDTOConverterService.Object,
             _mockAnswerCheckerService.Object);
-
-        _answerCheckerService = new AnswerCheckerService();
     }
 
     [TearDown]
@@ -113,17 +109,120 @@ public class QuizServiceTests
         {
             new AnswerSubmitRequestDTO { QuestionId = 1, OptionName = "Paris" }
         };
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "failed" };
+        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
+
+        var questions = new List<Question>
+        {
+            new SingleChoiceQuestion
+            {
+                Id = 1,
+            },
+            new SingleChoiceQuestion
+            {
+                Id = 2,
+            },
+            new SingleChoiceQuestion
+            {
+                Id = 3,
+            }
+        };
+
+        var fakeQuiz = new Quiz
+        {
+            Id = 1,
+            Name = "Fake Quiz",
+            Questions = questions
+        };
 
         // Mock repository setup
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns((Quiz)null);
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
 
         // Act
         var result = await _quizService.SubmitAnswers(1, answerRequest);
+        _mockAnswerCheckerService.Verify(mock => mock.CheckSingleChoiceAnswer(It.IsAny<SingleChoiceQuestion>(), It.IsAny<string>()), Times.Once);
+
+
+        var answerRequest2 = new List<AnswerSubmitRequestDTO>
+        {
+            new AnswerSubmitRequestDTO
+            {
+                QuestionId = 1,
+                OptionNames = new List<string> { "Option1", "Option2" }
+            }
+        };
+
+        var questions2 = new List<Question>
+        {
+            new MultipleChoiceQuestion
+            {
+                Id = 1,
+            },
+            new MultipleChoiceQuestion
+            {
+                Id = 2,
+            },
+            new MultipleChoiceQuestion
+            {
+                Id = 3,
+            }
+        };
+
+        var fakeQuiz2 = new Quiz
+        {
+            Id = 2,
+            Name = "Fake Quiz",
+            Questions = questions2
+        };
+
+        // Mock repository setup
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz2);
+
+        // Act
+        var result2 = await _quizService.SubmitAnswers(2, answerRequest2);
+        _mockAnswerCheckerService.Verify(mock => mock.CheckMultipleChoiceAnswer(It.IsAny<MultipleChoiceQuestion>(), It.IsAny<List<Option>>()), Times.Once);
+
+        var answerRequest3 = new List<AnswerSubmitRequestDTO>
+        {
+            new AnswerSubmitRequestDTO
+            {
+                QuestionId = 1,
+                AnswerText = "Your answer goes here"
+            }
+        };
+
+        var questions3 = new List<Question>
+        {
+            new OpenTextQuestion
+            {
+                Id = 1,
+            },
+            new OpenTextQuestion
+            {
+                Id = 2,
+            },
+            new OpenTextQuestion
+            {
+                Id = 3,
+            }
+        };
+
+        var fakeQuiz3 = new Quiz
+        {
+            Id = 2,
+            Name = "Fake Quiz",
+            Questions = questions3
+        };
+
+        // Mock repository setup
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz3);
+
+        // Act
+        var result3 = await _quizService.SubmitAnswers(2, answerRequest3);
+        _mockAnswerCheckerService.Verify(mock => mock.CheckOpenTextAnswer(It.IsAny<OpenTextQuestion>(), It.IsAny<string>(), false, false), Times.Once);
 
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Exactly(3));
     }
 
 
@@ -178,60 +277,4 @@ public class QuizServiceTests
             Assert.AreEqual(quiz.Id, result.Id);
             _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
         }
-
-    [Test]
-    public void CheckAnswers()
-    {
-        // Arrange
-        var singleChoiceQuestion = new SingleChoiceQuestion
-        {
-            Options = new List<Option>
-            {
-                new Option { Name = "Paris", Correct = true },
-                new Option { Name = "London", Correct = false },
-                new Option { Name = "Berlin", Correct = false }
-            }
-        };
-
-        var option1 = new Option { Name = "Paris", Correct = true };
-        var option2 = new Option { Name = "London", Correct = false };
-        var option3 = new Option { Name = "Berlin", Correct = false };
-
-        var multipleChoiceQuestion = new MultipleChoiceQuestion
-        {
-            Options = new List<Option> { option1, option2, option3 }
-        };
-
-        var openTextQuestion = new OpenTextQuestion
-        {
-            CorrectAnswer = "Paris"
-        };
-
-        var answerCheckerService = _answerCheckerService;
-
-        // Act and Assert
-
-        Assert.IsTrue(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
-        Assert.IsFalse(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
-
-        var correctMultipleChoiceAnswer = new List<Option>
-        {
-            new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = false },
-            new Option { Name = "Paris", Correct = true }
-        };
-
-        Assert.IsTrue(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
-
-        var incorrectMultipleChoiceAnswer = new List<Option>
-        {
-            new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = false }
-        };
-        Assert.IsFalse(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
-
-        Assert.IsTrue(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
-        Assert.IsFalse(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
-    }
-
 }

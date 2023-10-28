@@ -161,39 +161,42 @@ public class QuizService : IQuizService
         {
             var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
 
-                if (question == null)
-                {
-                    continue;
-                }
-                
-                switch (question)
-                {
-                    case SingleChoiceQuestion singleChoiceQuestion:
-                        if (answer.OptionName != null && _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, answer.OptionName))
-                        {
-                            correctAnswers++;
-                        }
-                        break;
-
-                    case MultipleChoiceQuestion multipleChoiceQuestion:
-                        if (answer.OptionNames != null)
-                        {
-                            if (_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, answer.OptionNames.Select(optName => new Option { Name = optName }).ToList()))
-                            {
-                                correctAnswers++;
-                            }
-                        }
-                        break;
-
-                    case OpenTextQuestion openTextQuestion:
-                        var answerText = answer.AnswerText;
-                        if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText))
-                        {
-                            correctAnswers++;
-                        }
-                        break;
-                }
+            if (question == null)
+            {
+                continue;
             }
+                
+            switch (question)
+            {
+                case SingleChoiceQuestion singleChoiceQuestion:
+                    if (answer.OptionName != null && _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, answer.OptionName))
+                    {
+                        correctAnswers++;
+                        correctExplanationAnswer = true;
+                    }
+                    break;
+
+                case MultipleChoiceQuestion multipleChoiceQuestion:
+                    if (answer.OptionNames != null)
+                    {
+                        if (_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, answer.OptionNames.Select(optName => new Option { Name = optName }).ToList()))
+                        {
+                            correctAnswers++;
+                            correctExplanationAnswer = true;
+                        }
+                    }
+                    break;
+
+                case OpenTextQuestion openTextQuestion:
+                    var answerText = answer.AnswerText;
+                    if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText))
+                    {
+                        correctAnswers++;
+                        correctExplanationAnswer = true;
+                    }
+                    break;
+            }
+        }
 
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
