@@ -1,7 +1,5 @@
 using NUnit.Framework;
-using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
-using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
 
@@ -90,5 +88,9 @@ public class AnswerCheckerServiceTests
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, null));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, ""));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Par"));
+
+        // Check useLowerCaseComparison and trimWhitespace optional parameters
+        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "paris", useLowercaseComparison: true));
+        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "   Paris   ", trimWhitespace: true));
     }
 }

@@ -194,9 +194,10 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
-                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanation, Correct = correctExplanationAnswer });
+                    explanation = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "");
                     break;
             }
+            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanation, Correct = correctExplanationAnswer });
         }
 
         response.CorrectlyAnswered = correctAnswers;

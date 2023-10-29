@@ -103,7 +103,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public async Task SubmitAnswersCheckSingleChoiceChecker_ReturnsErrorForNonexistentQuiz()
+    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_1()
     {
         // Arrange
         var answerRequest = new List<AnswerSubmitRequestDTO>
@@ -148,7 +148,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public async Task SubmitAnswersMultipleChoiceChecker_ReturnsErrorForNonexistentQuiz()
+    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_2()
     {
         // Arrange
         var answerRequest = new List<AnswerSubmitRequestDTO>
@@ -198,7 +198,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public async Task SubmitAnswersOpenTextChecker_ReturnsErrorForNonexistentQuiz()
+    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_3()
     {
         // Arrange
         var answerRequest = new List<AnswerSubmitRequestDTO>
