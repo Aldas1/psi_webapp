@@ -1,4 +1,4 @@
-﻿using QuizAppApi.Models.Questions;
+using QuizAppApi.Models.Questions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace QuizAppApi.Utils;

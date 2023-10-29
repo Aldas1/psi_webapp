@@ -38,6 +38,7 @@ builder.Services.AddDbContext<QuizContext>(options =>
     options
         .UseLazyLoadingProxies()
         .UseSqlServer(builder.Configuration["ConnectionString"]));
+builder.Services.AddScoped<IAnswerCheckerService, AnswerCheckerService>();
 
 var app = builder.Build();
 

@@ -15,19 +15,22 @@ public class QuizService : IQuizService
     private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
-    
+    private readonly IAnswerCheckerService _answerCheckerService;
+
     public QuizService(
         IQuizRepository quizRepository,
         IExplanationService explanationService,
         IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
         IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
+        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
+        IAnswerCheckerService answerCheckerService)
     {
         _quizRepository = quizRepository;
         _explanationService = explanationService;
         _singleChoiceDTOConverter = singleChoiceDTOConverter;
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
+        _answerCheckerService = answerCheckerService;
     }
 
     public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
@@ -160,11 +163,11 @@ public class QuizService : IQuizService
             {
                 continue;
             }
-
+                
             switch (question)
             {
                 case SingleChoiceQuestion singleChoiceQuestion:
-                    if (answer.OptionName != null && SingleChoiceAnswerChecker.IsCorrect(singleChoiceQuestion, answer.OptionName))
+                    if (answer.OptionName != null && _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, answer.OptionName))
                     {
                         correctAnswers++;
                         correctExplanationAnswer = true;
@@ -175,7 +178,7 @@ public class QuizService : IQuizService
                 case MultipleChoiceQuestion multipleChoiceQuestion:
                     if (answer.OptionNames != null)
                     {
-                        if (MultipleChoiceAnswerChecker.IsCorrect(multipleChoiceQuestion, answer.OptionNames.Select(opt => new Option { Name = opt }).ToList()))
+                        if (_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, answer.OptionNames.Select(optName => new Option { Name = optName }).ToList()))
                         {
                             correctAnswers++;
                             correctExplanationAnswer = true;
@@ -186,7 +189,7 @@ public class QuizService : IQuizService
 
                 case OpenTextQuestion openTextQuestion:
                     var answerText = answer.AnswerText;
-                    if (answerText != null && OpenTextAnswerChecker.IsCorrect(openTextQuestion, answerText, trimWhitespace: true))
+                    if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true))
                     {
                         correctAnswers++;
                         correctExplanationAnswer = true;
@@ -247,5 +250,4 @@ public class QuizService : IQuizService
             quiz.Questions.Add(generatedQuestion);
         }
     }
-
 }
