@@ -172,6 +172,7 @@ public class QuizService : IQuizService
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
+                    explanation = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText);
                     break;
 
                 case MultipleChoiceQuestion multipleChoiceQuestion:
@@ -183,15 +184,17 @@ public class QuizService : IQuizService
                             correctExplanationAnswer = true;
                         }
                     }
+                    explanation = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>());
                     break;
 
                 case OpenTextQuestion openTextQuestion:
                     var answerText = answer.AnswerText;
-                    if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText))
+                    if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true))
                     {
                         correctAnswers++;
                         correctExplanationAnswer = true;
                     }
+                    explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanation, Correct = correctExplanationAnswer });
                     break;
             }
         }
@@ -246,5 +249,4 @@ public class QuizService : IQuizService
             quiz.Questions.Add(generatedQuestion);
         }
     }
-
 }

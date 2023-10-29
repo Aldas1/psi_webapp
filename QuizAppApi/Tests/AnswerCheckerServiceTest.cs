@@ -1,4 +1,3 @@
-using Moq;
 using NUnit.Framework;
 using QuizAppApi.DTOs;
 using QuizAppApi.Interfaces;
@@ -9,16 +8,28 @@ using QuizAppApi.Services;
 namespace Tests;
 
 [TestFixture]
-public class AnswerCheckerTests
+public class AnswerCheckerServiceTests
 {
     private IAnswerCheckerService? _answerCheckerService;
 
-    [Test]
-    public void CheckAnswers()
+    [SetUp]
+    public void Setup()
     {
-        // Arrange
+        // Setup checker
         _answerCheckerService = new AnswerCheckerService();
+    }
 
+    [TearDown]
+    public void TearDown()
+    {
+        // Reset the checker after each test
+        _answerCheckerService = null;
+    }
+
+    [Test]
+    public void SingleChoiceAnswerChecker_Test()
+    {
+        
         var singleChoiceQuestion = new SingleChoiceQuestion
         {
             Options = new List<Option>
@@ -29,6 +40,15 @@ public class AnswerCheckerTests
             }
         };
 
+        // Act and Assert
+        Assert.IsTrue(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
+        Assert.IsFalse(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
+    }
+
+    [Test]
+    public void MultipleChoiceAnswerChecker_Test()
+    {
+        // Arrange
         var option1 = new Option { Name = "Paris", Correct = true };
         var option2 = new Option { Name = "London", Correct = false };
         var option3 = new Option { Name = "Berlin", Correct = false };
@@ -38,18 +58,6 @@ public class AnswerCheckerTests
             Options = new List<Option> { option1, option2, option3 }
         };
 
-        var openTextQuestion = new OpenTextQuestion
-        {
-            CorrectAnswer = "Paris"
-        };
-
-        var answerCheckerService = _answerCheckerService;
-
-        // Act and Assert
-
-        Assert.IsTrue(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
-        Assert.IsFalse(answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
-
         var correctMultipleChoiceAnswer = new List<Option>
         {
             new Option { Name = "London", Correct = false },
@@ -57,16 +65,30 @@ public class AnswerCheckerTests
             new Option { Name = "Paris", Correct = true }
         };
 
-        Assert.IsTrue(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
+        Assert.IsTrue(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
 
         var incorrectMultipleChoiceAnswer = new List<Option>
         {
             new Option { Name = "London", Correct = false },
             new Option { Name = "Berlin", Correct = false }
         };
-        Assert.IsFalse(answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
+        Assert.IsFalse(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
+    }
 
-        Assert.IsTrue(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
-        Assert.IsFalse(answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
+    [Test]
+    public void OpenTextAnswerChecker_Test()
+    {
+        // Arrange
+        var openTextQuestion = new OpenTextQuestion
+        {
+            CorrectAnswer = "Paris"
+        };
+
+        // Act and Assert
+        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
+        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
+        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, null));
+        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, ""));
+        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Par"));
     }
 }
