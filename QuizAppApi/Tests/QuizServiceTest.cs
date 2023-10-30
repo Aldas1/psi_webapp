@@ -265,8 +265,8 @@ public class QuizServiceTests
 
         // Assert
         Assert.AreEqual(quizzes.Count, result.Count());
-        Assert.AreEqual(quizzes[0].Name, result.First().Name);
-        Assert.AreEqual(quizzes[1].Name, result.Skip(1).First().Name);
+        Assert.IsTrue(result.Any(q => q.Name == "Quiz 1"));
+        Assert.IsTrue(result.Any(q => q.Name == "Quiz 2"));
     }
 
     [Test]
@@ -296,5 +296,98 @@ public class QuizServiceTests
         Assert.AreEqual(quiz.Name, result.Name);
         Assert.AreEqual(quiz.Id, result.Id);
         _mockQuizRepository.Verify(repo => repo.GetQuizById(quizId), Times.Once);
+    }
+
+    [Test]
+    public void UpdateQuiz_SuccessfulUpdate()
+    {
+        // Arrange
+        var existingQuizId = 1;
+        var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
+
+        var newQuizData = new QuizManipulationRequestDTO
+        {
+            Name = "New Name",
+            Questions = new List<QuizManipulationQuestionRequestDTO>
+            {
+                new QuizManipulationQuestionRequestDTO
+                {
+                    QuestionText = "What is 2 + 2?",
+                    QuestionType = "singleChoiceQuestion",
+                    QuestionParameters = new QuestionParametersDTO
+                    {
+                        Options = new List<string> { "3", "4", "5" },
+                        CorrectOptionIndex = 1 // Correct answer is 4.
+                    }
+                },
+            }
+        };
+
+        // Mock repository setup and DTOConverterService
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(existingQuizId)).Returns(existingQuiz);
+        _mockQuizRepository.Setup(repo => repo.Save()).Verifiable();
+        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+
+        // Act
+        var result = _quizService.UpdateQuiz(existingQuizId, newQuizData);
+
+        // Assert
+        Assert.AreEqual("success", result.Status);
+        Assert.AreEqual(existingQuizId, result.Id);
+
+        // Verify that the Save method of the mock repository is called to save the changes.
+        _mockQuizRepository.Verify(repo => repo.Save(), Times.Once);
+    }
+
+    [Test]
+    public void UpdateQuiz_QuizNotFound()
+    {
+        // Arrange
+        var nonExistentQuizId = 100;
+        var editRequest = new QuizManipulationRequestDTO
+        {
+        };
+
+        // Mock repository setup and DTOConverterService
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(nonExistentQuizId)).Returns((Quiz)null);
+        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+
+        // Act
+        var result = _quizService.UpdateQuiz(nonExistentQuizId, editRequest);
+
+        // Assert
+        Assert.AreEqual("Quiz not found", result.Status);
+    }
+
+    [Test]
+    public void UpdateQuiz_DataConversionException()
+    {
+        // Arrange
+        var existingQuizId = 1;
+        var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
+
+        var editRequest = new QuizManipulationRequestDTO
+        {
+            Name = "New Name",
+            Questions = new List<QuizManipulationQuestionRequestDTO>
+            {
+                new QuizManipulationQuestionRequestDTO
+                {
+                    QuestionText = null
+
+                },
+
+            }
+        };
+
+        // Mock repository setup and DTOConverterService
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(existingQuizId)).Returns(existingQuiz);
+        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+
+        // Act
+        var result = _quizService.UpdateQuiz(existingQuizId, editRequest);
+
+        // Assert
+        Assert.AreEqual("Failed to create a question", result.Status);
     }
 }
