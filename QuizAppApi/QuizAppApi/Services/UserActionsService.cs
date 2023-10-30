@@ -10,12 +10,13 @@ public class UserActionsService : IUserActionsService
 {
     private readonly IQuizRepository _quizRepository;
     private readonly IAnswerCheckerService _answerCheckerService;
-    public event AnswerSubmittedEventHandler? AnswerSubmitted;
+    private readonly EventPublisher _eventPublisher;
 
-    public UserActionsService(IQuizRepository quizRepository, IAnswerCheckerService answerCheckerService)
+    public UserActionsService(IQuizRepository quizRepository, IAnswerCheckerService answerCheckerService, EventPublisher eventPublisher)
     {
         _quizRepository = quizRepository;
         _answerCheckerService = answerCheckerService;
+        _eventPublisher = eventPublisher;
     }
 
     public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
@@ -46,7 +47,7 @@ public class UserActionsService : IUserActionsService
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
         
-        AnswerSubmitted?.Invoke(this, new AnswerSubmittedEventArgs());
+        _eventPublisher.RaiseAnswerSubmittedEvent(this, new AnswerSubmittedEventArgs());
 
         return response;
     }
