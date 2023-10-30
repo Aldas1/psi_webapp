@@ -317,7 +317,7 @@ public class QuizServiceTests
                     QuestionParameters = new QuestionParametersDTO
                     {
                         Options = new List<string> { "3", "4", "5" },
-                        CorrectOptionIndex = 1 // Correct answer is 4.
+                        CorrectOptionIndex = 1
                     }
                 },
             }
@@ -334,8 +334,6 @@ public class QuizServiceTests
         // Assert
         Assert.AreEqual("success", result.Status);
         Assert.AreEqual(existingQuizId, result.Id);
-
-        // Verify that the Save method of the mock repository is called to save the changes.
         _mockQuizRepository.Verify(repo => repo.Save(), Times.Once);
     }
 
