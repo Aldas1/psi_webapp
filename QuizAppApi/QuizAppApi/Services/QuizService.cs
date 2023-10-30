@@ -14,25 +14,35 @@ public class QuizService : IQuizService
     private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
+    private readonly EventPublisher _eventPublisher;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public QuizService(
         IQuizRepository quizRepository,
         IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
         IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
         IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
-        IUserActionsService userActionsService)
+        EventPublisher eventPublisher,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _quizRepository = quizRepository;
         _singleChoiceDTOConverter = singleChoiceDTOConverter;
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
+        _eventPublisher = eventPublisher;
+        _serviceScopeFactory = serviceScopeFactory;
 
-        userActionsService.AnswerSubmitted += (sender, e) =>
+        _eventPublisher.AnswerSubmitted += (sender, e) =>
         {
-            var quiz = _quizRepository.GetQuizById(e.QuizId);
-            if (quiz == null) return;
-            quiz.NumberOfSubmitters++;
-            _quizRepository.Save();
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var scopedQuizRepository = scope.ServiceProvider.GetRequiredService<IQuizRepository>();
+                Console.WriteLine("udpating stuff");
+                var quiz = scopedQuizRepository.GetQuizById(e.QuizId);
+                if (quiz == null) return;
+                quiz.NumberOfSubmitters++;
+                scopedQuizRepository.Save();
+            }
         };
     }
 
@@ -108,6 +118,7 @@ public class QuizService : IQuizService
             {
                 return null;
             }
+
             generatedQuestions.Add(new QuestionResponseDTO
             {
                 QuestionText = question.Text,
@@ -124,7 +135,8 @@ public class QuizService : IQuizService
     {
         var quizzes = _quizRepository.GetQuizzes();
 
-        return quizzes.Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
+        return quizzes.Select(quiz => new QuizResponseDTO
+            { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
     }
 
     public QuizResponseDTO? GetQuiz(int id)
@@ -135,7 +147,7 @@ public class QuizService : IQuizService
             return null;
         }
 
-        return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
+        return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters };
     }
 
 
