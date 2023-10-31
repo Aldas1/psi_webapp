@@ -50,23 +50,6 @@ public class QuizController : ControllerBase
         return Ok(quiz);
     }
 
-    [HttpGet("{id}/questions")]
-    public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
-    {
-        var questions = _quizService.GetQuestions(id);
-        if (questions == null)
-        {
-            return NotFound();
-        }
-        return Ok(questions);
-    }
-
-    [HttpPost("{id}/submit")]
-    public async Task<ActionResult<AnswerSubmitResponseDTO>> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
-    {
-        return await _quizService.SubmitAnswers(id, request);
-    }
-
     [HttpDelete("{id}")]
     public ActionResult DeleteQuiz(int id)
     {
