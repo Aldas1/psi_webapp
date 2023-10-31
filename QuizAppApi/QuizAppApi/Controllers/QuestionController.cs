@@ -8,27 +8,21 @@ namespace QuizAppApi.Controllers;
 [Route("quizzes")]
 public class QuestionController : ControllerBase
 {
-    private readonly IQuizService _quizService;
+    private readonly IQuestionService _questionService;
 
-    public QuestionController(IQuizService quizService)
+    public QuestionController(IQuestionService questionService)
     {
-        _quizService = quizService;
+        _questionService = questionService;
     }
 
     [HttpGet("{id}/questions")]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {
-        var questions = _quizService.GetQuestions(id);
+        var questions = _questionService.GetQuestions(id);
         if (questions == null)
         {
             return NotFound();
         }
         return Ok(questions);
-    }
-
-    [HttpPost("{id}/submit")]
-    public async Task<ActionResult<AnswerSubmitResponseDTO>> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
-    {
-        return await _quizService.SubmitAnswers(id, request);
     }
 }
