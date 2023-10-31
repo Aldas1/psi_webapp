@@ -4,7 +4,6 @@ using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Repositories;
 using QuizAppApi.Services;
-using QuizAppApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +25,7 @@ builder.Services
 builder.Services
     .AddScoped<IQuestionDTOConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDTOConverterService>();
 builder.Services.AddScoped<IQuestionDTOConverterService<OpenTextQuestion>, OpenTextQuestionDTOConverterService>();
-builder.Services.AddSingleton<IQuizRepository, QuizRepository>();
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -34,12 +33,11 @@ builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
     if (openAiApiKey != null) return new ExplanationService(openAiApiKey);
     throw new Exception("OpenAI API key not found.");
 });
-builder.Services.AddSingleton<EventPublisher>();
 
 builder.Services.AddDbContext<QuizContext>(options =>
     options
         .UseLazyLoadingProxies()
-        .UseSqlServer(builder.Configuration["ConnectionString"]), ServiceLifetime.Singleton);
+        .UseSqlServer(builder.Configuration["ConnectionString"]));
 builder.Services.AddScoped<IAnswerCheckerService, AnswerCheckerService>();
 builder.Services.AddScoped<IUserActionsService, UserActionsService>();
 

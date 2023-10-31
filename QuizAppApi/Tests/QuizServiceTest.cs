@@ -16,7 +16,6 @@ public class QuizServiceTests
     private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
-    private Mock<IUserActionsService>? _mockUserActionsService;
 
     [SetUp]
     public void Setup()
@@ -25,13 +24,11 @@ public class QuizServiceTests
         _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
         _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
         _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
-        _mockUserActionsService = new Mock<IUserActionsService>();
         _quizService = new QuizService(
             _mockQuizRepository.Object,
             _mockSingleChoiceQuestionDTOConverterService.Object,
             _mockMultipleChoiceQuestionDTOConverterService.Object,
-            _mockOpenTextQuestionDTOConverterService.Object,
-            _mockUserActionsService.Object);
+            _mockOpenTextQuestionDTOConverterService.Object);
     }
 
     [TearDown]
