@@ -14,36 +14,17 @@ public class QuizService : IQuizService
     private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
-    private readonly EventPublisher _eventPublisher;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public QuizService(
         IQuizRepository quizRepository,
         IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
         IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
-        EventPublisher eventPublisher,
-        IServiceScopeFactory serviceScopeFactory)
+        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
     {
         _quizRepository = quizRepository;
         _singleChoiceDTOConverter = singleChoiceDTOConverter;
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
-        _eventPublisher = eventPublisher;
-        _serviceScopeFactory = serviceScopeFactory;
-
-        _eventPublisher.AnswerSubmitted += (sender, e) =>
-        {
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var scopedQuizRepository = scope.ServiceProvider.GetRequiredService<IQuizRepository>();
-                Console.WriteLine("udpating stuff");
-                var quiz = scopedQuizRepository.GetQuizById(e.QuizId);
-                if (quiz == null) return;
-                quiz.NumberOfSubmitters++;
-                scopedQuizRepository.Save();
-            }
-        };
     }
 
     public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
