@@ -2,10 +2,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import {
   deleteQuiz,
-  getQuestions,
   getQuiz,
   updateQuiz,
 } from "../../api/quizzes";
+import {
+  getQuestions
+} from "../../api/questions";
 import { Button, HStack, Spinner, useToast } from "@chakra-ui/react";
 import {
   QuestionResponseDto,

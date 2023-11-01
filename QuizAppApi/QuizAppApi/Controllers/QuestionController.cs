@@ -5,7 +5,7 @@ using QuizAppApi.Interfaces;
 namespace QuizAppApi.Controllers;
 
 [ApiController]
-[Route("quizzes")]
+[Route("questions")]
 public class QuestionController : ControllerBase
 {
     private readonly IQuestionService _questionService;
