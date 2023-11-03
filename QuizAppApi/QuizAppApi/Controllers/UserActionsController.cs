@@ -16,6 +16,7 @@ public class UserActionsController : ControllerBase
     }
 
     [HttpPost("submitAnswers/{id}")]
+    [RequireHttps]
     public ActionResult<AnswerSubmitResponseDTO> SubmitQuizAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
     {
         return Ok(_userActionsService.SubmitAnswers(id, request));
