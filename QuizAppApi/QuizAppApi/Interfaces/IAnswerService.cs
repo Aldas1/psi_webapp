@@ -3,7 +3,7 @@ using QuizAppApi.Utils;
 
 namespace QuizAppApi.Interfaces;
 
-public interface IUserActionsService
+public interface IAnswerService
 {
     AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request);
 }

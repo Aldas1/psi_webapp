@@ -9,9 +9,9 @@ using QuizAppApi.Services;
 namespace Tests;
 
 [TestFixture]
-public class UserActionsServiceTest
+public class AnswerServiceTest
 {
-    private IUserActionsService _userActionsService = null!;
+    private IAnswerService _answerService = null!;
     private Mock<IQuizRepository> _mockQuizRepository = null!;
     private Mock<IAnswerCheckerService> _mockAnswerCheckerService = null!;
 
@@ -20,7 +20,7 @@ public class UserActionsServiceTest
     {
         _mockQuizRepository = new Mock<IQuizRepository>();
         _mockAnswerCheckerService = new Mock<IAnswerCheckerService>();
-        _userActionsService = new UserActionsService(_mockQuizRepository.Object, _mockAnswerCheckerService.Object);
+        _answerService = new AnswerService(_mockQuizRepository.Object, _mockAnswerCheckerService.Object);
     }
     
     [Test]
@@ -60,7 +60,7 @@ public class UserActionsServiceTest
         _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
-        var result = _userActionsService.SubmitAnswers(1, answerRequest);
+        var result = _answerService.SubmitAnswers(1, answerRequest);
         _mockAnswerCheckerService.Verify(mock => mock.CheckSingleChoiceAnswer(It.IsAny<SingleChoiceQuestion>(), It.IsAny<string>()), Times.Once);
     
         // Assert
@@ -110,7 +110,7 @@ public class UserActionsServiceTest
         _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
-        var result = _userActionsService.SubmitAnswers(1, answerRequest);
+        var result = _answerService.SubmitAnswers(1, answerRequest);
         _mockAnswerCheckerService.Verify(mock => mock.CheckMultipleChoiceAnswer(It.IsAny<MultipleChoiceQuestion>(), It.IsAny<List<Option>>()), Times.Once);
     
         // Assert
@@ -160,7 +160,7 @@ public class UserActionsServiceTest
         _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
-        var result = _userActionsService.SubmitAnswers(1, answerRequest);
+        var result = _answerService.SubmitAnswers(1, answerRequest);
         _mockAnswerCheckerService.Verify(mock => mock.CheckOpenTextAnswer(It.IsAny<OpenTextQuestion>(), It.IsAny<string>(), false, true), Times.Once);
     
         // Assert
