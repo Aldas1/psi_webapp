@@ -40,6 +40,8 @@ builder.Services.AddDbContext<QuizContext>(options =>
         .UseSqlServer(builder.Configuration["ConnectionString"]));
 builder.Services.AddScoped<IAnswerCheckerService, AnswerCheckerService>();
 builder.Services.AddScoped<IUserActionsService, UserActionsService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
