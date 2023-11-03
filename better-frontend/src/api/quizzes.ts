@@ -50,7 +50,7 @@ async function deleteQuiz(id: number) {
 
 async function submitAnswers(id: number, answers: AnswerSubmitRequestDto[]) {
   const response = await axios.post<AnswerSubmitResponseDto>(
-    `/api/actions/submitAnswers/${id}`,
+    `/api/answers/${id}/submit`,
     answers
   );
   return response.data;

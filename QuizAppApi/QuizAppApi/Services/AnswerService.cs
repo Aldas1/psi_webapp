@@ -6,12 +6,12 @@ using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 
-public class UserActionsService : IUserActionsService
+public class AnswerService : IAnswerService
 {
     private readonly IQuizRepository _quizRepository;
     private readonly IAnswerCheckerService _answerCheckerService;
 
-    public UserActionsService(IQuizRepository quizRepository, IAnswerCheckerService answerCheckerService)
+    public AnswerService(IQuizRepository quizRepository, IAnswerCheckerService answerCheckerService)
     {
         _quizRepository = quizRepository;
         _answerCheckerService = answerCheckerService;
