@@ -15,7 +15,7 @@ function CreateQuiz() {
   const toast = useToast();
 
   return (
-    <VStack>
+    <VStack align="stretch">
       <Heading size="lg" alignSelf="right">
         Create quiz
       </Heading>

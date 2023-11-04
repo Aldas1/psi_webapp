@@ -4,15 +4,18 @@ import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
 import CreateQuiz from "./pages/CreateQuiz";
 import QuizPreview from "./pages/QuizPreview";
+import ContainerLayout from "./layouts/ContainerLayout";
 
 function Router() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route element={<ContainerLayout />}>
         <Route path="/quizzes/:id" element={<QuizPreview />} />
         <Route path="/createQuiz" element={<CreateQuiz />} />
         <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   );
