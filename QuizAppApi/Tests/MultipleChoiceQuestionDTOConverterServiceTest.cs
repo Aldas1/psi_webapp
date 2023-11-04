@@ -11,6 +11,10 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
 {
     private MultipleChoiceQuestionDTOConverterService _multipleChoiceConverter;
 
+    string option1 = "Option1";
+    string option2 = "Option2";
+    string option3 = "Option3";
+
     [SetUp]
     public void Setup()
     {
@@ -22,7 +26,7 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     {
         var questionDTO = new QuestionParametersDTO
         {
-            Options = new List<string> { "Option1", "Option2", "Option3" },
+            Options = new List<string> { option1, option2, option3 },
             CorrectOptionIndexes = new List<int> { 0, 2 }
         };
 
@@ -31,9 +35,9 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<MultipleChoiceQuestion>(result);
         Assert.AreEqual(3, result.Options.Count);
-        Assert.IsTrue(result.Options.Any(option => option.Name == "Option1"));
-        Assert.IsTrue(result.Options.Any(option => option.Name == "Option2"));
-        Assert.IsTrue(result.Options.Any(option => option.Name == "Option3"));
+        Assert.IsTrue(result.Options.Any(option => option.Name == option1));
+        Assert.IsTrue(result.Options.Any(option => option.Name == option2));
+        Assert.IsTrue(result.Options.Any(option => option.Name == option3));
         Assert.IsTrue(result.Options.Where(option => option.Correct).Count() == 2);
     }
 
@@ -42,7 +46,7 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     {
         var questionDTO = new QuestionParametersDTO
         {
-            Options = new List<string> { "Option1", "Option2", "Option3" },
+            Options = new List<string> { option1, option2, option3 },
             CorrectOptionIndexes = new List<int> { 0, 3 }
         };
 
@@ -56,9 +60,9 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
         {
             Options = new List<Option>
             {
-                new Option { Name = "Option1", Correct = true },
-                new Option { Name = "Option2", Correct = false },
-                new Option { Name = "Option3", Correct = true },
+                new Option { Name = option1, Correct = true },
+                new Option { Name = option2, Correct = false },
+                new Option { Name = option3, Correct = true },
             }
         };
 
@@ -67,9 +71,9 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
         Assert.AreEqual(3, result.Options.Count);
-        Assert.IsTrue(result.Options.Any(option => option == "Option1"));
-        Assert.IsTrue(result.Options.Any(option => option == "Option2"));
-        Assert.IsTrue(result.Options.Any(option => option == "Option3"));
+        Assert.IsTrue(result.Options.Any(option => option == option1));
+        Assert.IsTrue(result.Options.Any(option => option == option2));
+        Assert.IsTrue(result.Options.Any(option => option == option3));
         Assert.IsTrue(result.CorrectOptionIndexes.Count() == 2);
     }
 }

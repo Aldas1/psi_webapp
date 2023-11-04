@@ -11,6 +11,8 @@ public class OpenTextQuestionDTOConverterServiceTests
 {
     private OpenTextQuestionDTOConverterService _openTextConverter;
 
+    string validAnswer = "ValidAnswer?";
+        
     [SetUp]
     public void Setup()
     {
@@ -22,14 +24,14 @@ public class OpenTextQuestionDTOConverterServiceTests
     {
         var questionDTO = new QuestionParametersDTO
         {
-            CorrectText = "ValidAnswer?"
+            CorrectText = validAnswer
         };
 
         var result = _openTextConverter.CreateFromParameters(questionDTO);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<OpenTextQuestion>(result);
-        Assert.AreEqual("ValidAnswer?", result.CorrectAnswer);
+        Assert.AreEqual(validAnswer, result.CorrectAnswer);
     }
 
     [Test]
@@ -37,13 +39,13 @@ public class OpenTextQuestionDTOConverterServiceTests
     {
         var question = new OpenTextQuestion
         {
-            CorrectAnswer = "ValidAnswer?"
+            CorrectAnswer = validAnswer
         };
 
         var result = _openTextConverter.GenerateParameters(question);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
-        Assert.AreEqual("ValidAnswer?", result.CorrectText);
+        Assert.AreEqual(validAnswer, result.CorrectText);
     }
 }
