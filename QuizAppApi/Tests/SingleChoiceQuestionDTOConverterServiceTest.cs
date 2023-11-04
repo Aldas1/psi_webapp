@@ -11,10 +11,6 @@ public class SingleChoiceQuestionDTOConverterServiceTests
 {
     private SingleChoiceQuestionDTOConverterService _singleChoiceConverter;
 
-    string option1 = "Option1";
-    string option2 = "Option2";
-    string option3 = "Option3";
-
     [SetUp]
     public void Setup()
     {
@@ -24,6 +20,10 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ReturnsSingleChoiceQuestion()
     {
+        string option1 = "Option1";
+        string option2 = "Option2";
+        string option3 = "Option3";
+
         var questionDTO = new QuestionParametersDTO
         {
             Options = new List<string> { option1, option2, option3 },
@@ -44,6 +44,10 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ThrowsDTOConversionException()
     {
+        string option1 = "Option1";
+        string option2 = "Option2";
+        string option3 = "Option3";
+
         var questionDTO = new QuestionParametersDTO
         {
             Options = new List<string> { option1, option2, option3 },
@@ -56,6 +60,9 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void GenerateParameters_ReturnsQuestionParametersDTO()
     {
+        string option1 = "Option1";
+        string option2 = "Option2";
+
         var question = new SingleChoiceQuestion
         {
             Options = new List<Option>

@@ -11,10 +11,6 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
 {
     private MultipleChoiceQuestionDTOConverterService _multipleChoiceConverter;
 
-    string option1 = "Option1";
-    string option2 = "Option2";
-    string option3 = "Option3";
-
     [SetUp]
     public void Setup()
     {
@@ -24,6 +20,10 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ReturnsMultipleChoiceQuestion()
     {
+        var option1 = "Option1";
+        var option2 = "Option2";
+        var option3 = "Option3";
+
         var questionDTO = new QuestionParametersDTO
         {
             Options = new List<string> { option1, option2, option3 },
@@ -44,6 +44,10 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ThrowsDTOConversionException()
     {
+        var option1 = "Option1";
+        var option2 = "Option2";
+        var option3 = "Option3";
+
         var questionDTO = new QuestionParametersDTO
         {
             Options = new List<string> { option1, option2, option3 },
@@ -56,6 +60,10 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void GenerateParameters_ReturnsQuestionParametersDTO()
     {
+        var option1 = "Option1";
+        var option2 = "Option2";
+        var option3 = "Option3";
+
         var question = new MultipleChoiceQuestion
         {
             Options = new List<Option>

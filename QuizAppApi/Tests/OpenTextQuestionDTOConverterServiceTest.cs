@@ -10,8 +10,6 @@ namespace Tests;
 public class OpenTextQuestionDTOConverterServiceTests
 {
     private OpenTextQuestionDTOConverterService _openTextConverter;
-
-    string validAnswer = "ValidAnswer?";
         
     [SetUp]
     public void Setup()
@@ -22,6 +20,8 @@ public class OpenTextQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ReturnsOpenTextQuestion()
     {
+        string validAnswer = "ValidAnswer?";
+
         var questionDTO = new QuestionParametersDTO
         {
             CorrectText = validAnswer
@@ -37,6 +37,8 @@ public class OpenTextQuestionDTOConverterServiceTests
     [Test]
     public void GenerateParameters_ReturnsQuestionParametersDTO()
     {
+        string validAnswer = "ValidAnswer?";
+
         var question = new OpenTextQuestion
         {
             CorrectAnswer = validAnswer
