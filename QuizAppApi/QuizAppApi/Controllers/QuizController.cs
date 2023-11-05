@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -16,19 +16,19 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
+    public ActionResult<QuizManipulationResponseDto> CreateQuiz([FromBody] QuizManipulationRequestDto request)
     {
         return _quizService.CreateQuiz(request);
     }
 
     [HttpPut("{id}")]
-    public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
+    public ActionResult<QuizManipulationResponseDto> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDto updateRequest)
     {
         return _quizService.UpdateQuiz(id, updateRequest);
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
+    public ActionResult<IEnumerable<QuizResponseDto>> GetQuizzes()
     {
         var quizzes = _quizService.GetQuizzes();
         if (quizzes == null)
@@ -39,7 +39,7 @@ public class QuizController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<QuizResponseDTO> GetQuiz(int id)
+    public ActionResult<QuizResponseDto> GetQuiz(int id)
     {
         var quiz = _quizService.GetQuiz(id);
         if (quiz == null)
@@ -51,7 +51,7 @@ public class QuizController : ControllerBase
     }
 
     [HttpGet("{id}/questions")]
-    public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
+    public ActionResult<IEnumerable<QuestionResponseDto>> GetQuestions(int id)
     {
         var questions = _quizService.GetQuestions(id);
         if (questions == null)
@@ -62,7 +62,7 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost("{id}/submit")]
-    public async Task<ActionResult<AnswerSubmitResponseDTO>> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
+    public async Task<ActionResult<AnswerSubmitResponseDto>> SubmitAnswers(int id, [FromBody] List<AnswerSubmitRequestDto> request)
     {
         return await _quizService.SubmitAnswers(id, request);
     }

@@ -1,26 +1,26 @@
-﻿using QuizAppApi.DTOs;
+﻿using QuizAppApi.Dtos;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Services;
 
-public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<SingleChoiceQuestion>
+public class SingleChoiceQuestionDtoConverterService : IQuestionDtoConverterService<SingleChoiceQuestion>
 {
-    public SingleChoiceQuestion CreateFromParameters(QuestionParametersDTO questionDTO)
+    public SingleChoiceQuestion CreateFromParameters(QuestionParametersDto questionDto)
     {
-        var options = questionDTO.Options;
-        var correctOptionIndex = questionDTO.CorrectOptionIndex;
+        var options = questionDto.Options;
+        var correctOptionIndex = questionDto.CorrectOptionIndex;
 
         if (options == null || correctOptionIndex == null || correctOptionIndex < 0 ||
             correctOptionIndex >= options.Count)
         {
-            throw new DTOConversionException("Client did not provide required info");
+            throw new DtoConversionException("Client did not provide required info");
         }
 
         if (options.Distinct().Count() != options.Count)
         {
-            throw new DTOConversionException("Duplicate options are not allowed");
+            throw new DtoConversionException("Duplicate options are not allowed");
         }
 
         var correctOptionName = options[(int)correctOptionIndex];
@@ -31,9 +31,9 @@ public class SingleChoiceQuestionDTOConverterService : IQuestionDTOConverterServ
         };
     }
 
-    public QuestionParametersDTO GenerateParameters(SingleChoiceQuestion question)
+    public QuestionParametersDto GenerateParameters(SingleChoiceQuestion question)
     {
-        return new QuestionParametersDTO
+        return new QuestionParametersDto
         {
             Options = question.Options.Select(opt => opt.Name).ToList(),
             CorrectOptionIndex =

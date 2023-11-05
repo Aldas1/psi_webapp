@@ -1,9 +1,9 @@
-﻿namespace QuizAppApi.DTOs;
+﻿namespace QuizAppApi.Dtos;
 
-public class AnswerSubmitResponseDTO
+public class AnswerSubmitResponseDto
 {
     public int Score { get; set; }
     public int CorrectlyAnswered { get; set; } // number of correctly answered questions
     public string? Status { get; set; } // "passed" or "failed"
-    public List<ExplanationDTO> Explanations { get; set; }
+    public List<ExplanationDto> Explanations { get; set; }
 }

@@ -1,8 +1,8 @@
 namespace QuizAppApi.Exceptions;
 
-public class DTOConversionException : Exception
+public class DtoConversionException : Exception
 {
-    public DTOConversionException(string? message) : base(message)
+    public DtoConversionException(string? message) : base(message)
     {
     }
 }
