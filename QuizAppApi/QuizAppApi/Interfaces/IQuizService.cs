@@ -1,4 +1,6 @@
 ﻿using QuizAppApi.Dtos;
+using QuizAppApi.Dtos.Responses;
+using QuizAppApi.Dtos.Requests;
 
 namespace QuizAppApi.Interfaces;
 public interface IQuizService

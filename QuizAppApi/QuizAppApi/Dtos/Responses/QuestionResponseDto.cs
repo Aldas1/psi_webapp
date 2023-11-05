@@ -1,4 +1,4 @@
-﻿namespace QuizAppApi.Dtos;
+﻿namespace QuizAppApi.Dtos.Responses;
 
 public class QuestionResponseDto
 {

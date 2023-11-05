@@ -1,6 +1,8 @@
 using Moq;
 using NUnit.Framework;
 using QuizAppApi.Dtos;
+using QuizAppApi.Dtos.Responses;
+using QuizAppApi.Dtos.Requests;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;

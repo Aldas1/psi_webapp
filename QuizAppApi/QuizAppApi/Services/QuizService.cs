@@ -1,4 +1,6 @@
 using QuizAppApi.Dtos;
+using QuizAppApi.Dtos.Responses;
+using QuizAppApi.Dtos.Requests;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;

@@ -1,4 +1,4 @@
-﻿namespace QuizAppApi.Dtos;
+﻿namespace QuizAppApi.Dtos.Requests;
 
 public class AnswerSubmitRequestDto
 {

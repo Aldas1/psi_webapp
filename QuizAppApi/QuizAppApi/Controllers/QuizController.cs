@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizAppApi.Dtos;
+using QuizAppApi.Dtos.Responses;
+using QuizAppApi.Dtos.Requests;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
