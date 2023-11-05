@@ -8,26 +8,20 @@ namespace QuizAppApi.Services;
 public class QuestionService : IQuestionService
 {
     private readonly IQuizRepository _quizRepository;
-    private readonly IExplanationService _explanationService;
     private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
-    private readonly IAnswerCheckerService _answerCheckerService;
 
     public QuestionService(
         IQuizRepository quizRepository,
-        IExplanationService explanationService,
         IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
         IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
-        IAnswerCheckerService answerCheckerService)
+        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
     {
         _quizRepository = quizRepository;
-        _explanationService = explanationService;
         _singleChoiceDTOConverter = singleChoiceDTOConverter;
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
-        _answerCheckerService = answerCheckerService;
     }
 
     public IEnumerable<QuestionResponseDTO>? GetQuestions(int id)
