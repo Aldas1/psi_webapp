@@ -64,7 +64,7 @@ public class SingleChoiceQuestionDTOConverterServiceTests
         var result = _singleChoiceConverter.GenerateParameters(question);
 
         var optionNames = result.Options.Select(option => option).ToHashSet();
-        var expectedOptionNames = new HashSet<string> { "Option1", "Option2"};
+        var expectedOptionNames = question.Options.Select(option => option.Name).ToHashSet();
         Assert.AreEqual(expectedOptionNames, optionNames);
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
