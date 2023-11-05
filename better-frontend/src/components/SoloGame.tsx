@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
+import { AuthContext } from "../contexts/AuthContext";
 
 function SingleChoiceControls({
   parameters,
@@ -172,6 +173,7 @@ function SoloGame({ quiz }: { quiz: QuizManipulationRequestDto }) {
   const [answers, setAnswers] = useState<AnswerSubmitRequestDto[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [results, setResults] = useState<AnswerSubmitResponseDto | null>(null);
+  const [authInfo, setAuthInfo] = useContext(AuthContext);
 
   const answer = answers.find(
     (a) => a.questionId === quiz.questions[currentQuestionIndex].id
@@ -198,7 +200,11 @@ function SoloGame({ quiz }: { quiz: QuizManipulationRequestDto }) {
         />
         <IconButton
           onClick={async () => {
-            const results = await submitAnswers(quiz.id ?? 0, answers);
+            const results = await submitAnswers(
+              quiz.id ?? 0,
+              answers,
+              authInfo === null ? null : authInfo.token
+            );
             setResults(results);
           }}
           aria-label="Submit"

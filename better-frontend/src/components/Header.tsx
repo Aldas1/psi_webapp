@@ -5,10 +5,13 @@ import {
   Heading,
   HStack,
   Button,
+  Text,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { useTheme } from "@chakra-ui/react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useContext } from "react";
 
 function DarkModeToggle() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -24,6 +27,8 @@ function DarkModeToggle() {
 
 function Header() {
   const theme = useTheme();
+  const [authInfo, setAuthInfo] = useContext(AuthContext);
+
   return (
     <Flex
       minHeight="4.5rem"
@@ -42,6 +47,16 @@ function Header() {
         <ReactRouterLink to="/createQuiz">
           <Button>Create Quiz</Button>
         </ReactRouterLink>
+        {authInfo ? (
+          <>
+            <Text>Logged in as {authInfo.username}</Text>
+            <Button onClick={() => setAuthInfo(null)}>Logout</Button>
+          </>
+        ) : (
+          <ReactRouterLink to="/auth">
+            <Button>Auth</Button>
+          </ReactRouterLink>
+        )}
       </HStack>
     </Flex>
   );
