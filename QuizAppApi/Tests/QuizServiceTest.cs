@@ -228,12 +228,10 @@ public class QuizServiceTests
     [Test]
     public void GetQuizzes_ReturnsCorrectQuizzes()
     {
-        var quiz1 = "Quiz 1";
-        var quiz2 = "Quiz 2";
         var quizzes = new List<Quiz>
         {
-            new Quiz { Id = 1, Name = quiz1},
-            new Quiz { Id = 2, Name = quiz2}
+            new Quiz { Id = 1, Name = "Quiz 1"},
+            new Quiz { Id = 2, Name = "Quiz 2"}
         };
 
         _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(quizzes);
@@ -241,8 +239,8 @@ public class QuizServiceTests
         var result = _quizService.GetQuizzes();
 
         Assert.AreEqual(quizzes.Count, result.Count());
-        Assert.IsTrue(result.Any(q => q.Name == quiz1));
-        Assert.IsTrue(result.Any(q => q.Name == quiz2));
+        Assert.IsTrue(result.Any(q => q.Name == "Quiz 1"));
+        Assert.IsTrue(result.Any(q => q.Name == "Quiz 2"));
     }
 
     [Test]

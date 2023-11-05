@@ -2,6 +2,7 @@ using NUnit.Framework;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
+using System.Linq;
 
 namespace Tests;
 
@@ -25,34 +26,26 @@ public class AnswerCheckerServiceTests
     [Test]
     public void CheckSingleChoiceAnswer_ValidatingAnswer()
     {
-        var option_name1 = "Paris";
-        var option_name2 = "Berlin";
-        var option_name3 = "London";
-
         var singleChoiceQuestion = new SingleChoiceQuestion
         {
             Options = new List<Option>
             {
-                new Option { Name = option_name1, Correct = true },
-                new Option { Name = option_name3, Correct = false },
-                new Option { Name = option_name2, Correct = false }
+                new Option { Name = "Paris", Correct = true },
+                new Option { Name = "London", Correct = false },
+                new Option { Name = "Berlin", Correct = false }
             }
         };
 
-        Assert.IsTrue(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, option_name1));
-        Assert.IsFalse(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, option_name3));
+        Assert.IsTrue(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, singleChoiceQuestion.Options.ToList().Find(option => option.Correct == true).Name));
+        Assert.IsFalse(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, singleChoiceQuestion.Options.ToList().Find(option => option.Correct == false).Name));
     }
 
     [Test]
     public void CheckMultipleChoiceAnswer_ValidatingCorrectAnswer()
     {
-        var option_name1 = "Paris";
-        var option_name2 = "Berlin";
-        var option_name3 = "London";
-
-        var option1 = new Option { Name = option_name1, Correct = true };
-        var option2 = new Option { Name = option_name2, Correct = false };
-        var option3 = new Option { Name = option_name3, Correct = false };
+        var option1 = new Option { Name = "Paris", Correct = true };
+        var option2 = new Option { Name = "Berlin", Correct = true };
+        var option3 = new Option { Name = "London", Correct = false };
 
         var multipleChoiceQuestion = new MultipleChoiceQuestion
         {
@@ -61,9 +54,9 @@ public class AnswerCheckerServiceTests
 
         var correctMultipleChoiceAnswer = new List<Option>
         {
-            new Option { Name = option_name3, Correct = false },
-            new Option { Name = option_name2, Correct = false },
-            new Option { Name = option_name1, Correct = true }
+            new Option { Name = "London", Correct = false },
+            new Option { Name = "Berlin", Correct = true },
+            new Option { Name = "Paris", Correct = true }
         };
 
         Assert.IsTrue(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
@@ -72,13 +65,9 @@ public class AnswerCheckerServiceTests
     [Test]
     public void CheckMultipleChoiceAnswer_ValidatingIncorrectAnswer()
     {
-        var option_name1 = "Paris";
-        var option_name2 = "Berlin";
-        var option_name3 = "London";
-
-        var option1 = new Option { Name = option_name1, Correct = true };
-        var option2 = new Option { Name = option_name3, Correct = false };
-        var option3 = new Option { Name = option_name2, Correct = false };
+        var option1 = new Option { Name = "Paris", Correct = true };
+        var option2 = new Option { Name = "Berlin", Correct = false };
+        var option3 = new Option { Name = "London", Correct = true };
 
         var multipleChoiceQuestion = new MultipleChoiceQuestion
         {
@@ -87,8 +76,9 @@ public class AnswerCheckerServiceTests
 
         var incorrectMultipleChoiceAnswer = new List<Option>
         {
-            new Option { Name = option_name3, Correct = false },
-            new Option { Name = option_name2, Correct = false }
+            new Option { Name = "London", Correct = false },
+            new Option { Name = "Berlin", Correct = false },
+            new Option { Name = "Paris", Correct = false }
         };
 
         Assert.IsFalse(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
@@ -97,16 +87,13 @@ public class AnswerCheckerServiceTests
     [Test]
     public void CheckOpenTextAnswer_ValidatingAnswer()
     {
-        var option_name1 = "Paris";
-        var option_name3 = "London";
-
         var openTextQuestion = new OpenTextQuestion
         {
-            CorrectAnswer = option_name1
+            CorrectAnswer = "Paris"
         };
 
-        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, option_name1));
-        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, option_name3));
+        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, openTextQuestion.CorrectAnswer));
+        Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, null));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, ""));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Par"));

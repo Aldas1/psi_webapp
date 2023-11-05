@@ -20,34 +20,30 @@ public class OpenTextQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ReturnsOpenTextQuestion()
     {
-        string validAnswer = "ValidAnswer?";
-
         var questionDTO = new QuestionParametersDTO
         {
-            CorrectText = validAnswer
+            CorrectText = "ValidAnswer?"
         };
 
         var result = _openTextConverter.CreateFromParameters(questionDTO);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<OpenTextQuestion>(result);
-        Assert.AreEqual(validAnswer, result.CorrectAnswer);
+        Assert.AreEqual(questionDTO.CorrectText, result.CorrectAnswer);
     }
 
     [Test]
     public void GenerateParameters_ReturnsQuestionParametersDTO()
     {
-        string validAnswer = "ValidAnswer?";
-
         var question = new OpenTextQuestion
         {
-            CorrectAnswer = validAnswer
+            CorrectAnswer = "ValidAnswer?"
         };
 
         var result = _openTextConverter.GenerateParameters(question);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
-        Assert.AreEqual(validAnswer, result.CorrectText);
+        Assert.AreEqual(question.CorrectAnswer, result.CorrectText);
     }
 }

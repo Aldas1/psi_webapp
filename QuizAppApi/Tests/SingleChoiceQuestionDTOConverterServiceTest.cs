@@ -20,13 +20,9 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void CreateFromParameters_ReturnsSingleChoiceQuestion()
     {
-        string option1 = "Option1";
-        string option2 = "Option2";
-        string option3 = "Option3";
-
         var questionDTO = new QuestionParametersDTO
         {
-            Options = new List<string> { option1, option2, option3 },
+            Options = new List<string> { "Option1", "Option2", "Option3" },
             CorrectOptionIndex = 0
         };
 
@@ -35,22 +31,18 @@ public class SingleChoiceQuestionDTOConverterServiceTests
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<SingleChoiceQuestion>(result);
         Assert.AreEqual(3, result.Options.Count);
-        Assert.IsTrue(result.Options.Any(option => option.Name == option1));
-        Assert.IsTrue(result.Options.Any(option => option.Name == option2));
-        Assert.IsTrue(result.Options.Any(option => option.Name == option3));
+        Assert.IsTrue(result.Options.Any(option => option.Name == "Option1"));
+        Assert.IsTrue(result.Options.Any(option => option.Name == "Option2"));
+        Assert.IsTrue(result.Options.Any(option => option.Name == "Option3"));
         Assert.IsTrue(result.Options.Any(option => option.Correct));
     }
 
     [Test]
     public void CreateFromParameters_ThrowsDTOConversionException()
     {
-        string option1 = "Option1";
-        string option2 = "Option2";
-        string option3 = "Option3";
-
         var questionDTO = new QuestionParametersDTO
         {
-            Options = new List<string> { option1, option2, option3 },
+            Options = new List<string> { "Option1", "Option2", "Option3" },
             CorrectOptionIndex = 3
         };
 
@@ -60,25 +52,23 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     [Test]
     public void GenerateParameters_ReturnsQuestionParametersDTO()
     {
-        string option1 = "Option1";
-        string option2 = "Option2";
-
         var question = new SingleChoiceQuestion
         {
             Options = new List<Option>
             {
-                new Option { Name = option1, Correct = true },
-                new Option { Name = option2, Correct = false },
+                new Option { Name = "Option1", Correct = true },
+                new Option { Name = "Option2", Correct = false },
             }
         };
 
         var result = _singleChoiceConverter.GenerateParameters(question);
 
+        var optionNames = result.Options.Select(option => option).ToHashSet();
+        var expectedOptionNames = new HashSet<string> { "Option1", "Option2"};
+        Assert.AreEqual(expectedOptionNames, optionNames);
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
         Assert.AreEqual(2, result.Options.Count);
-        Assert.IsTrue(result.Options.Any(option => option == option1));
-        Assert.IsTrue(result.Options.Any(option => option == option2));
         Assert.AreEqual(0, result.CorrectOptionIndex);
     }
 }
