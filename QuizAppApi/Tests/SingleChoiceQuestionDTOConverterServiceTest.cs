@@ -63,11 +63,12 @@ public class SingleChoiceQuestionDTOConverterServiceTests
 
         var result = _singleChoiceConverter.GenerateParameters(question);
 
+        var optionNames = result.Options.Select(option => option).ToHashSet();
+        var expectedOptionNames = question.Options.Select(option => option.Name).ToHashSet();
+        Assert.AreEqual(expectedOptionNames, optionNames);
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
         Assert.AreEqual(2, result.Options.Count);
-        Assert.IsTrue(result.Options.Any(option => option == "Option1"));
-        Assert.IsTrue(result.Options.Any(option => option == "Option2"));
         Assert.AreEqual(0, result.CorrectOptionIndex);
     }
 }

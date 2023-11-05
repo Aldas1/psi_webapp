@@ -2,6 +2,7 @@ using NUnit.Framework;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
+using System.Linq;
 
 namespace Tests;
 
@@ -13,21 +14,18 @@ public class AnswerCheckerServiceTests
     [SetUp]
     public void Setup()
     {
-        // Setup checker
         _answerCheckerService = new AnswerCheckerService();
     }
 
     [TearDown]
     public void TearDown()
     {
-        // Reset the checker after each test
         _answerCheckerService = null;
     }
 
     [Test]
-    public void SingleChoiceAnswerChecker_Test()
+    public void CheckSingleChoiceAnswer_ValidatingAnswer()
     {
-        
         var singleChoiceQuestion = new SingleChoiceQuestion
         {
             Options = new List<Option>
@@ -38,18 +36,16 @@ public class AnswerCheckerServiceTests
             }
         };
 
-        // Act and Assert
-        Assert.IsTrue(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "Paris"));
-        Assert.IsFalse(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, "London"));
+        Assert.IsTrue(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, singleChoiceQuestion.Options.ToList().Find(option => option.Correct == true).Name));
+        Assert.IsFalse(_answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, singleChoiceQuestion.Options.ToList().Find(option => option.Correct == false).Name));
     }
 
     [Test]
-    public void MultipleChoiceAnswerChecker_Test()
+    public void CheckMultipleChoiceAnswer_ValidatingCorrectAnswer()
     {
-        // Arrange
         var option1 = new Option { Name = "Paris", Correct = true };
-        var option2 = new Option { Name = "London", Correct = false };
-        var option3 = new Option { Name = "Berlin", Correct = false };
+        var option2 = new Option { Name = "Berlin", Correct = true };
+        var option3 = new Option { Name = "London", Correct = false };
 
         var multipleChoiceQuestion = new MultipleChoiceQuestion
         {
@@ -59,37 +55,48 @@ public class AnswerCheckerServiceTests
         var correctMultipleChoiceAnswer = new List<Option>
         {
             new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = false },
+            new Option { Name = "Berlin", Correct = true },
             new Option { Name = "Paris", Correct = true }
         };
 
         Assert.IsTrue(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
+    }
+
+    [Test]
+    public void CheckMultipleChoiceAnswer_ValidatingIncorrectAnswer()
+    {
+        var option1 = new Option { Name = "Paris", Correct = true };
+        var option2 = new Option { Name = "Berlin", Correct = false };
+        var option3 = new Option { Name = "London", Correct = true };
+
+        var multipleChoiceQuestion = new MultipleChoiceQuestion
+        {
+            Options = new List<Option> { option1, option2, option3 }
+        };
 
         var incorrectMultipleChoiceAnswer = new List<Option>
         {
             new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = false }
+            new Option { Name = "Berlin", Correct = false },
+            new Option { Name = "Paris", Correct = false }
         };
+
         Assert.IsFalse(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
     }
 
     [Test]
-    public void OpenTextAnswerChecker_Test()
+    public void CheckOpenTextAnswer_ValidatingAnswer()
     {
-        // Arrange
         var openTextQuestion = new OpenTextQuestion
         {
             CorrectAnswer = "Paris"
         };
 
-        // Act and Assert
-        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Paris"));
+        Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, openTextQuestion.CorrectAnswer));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "London"));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, null));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, ""));
         Assert.IsFalse(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "Par"));
-
-        // Check useLowerCaseComparison and trimWhitespace optional parameters
         Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "paris", useLowercaseComparison: true));
         Assert.IsTrue(_answerCheckerService.CheckOpenTextAnswer(openTextQuestion, "   Paris   ", trimWhitespace: true));
     }
