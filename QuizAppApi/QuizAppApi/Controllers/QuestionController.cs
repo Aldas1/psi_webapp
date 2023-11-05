@@ -15,7 +15,7 @@ public class QuestionController : ControllerBase
         _questionService = questionService;
     }
     
-    [HttpGet("quiz_questions")]
+    [HttpGet]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {
         var questions = _questionService.GetQuestions(id);
