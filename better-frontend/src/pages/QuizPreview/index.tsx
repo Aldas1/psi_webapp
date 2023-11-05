@@ -33,7 +33,6 @@ function QuizPreview() {
   const toast = useToast();
   const params = useParams();
   const id = parseInt(params.id ?? "0");
-  const quiz_id = parseInt(params.quiz_id ?? "0");
 
   const [inGame, setInGame] = useState(false);
   const [quizForEdit, setQuizForEdit] =
@@ -47,8 +46,8 @@ function QuizPreview() {
     queryFn: () => getQuiz(id),
   });
   const questionsQuery = useQuery({
-    queryKey: ["questions", quiz_id],
-    queryFn: () => getQuestions(quiz_id),
+    queryKey: ["questions", id],
+    queryFn: () => getQuestions(id),
   });
 
   const quizMutation = useMutation({

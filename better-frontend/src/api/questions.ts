@@ -3,7 +3,7 @@ import { QuestionResponseDto } from "../types";
 
 async function getQuestions(quiz_id: number) {
   const response = await axios.get<QuestionResponseDto[]>(
-    `/api/questions/${quiz_id}/quiz_questions`
+    `/api/quizzes/${quiz_id}/questions/quiz_questions`
   );
   return response.data;
 }

@@ -5,7 +5,7 @@ using QuizAppApi.Interfaces;
 namespace QuizAppApi.Controllers;
 
 [ApiController]
-[Route("questions")]
+[Route("quizzes/{id}/questions")]
 public class QuestionController : ControllerBase
 {
     private readonly IQuestionService _questionService;
@@ -15,7 +15,7 @@ public class QuestionController : ControllerBase
         _questionService = questionService;
     }
     
-    [HttpGet("{quiz_id}/quiz_questions")]
+    [HttpGet("quiz_questions")]
     public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
     {
         var questions = _questionService.GetQuestions(id);
