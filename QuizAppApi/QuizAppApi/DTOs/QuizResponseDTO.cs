@@ -2,6 +2,6 @@
 
 public class QuizResponseDTO
 {
-    public string Name { get; set; } = String.Empty;
+    public string Name { get; set; }
     public int Id { get; set; }
 }
