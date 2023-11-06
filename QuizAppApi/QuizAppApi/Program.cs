@@ -25,7 +25,7 @@ builder.Services.AddSingleton<IServiceProviderFactory<IWindsorContainer>>(new Wi
 builder.Services.AddSingleton<IWindsorContainer>(provider =>
 {
     var container = provider.GetRequiredService<IWindsorContainer>();
-    container.Install(new WindsorInstaller()); // Assuming WindsorInstaller is your installer
+    container.Install(new WindsorInstaller());
     return container;
 });
 
