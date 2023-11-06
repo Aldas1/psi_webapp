@@ -71,22 +71,6 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void GetQuiz_ReturnsCorrectQuiz()
-    {
-        var createdQuiz = new Quiz { Id = 1, Name = "Test Quiz" };
-        _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(createdQuiz);
-
-        var expectedQuizzes = new List<Quiz> { createdQuiz };
-        _mockQuizRepository.Setup(repo => repo.GetQuizzes()).Returns(expectedQuizzes);
-
-        var result = _quizService.GetQuizzes().FirstOrDefault(q => q.Id == createdQuiz.Id);
-
-        Assert.IsNotNull(createdQuiz);
-        Assert.IsNotNull(result);
-        _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once);
-    }
-
-    [Test]
     public void GetQuizzes_ReturnsCorrectQuizzes()
     {
         var quizzes = new List<Quiz>
