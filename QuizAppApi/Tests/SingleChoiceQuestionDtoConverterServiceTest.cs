@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
@@ -7,26 +7,26 @@ using QuizAppApi.Services;
 namespace Tests;
 
 [TestFixture]
-public class SingleChoiceQuestionDTOConverterServiceTests
+public class SingleChoiceQuestionDtoConverterServiceTests
 {
-    private SingleChoiceQuestionDTOConverterService _singleChoiceConverter;
+    private SingleChoiceQuestionDtoConverterService _singleChoiceConverter;
 
     [SetUp]
     public void Setup()
     {
-        _singleChoiceConverter = new SingleChoiceQuestionDTOConverterService();
+        _singleChoiceConverter = new SingleChoiceQuestionDtoConverterService();
     }
 
     [Test]
     public void CreateFromParameters_ReturnsSingleChoiceQuestion()
     {
-        var questionDTO = new QuestionParametersDTO
+        var questionDto = new QuestionParametersDto
         {
             Options = new List<string> { "Option1", "Option2", "Option3" },
             CorrectOptionIndex = 0
         };
 
-        var result = _singleChoiceConverter.CreateFromParameters(questionDTO);
+        var result = _singleChoiceConverter.CreateFromParameters(questionDto);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<SingleChoiceQuestion>(result);
@@ -38,19 +38,19 @@ public class SingleChoiceQuestionDTOConverterServiceTests
     }
 
     [Test]
-    public void CreateFromParameters_ThrowsDTOConversionException()
+    public void CreateFromParameters_ThrowsDtoConversionException()
     {
-        var questionDTO = new QuestionParametersDTO
+        var questionDto = new QuestionParametersDto
         {
             Options = new List<string> { "Option1", "Option2", "Option3" },
             CorrectOptionIndex = 3
         };
 
-        Assert.Throws<DTOConversionException>(() => _singleChoiceConverter.CreateFromParameters(questionDTO));
+        Assert.Throws<DtoConversionException>(() => _singleChoiceConverter.CreateFromParameters(questionDto));
     }
 
     [Test]
-    public void GenerateParameters_ReturnsQuestionParametersDTO()
+    public void GenerateParameters_ReturnsQuestionParametersDto()
     {
         var question = new SingleChoiceQuestion
         {
@@ -67,7 +67,7 @@ public class SingleChoiceQuestionDTOConverterServiceTests
         var expectedOptionNames = question.Options.Select(option => option.Name).ToHashSet();
         Assert.AreEqual(expectedOptionNames, optionNames);
         Assert.IsNotNull(result);
-        Assert.IsInstanceOf<QuestionParametersDTO>(result);
+        Assert.IsInstanceOf<QuestionParametersDto>(result);
         Assert.AreEqual(2, result.Options.Count);
         Assert.AreEqual(0, result.CorrectOptionIndex);
     }

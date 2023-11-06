@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -17,7 +17,7 @@ public class AnswerController : ControllerBase
 
     [HttpPost("{id}/submit")]
     [RequireHttps]
-    public ActionResult<AnswerSubmitResponseDTO> SubmitQuizAnswers(int id, [FromBody] List<AnswerSubmitRequestDTO> request)
+    public ActionResult<AnswerSubmitResponseDto> SubmitQuizAnswers(int id, [FromBody] List<AnswerSubmitRequestDto> request)
     {
         return Ok(_answerService.SubmitAnswers(id, request));
     }

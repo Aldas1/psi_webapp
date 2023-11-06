@@ -1,6 +1,6 @@
 using Moq;
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
@@ -13,22 +13,22 @@ public class QuizServiceTests
 {
     private IQuizService? _quizService;
     private Mock<IQuizRepository>? _mockQuizRepository;
-    private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
-    private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
-    private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+    private Mock<IQuestionDtoConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDtoConverterService;
+    private Mock<IQuestionDtoConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDtoConverterService;
+    private Mock<IQuestionDtoConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDtoConverterService;
 
     [SetUp]
     public void Setup()
     {
         _mockQuizRepository = new Mock<IQuizRepository>();
-        _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
-        _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
-        _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+        _mockSingleChoiceQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<SingleChoiceQuestion>>();
+        _mockMultipleChoiceQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<MultipleChoiceQuestion>>();
+        _mockOpenTextQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<OpenTextQuestion>>();
         _quizService = new QuizService(
             _mockQuizRepository.Object,
-            _mockSingleChoiceQuestionDTOConverterService.Object,
-            _mockMultipleChoiceQuestionDTOConverterService.Object,
-            _mockOpenTextQuestionDTOConverterService.Object);
+            _mockSingleChoiceQuestionDtoConverterService.Object,
+            _mockMultipleChoiceQuestionDtoConverterService.Object,
+            _mockOpenTextQuestionDtoConverterService.Object);
     }
 
     [TearDown]
@@ -41,16 +41,16 @@ public class QuizServiceTests
     [Test]
     public void CreateQuiz_ReturnsCorrectResponse()
     {
-        var request = new QuizManipulationRequestDTO
+        var request = new QuizManipulationRequestDto
         {
             Name = "Test Quiz",
-            Questions = new List<QuizManipulationQuestionRequestDTO>
+            Questions = new List<QuizManipulationQuestionRequestDto>
             {
-                new QuizManipulationQuestionRequestDTO
+                new QuizManipulationQuestionRequestDto
                 {
                     QuestionText = "What is the capital of France?",
                     QuestionType = "singleChoiceQuestion",
-                    QuestionParameters = new QuestionParametersDTO
+                    QuestionParameters = new QuestionParametersDto
                     {
                         Options = new List<string> { "Paris", "London", "Berlin", "Madrid" },
                         CorrectOptionIndex = 0
@@ -58,10 +58,10 @@ public class QuizServiceTests
                 }
             }
         };
-        var expectedResponse = new QuizManipulationResponseDTO { Status = "success", Id = 1 };
+        var expectedResponse = new QuizManipulationResponseDto { Status = "success", Id = 1 };
 
         _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
-        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+        _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
         var result = _quizService.CreateQuiz(request);
 
@@ -123,16 +123,16 @@ public class QuizServiceTests
         var existingQuizId = 1;
         var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
 
-        var newQuizData = new QuizManipulationRequestDTO
+        var newQuizData = new QuizManipulationRequestDto
         {
             Name = "New Name",
-            Questions = new List<QuizManipulationQuestionRequestDTO>
+            Questions = new List<QuizManipulationQuestionRequestDto>
             {
-                new QuizManipulationQuestionRequestDTO
+                new QuizManipulationQuestionRequestDto
                 {
                     QuestionText = "What is 2 + 2?",
                     QuestionType = "singleChoiceQuestion",
-                    QuestionParameters = new QuestionParametersDTO
+                    QuestionParameters = new QuestionParametersDto
                     {
                         Options = new List<string> { "3", "4", "5" },
                         CorrectOptionIndex = 1
@@ -143,7 +143,7 @@ public class QuizServiceTests
 
         _mockQuizRepository.Setup(repo => repo.GetQuizById(existingQuizId)).Returns(existingQuiz);
         _mockQuizRepository.Setup(repo => repo.Save()).Verifiable();
-        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+        _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
         var result = _quizService.UpdateQuiz(existingQuizId, newQuizData);
 
@@ -156,12 +156,12 @@ public class QuizServiceTests
     public void UpdateQuiz_QuizNotFound()
     {
         var nonExistentQuizId = 100;
-        var editRequest = new QuizManipulationRequestDTO
+        var editRequest = new QuizManipulationRequestDto
         {
         };
 
         _mockQuizRepository.Setup(repo => repo.GetQuizById(nonExistentQuizId)).Returns((Quiz)null);
-        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+        _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
         var result = _quizService.UpdateQuiz(nonExistentQuizId, editRequest);
 
@@ -174,12 +174,12 @@ public class QuizServiceTests
         var existingQuizId = 1;
         var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
 
-        var editRequest = new QuizManipulationRequestDTO
+        var editRequest = new QuizManipulationRequestDto
         {
             Name = "New Name",
-            Questions = new List<QuizManipulationQuestionRequestDTO>
+            Questions = new List<QuizManipulationQuestionRequestDto>
             {
-                new QuizManipulationQuestionRequestDTO
+                new QuizManipulationQuestionRequestDto
                 {
                     QuestionText = null
 
@@ -189,7 +189,7 @@ public class QuizServiceTests
         };
 
         _mockQuizRepository.Setup(repo => repo.GetQuizById(existingQuizId)).Returns(existingQuiz);
-        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDTO>())).Returns(new SingleChoiceQuestion());
+        _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
         var result = _quizService.UpdateQuiz(existingQuizId, editRequest);
 

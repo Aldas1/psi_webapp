@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.Options;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using OpenAI_API;
 using QuizAppApi.Models.Questions;

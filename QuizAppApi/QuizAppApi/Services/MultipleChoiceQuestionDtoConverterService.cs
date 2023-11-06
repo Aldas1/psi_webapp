@@ -1,26 +1,26 @@
-﻿using QuizAppApi.DTOs;
+﻿using QuizAppApi.Dtos;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Services;
 
-public class MultipleChoiceQuestionDTOConverterService : IQuestionDTOConverterService<MultipleChoiceQuestion>
+public class MultipleChoiceQuestionDtoConverterService : IQuestionDtoConverterService<MultipleChoiceQuestion>
 {
-    public MultipleChoiceQuestion CreateFromParameters(QuestionParametersDTO questionDTO)
+    public MultipleChoiceQuestion CreateFromParameters(QuestionParametersDto questionDto)
     {
-        var options = questionDTO.Options;
-        var correctOptionIndexes = questionDTO.CorrectOptionIndexes;
+        var options = questionDto.Options;
+        var correctOptionIndexes = questionDto.CorrectOptionIndexes;
 
         if (options == null || correctOptionIndexes == null || correctOptionIndexes.Min() < 0 ||
             correctOptionIndexes.Max() >= options.Count)
         {
-            throw new DTOConversionException("Duplicate options are not allowed");
+            throw new DtoConversionException("Duplicate options are not allowed");
         }
         
         if (options.Distinct().Count() != options.Count)
         {
-            throw new DTOConversionException("Duplicate options are not allowed");
+            throw new DtoConversionException("Duplicate options are not allowed");
         }
 
         var generatedOptions = options.Select(o => new Option { Name = o }).ToList();
@@ -35,9 +35,9 @@ public class MultipleChoiceQuestionDTOConverterService : IQuestionDTOConverterSe
         };
     }
 
-    public QuestionParametersDTO GenerateParameters(MultipleChoiceQuestion question)
+    public QuestionParametersDto GenerateParameters(MultipleChoiceQuestion question)
     {
-        return new QuestionParametersDTO
+        return new QuestionParametersDto
         {
             Options = question.Options.Select(opt => opt.Name).ToList(),
             CorrectOptionIndexes =

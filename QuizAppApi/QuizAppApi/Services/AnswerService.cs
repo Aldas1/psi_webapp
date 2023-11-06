@@ -1,4 +1,4 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
@@ -17,9 +17,9 @@ public class AnswerService : IAnswerService
         _answerCheckerService = answerCheckerService;
     }
 
-    public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+    public AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request)
     {
-        var response = new AnswerSubmitResponseDTO();
+        var response = new AnswerSubmitResponseDto();
         var quiz = _quizRepository.GetQuizById(id);
         var correctAnswers = 0;
         
@@ -47,7 +47,7 @@ public class AnswerService : IAnswerService
         return response;
     }
 
-    private bool IsAnswerCorrect(Question question, AnswerSubmitRequestDTO answerRequest)
+    private bool IsAnswerCorrect(Question question, AnswerSubmitRequestDto answerRequest)
     {
         switch (question)
         {

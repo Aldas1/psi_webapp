@@ -1,4 +1,4 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Enums;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
@@ -11,77 +11,77 @@ namespace QuizAppApi.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository _quizRepository;
-    private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
-    private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
-    private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
+    private readonly IQuestionDtoConverterService<SingleChoiceQuestion> _singleChoiceDtoConverter;
+    private readonly IQuestionDtoConverterService<MultipleChoiceQuestion> _multipleChoiceDtoConverter;
+    private readonly IQuestionDtoConverterService<OpenTextQuestion> _openTextDtoConverter;
 
     public QuizService(
         IQuizRepository quizRepository,
-        IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
-        IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
+        IQuestionDtoConverterService<SingleChoiceQuestion> singleChoiceDtoConverter,
+        IQuestionDtoConverterService<MultipleChoiceQuestion> multipleChoiceDtoConverter,
+        IQuestionDtoConverterService<OpenTextQuestion> openTextDtoConverter)
     {
         _quizRepository = quizRepository;
-        _singleChoiceDTOConverter = singleChoiceDTOConverter;
-        _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
-        _openTextDTOConverter = openTextDTOConverter;
+        _singleChoiceDtoConverter = singleChoiceDtoConverter;
+        _multipleChoiceDtoConverter = multipleChoiceDtoConverter;
+        _openTextDtoConverter = openTextDtoConverter;
     }
 
-    public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
+    public QuizManipulationResponseDto CreateQuiz(QuizManipulationRequestDto request)
     {
         var newQuiz = new Quiz();
 
         try
         {
-            PopulateQuizFromDTO(newQuiz, request);
+            PopulateQuizFromDto(newQuiz, request);
         }
-        catch (DTOConversionException e)
+        catch (DtoConversionException e)
         {
-            return new QuizManipulationResponseDTO { Status = e.Message };
+            return new QuizManipulationResponseDto { Status = e.Message };
         }
 
         Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
 
         if (createdQuiz == null)
         {
-            return new QuizManipulationResponseDTO { Status = "failed" };
+            return new QuizManipulationResponseDto { Status = "failed" };
         }
 
         int createdQuizId = createdQuiz.Id;
 
-        return new QuizManipulationResponseDTO { Status = "success", Id = createdQuizId };
+        return new QuizManipulationResponseDto { Status = "success", Id = createdQuizId };
     }
 
-    public QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest)
+    public QuizManipulationResponseDto UpdateQuiz(int id, QuizManipulationRequestDto editRequest)
     {
         var newQuiz = _quizRepository.GetQuizById(id);
         if (newQuiz == null)
         {
-            return new QuizManipulationResponseDTO { Status = "Quiz not found" };
+            return new QuizManipulationResponseDto { Status = "Quiz not found" };
         }
 
         try
         {
-            PopulateQuizFromDTO(newQuiz, editRequest);
+            PopulateQuizFromDto(newQuiz, editRequest);
         }
-        catch (DTOConversionException e)
+        catch (DtoConversionException e)
         {
-            return new QuizManipulationResponseDTO { Status = e.Message };
+            return new QuizManipulationResponseDto { Status = e.Message };
         }
 
         _quizRepository.Save();
-        return new QuizManipulationResponseDTO { Status = "success", Id = id };
+        return new QuizManipulationResponseDto { Status = "success", Id = id };
     }
 
-    public IEnumerable<QuizResponseDTO> GetQuizzes()
+    public IEnumerable<QuizResponseDto> GetQuizzes()
     {
         var quizzes = _quizRepository.GetQuizzes();
 
-        return quizzes.Select(quiz => new QuizResponseDTO
+        return quizzes.Select(quiz => new QuizResponseDto
             { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
     }
 
-    public QuizResponseDTO? GetQuiz(int id)
+    public QuizResponseDto? GetQuiz(int id)
     {
         var quiz = _quizRepository.GetQuizById(id);
         if (quiz == null)
@@ -89,7 +89,7 @@ public class QuizService : IQuizService
             return null;
         }
 
-        return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters };
+        return new QuizResponseDto { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters };
     }
 
 
@@ -105,7 +105,7 @@ public class QuizService : IQuizService
         return true;
     }
 
-    private void PopulateQuizFromDTO(Quiz quiz, QuizManipulationRequestDTO request)
+    private void PopulateQuizFromDto(Quiz quiz, QuizManipulationRequestDto request)
     {
         quiz.Name = request.Name;
         quiz.Questions.Clear();
@@ -116,19 +116,19 @@ public class QuizService : IQuizService
             switch (QuestionTypeConverter.FromString(question.QuestionType))
             {
                 case QuestionType.SingleChoiceQuestion:
-                    generatedQuestion = _singleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    generatedQuestion = _singleChoiceDtoConverter.CreateFromParameters(question.QuestionParameters);
                     break;
                 case QuestionType.MultipleChoiceQuestion:
-                    generatedQuestion = _multipleChoiceDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    generatedQuestion = _multipleChoiceDtoConverter.CreateFromParameters(question.QuestionParameters);
                     break;
                 case QuestionType.OpenTextQuestion:
-                    generatedQuestion = _openTextDTOConverter.CreateFromParameters(question.QuestionParameters);
+                    generatedQuestion = _openTextDtoConverter.CreateFromParameters(question.QuestionParameters);
                     break;
             }
 
             if (generatedQuestion == null)
             {
-                throw new DTOConversionException("Failed to create a question");
+                throw new DtoConversionException("Failed to create a question");
             }
 
             generatedQuestion.Text = question.QuestionText;

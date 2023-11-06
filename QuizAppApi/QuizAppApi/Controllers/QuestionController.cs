@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -16,7 +16,7 @@ public class QuestionController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
+    public ActionResult<IEnumerable<QuestionResponseDto>> GetQuestions(int id)
     {
         var questions = _questionService.GetQuestions(id);
         if (questions == null)

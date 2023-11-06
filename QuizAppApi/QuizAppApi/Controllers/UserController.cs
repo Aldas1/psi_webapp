@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -17,7 +17,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [RequireHttps]
-    public ActionResult<UserResponseDTO> CreateUser([FromBody] UserRequestDTO request)
+    public ActionResult<UserResponseDto> CreateUser([FromBody] UserRequestDto request)
     {
         var user = _userService.CreateUser(request);
         if (user == null) return Conflict();
@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{username}")]
-    public ActionResult<UserResponseDTO> GetUser(string username)
+    public ActionResult<UserResponseDto> GetUser(string username)
     {
         var user = _userService.GetUser(username);
         if (user == null) return NotFound();

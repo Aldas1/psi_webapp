@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace QuizAppApi.DTOs;
+namespace QuizAppApi.Dtos;
 
-public class UserRequestDTO
+public class UserRequestDto
 {
     [Required]
     public string Username { get; init; }

@@ -1,6 +1,6 @@
-namespace QuizAppApi.DTOs;
+namespace QuizAppApi.Dtos;
 
-public class UserResponseDTO
+public class UserResponseDto
 {
     public string Username { get; set; }
     public int TotalScore { get; set; }
