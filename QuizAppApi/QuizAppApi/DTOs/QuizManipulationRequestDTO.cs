@@ -1,8 +1,8 @@
-﻿namespace QuizAppApi.DTOs
+﻿namespace QuizAppApi.Dtos
 {
-    public class QuizManipulationRequestDTO
+    public class QuizManipulationRequestDto
     {
         public string Name { get; set; } = string.Empty;
-        public ICollection<QuizManipulationQuestionRequestDTO> Questions { get; set; } = new List<QuizManipulationQuestionRequestDTO>();
+        public ICollection<QuizManipulationQuestionRequestDto> Questions { get; set; } = new List<QuizManipulationQuestionRequestDto>();
     }
 }

@@ -1,4 +1,4 @@
-namespace QuizAppApi.DTOs;
+namespace QuizAppApi.Dtos;
 
 public class TokenResponseDto
 {
