@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { QuizManipulationRequestDto } from "../../types";
-import QuizEditor from "../../components/QuizEditor";
+import { QuizManipulationRequestDto } from "../types";
+import QuizEditor from "../components/QuizEditor";
 import { Heading, VStack } from "@chakra-ui/layout";
-import { createQuiz } from "../../api/quizzes";
+import { createQuiz } from "../api/quizzes";
 import { useToast } from "@chakra-ui/toast";
 import { useNavigate } from "react-router";
 
@@ -15,7 +15,7 @@ function CreateQuiz() {
   const toast = useToast();
 
   return (
-    <VStack>
+    <VStack align="stretch">
       <Heading size="lg" alignSelf="right">
         Create quiz
       </Heading>

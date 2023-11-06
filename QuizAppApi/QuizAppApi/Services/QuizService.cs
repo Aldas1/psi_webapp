@@ -11,26 +11,20 @@ namespace QuizAppApi.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository _quizRepository;
-    private readonly IExplanationService _explanationService;
     private readonly IQuestionDTOConverterService<SingleChoiceQuestion> _singleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<MultipleChoiceQuestion> _multipleChoiceDTOConverter;
     private readonly IQuestionDTOConverterService<OpenTextQuestion> _openTextDTOConverter;
-    private readonly IAnswerCheckerService _answerCheckerService;
 
     public QuizService(
         IQuizRepository quizRepository,
-        IExplanationService explanationService,
         IQuestionDTOConverterService<SingleChoiceQuestion> singleChoiceDTOConverter,
         IQuestionDTOConverterService<MultipleChoiceQuestion> multipleChoiceDTOConverter,
-        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter,
-        IAnswerCheckerService answerCheckerService)
+        IQuestionDTOConverterService<OpenTextQuestion> openTextDTOConverter)
     {
         _quizRepository = quizRepository;
-        _explanationService = explanationService;
         _singleChoiceDTOConverter = singleChoiceDTOConverter;
         _multipleChoiceDTOConverter = multipleChoiceDTOConverter;
         _openTextDTOConverter = openTextDTOConverter;
-        _answerCheckerService = answerCheckerService;
     }
 
     public QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request)
@@ -83,7 +77,8 @@ public class QuizService : IQuizService
     {
         var quizzes = _quizRepository.GetQuizzes();
 
-        return quizzes.Select(quiz => new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id });
+        return quizzes.Select(quiz => new QuizResponseDTO
+            { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
     }
 
     public QuizResponseDTO? GetQuiz(int id)
@@ -94,81 +89,9 @@ public class QuizService : IQuizService
             return null;
         }
 
-        return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id };
+        return new QuizResponseDTO { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters };
     }
 
-    public async Task<AnswerSubmitResponseDTO> SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
-    {
-        var response = new AnswerSubmitResponseDTO();
-        var quiz = _quizRepository.GetQuizById(id);
-        var correctAnswers = 0;
-        var explanation = "";
-
-        if (quiz == null)
-        {
-            response.Status = "failed";
-            return response;
-        }
-        else
-        {
-            response.Status = "success";
-        }
-        
-        var explanations = new List<ExplanationDTO>();
-        bool correctExplanationAnswer = false;
-
-        foreach (var answer in request)
-        {
-            var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
-
-            if (question == null)
-            {
-                continue;
-            }
-                
-            switch (question)
-            {
-                case SingleChoiceQuestion singleChoiceQuestion:
-                    if (answer.OptionName != null && _answerCheckerService.CheckSingleChoiceAnswer(singleChoiceQuestion, answer.OptionName))
-                    {
-                        correctAnswers++;
-                        correctExplanationAnswer = true;
-                    }
-                    explanation = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion, answer.OptionName ?? answer.AnswerText);
-                    break;
-
-                case MultipleChoiceQuestion multipleChoiceQuestion:
-                    if (answer.OptionNames != null)
-                    {
-                        if (_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, answer.OptionNames.Select(optName => new Option { Name = optName }).ToList()))
-                        {
-                            correctAnswers++;
-                            correctExplanationAnswer = true;
-                        }
-                    }
-                    explanation = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion, answer.OptionNames ?? new List<string>());
-                    break;
-
-                case OpenTextQuestion openTextQuestion:
-                    var answerText = answer.AnswerText;
-                    if (answerText != null && _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true))
-                    {
-                        correctAnswers++;
-                        correctExplanationAnswer = true;
-                    }
-                    explanation = await _explanationService.GenerateExplanationAsync(openTextQuestion, answer.AnswerText ?? "");
-                    break;
-            }
-            explanations.Add(new ExplanationDTO { QuestionId = question.Id, Explanation = explanation, Correct = correctExplanationAnswer });
-        }
-
-        response.CorrectlyAnswered = correctAnswers;
-        response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
-
-        response.Explanations = explanations;
-        
-        return response;
-    }
 
     public bool DeleteQuiz(int id)
     {

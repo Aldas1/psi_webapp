@@ -4,19 +4,19 @@ import {
   deleteQuiz,
   getQuiz,
   updateQuiz,
-} from "../../api/quizzes";
+} from "../api/quizzes";
 import {
   getQuestions
-} from "../../api/questions";
+} from "../api/questions";
 import { Button, HStack, Spinner, useToast } from "@chakra-ui/react";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
   QuizResponseDto,
-} from "../../types";
-import QuizEditor from "../../components/QuizEditor";
+} from "../types";
+import QuizEditor from "../components/QuizEditor";
 import { useState } from "react";
-import SoloGame from "../../components/SoloGame";
+import SoloGame from "../components/SoloGame";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,

@@ -10,7 +10,7 @@ namespace Tests;
 public class OpenTextQuestionDTOConverterServiceTests
 {
     private OpenTextQuestionDTOConverterService _openTextConverter;
-
+        
     [SetUp]
     public void Setup()
     {
@@ -29,7 +29,7 @@ public class OpenTextQuestionDTOConverterServiceTests
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<OpenTextQuestion>(result);
-        Assert.AreEqual("ValidAnswer?", result.CorrectAnswer);
+        Assert.AreEqual(questionDTO.CorrectText, result.CorrectAnswer);
     }
 
     [Test]
@@ -44,6 +44,6 @@ public class OpenTextQuestionDTOConverterServiceTests
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<QuestionParametersDTO>(result);
-        Assert.AreEqual("ValidAnswer?", result.CorrectText);
+        Assert.AreEqual(question.CorrectAnswer, result.CorrectText);
     }
 }

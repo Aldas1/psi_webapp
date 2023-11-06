@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getQuizzes } from "../../api/quizzes";
+import { getQuizzes } from "../api/quizzes";
 import { Spinner } from "@chakra-ui/spinner";
 import { Card, CardHeader } from "@chakra-ui/card";
 import { SimpleGrid } from "@chakra-ui/layout";

@@ -23,24 +23,29 @@ You first need to run web api and, after that, run the frontend.
 
 We use mssql server dbms. Make sure to install it, a viable option is to use [Docker image](https://hub.docker.com/_/microsoft-mssql-server).
 No matter how you setup your dbms, you need to get the connection string, it may look like this:
+
 ```
 Server=127.0.0.1,1433; Database=Master; User Id=SA; Password=REALLY_SECURE_PASSWORD; Encrypt=False; TrustServerCertificate=True;
 ```
+
 [This video](https://www.youtube.com/watch?v=EmV_IBYIlyo&list=PL82C6-O4XrHdiS10BLh23x71ve9mQCln0&index=5) may help when setting up the db.
 
 Connection string and API key are added via secrets:
+
 ```bash
 cd QuizAppApi/QuizAppApi
 dotnet user-secrets set "ConnectionString" "YOUR_CONNECTION_STRING"
 dotnet user-secrets set "OpenAiAPIKey" "YOUR_API_KEY"
+dotnet user-secrets set "JWT_SECRET" "random long string"
 ```
+
 Make sure to [apply migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli) (You can google on how to do that)
 
 ### Backend setup
 
 If you are using an ide, setup should be straightforward. You can also run it via cli:
 
-``` bash
+```bash
 dotnet run # or
 dotnet watch
 ```
@@ -49,7 +54,7 @@ dotnet watch
 
 To run .NET tests use this command in QuizAppApi.sln directory:
 
-``` bash
+```bash
 dotnet test
 ```
 
