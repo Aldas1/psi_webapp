@@ -1,4 +1,6 @@
 using System.Text;
+using Castle.Windsor;
+using Castle.Windsor.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +11,23 @@ using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Repositories;
 using QuizAppApi.Services;
+using QuizAppApi.Utils;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("log.txt")
+    .CreateLogger();
+
+builder.Services.AddSingleton<IWindsorContainer>(new WindsorContainer());
+builder.Services.AddSingleton<IServiceProviderFactory<IWindsorContainer>>(new WindsorServiceProviderFactory());
+builder.Services.AddSingleton<IWindsorContainer>(provider =>
+{
+    var container = provider.GetRequiredService<IWindsorContainer>();
+    container.Install(new WindsorInstaller()); // Assuming WindsorInstaller is your installer
+    return container;
+});
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -100,3 +117,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseMiddleware<JwtUserMapperMiddleware>();
 app.Run();
+Log.CloseAndFlush();
