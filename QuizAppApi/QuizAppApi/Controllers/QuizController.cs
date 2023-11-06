@@ -50,17 +50,6 @@ public class QuizController : ControllerBase
         return Ok(quiz);
     }
 
-    [HttpGet("{id}/questions")]
-    public ActionResult<IEnumerable<QuestionResponseDTO>> GetQuestions(int id)
-    {
-        var questions = _quizService.GetQuestions(id);
-        if (questions == null)
-        {
-            return NotFound();
-        }
-        return Ok(questions);
-    }
-
     [HttpDelete("{id}")]
     public ActionResult DeleteQuiz(int id)
     {

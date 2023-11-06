@@ -48,6 +48,7 @@ builder.Services.AddSwaggerGen(c => {
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services
     .AddScoped<IQuestionDTOConverterService<SingleChoiceQuestion>, SingleChoiceQuestionDTOConverterService>();
 builder.Services

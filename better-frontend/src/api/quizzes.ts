@@ -2,7 +2,6 @@ import axios from "axios";
 import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
-  QuestionResponseDto,
   QuizManipulationRequestDto,
   QuizManipulationResponseDto,
   QuizResponseDto,
@@ -15,13 +14,6 @@ async function getQuizzes() {
 
 async function getQuiz(id: number) {
   const response = await axios.get<QuizResponseDto>(`/api/quizzes/${id}`);
-  return response.data;
-}
-
-async function getQuestions(id: number) {
-  const response = await axios.get<QuestionResponseDto[]>(
-    `/api/quizzes/${id}/questions`
-  );
   return response.data;
 }
 
@@ -72,7 +64,6 @@ async function submitAnswers(
 export {
   getQuizzes,
   getQuiz,
-  getQuestions,
   createQuiz,
   updateQuiz,
   deleteQuiz,
