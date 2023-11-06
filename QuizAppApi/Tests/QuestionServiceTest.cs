@@ -47,14 +47,14 @@ public class QuestionServiceTest
     {
         var mockQuiz = new Quiz
         {
-            Id = 1,
+            Id = 0,
             Name = "Test quiz <3",
             Questions = new List<Question>
             {
-                new SingleChoiceQuestion 
-                { 
-                    Id = 1, 
-                    Text = "The one and only, question 1", 
+                new SingleChoiceQuestion
+                {
+                    Id = 0,
+                    Text = "The one and only, question 1",
                     Options = new List<Option>
                     {
                         new Option
@@ -72,13 +72,13 @@ public class QuestionServiceTest
             }
         };
 
-        _mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).Returns(mockQuiz);
+        //_mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).;
 
         var expectedQuestions = new List<QuestionResponseDTO>
         {
             new QuestionResponseDTO
             {
-                Id = 1,
+                Id = 0,
                 QuestionText = "The one and only, question 1",
                 QuestionType = QuestionTypeConverter.ToString(QuestionType.SingleChoiceQuestion),
                 QuestionParameters = new QuestionParametersDTO
@@ -88,12 +88,46 @@ public class QuestionServiceTest
                         "Option numero uno",
                         "Option correcto"
                     },
-                    CorrectOptionIndex = 1,
+                    CorrectOptionIndex = 1
                 }
             }
         };
 
-        var result = _questionService.GetQuestions(1);
-        //todo add asserts
+        _mockQuizRepository.Setup(repo => repo.GetQuizById(0)).Returns(mockQuiz);
+
+        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.GenerateParameters(It.IsAny<SingleChoiceQuestion>()))
+            .Returns(new QuestionParametersDTO
+            {
+                Options = new List<string>
+                    {
+                        "Option numero uno",
+                        "Option correcto"
+                    },
+                CorrectOptionIndex = 1
+            });
+
+        var result = _questionService.GetQuestions(0);
+
+        Assert.IsNotNull(expectedQuestions);
+        Assert.IsNotNull(result);
+
+        Assert.AreEqual(expectedQuestions.Count, result.Count());
+        Assert.AreEqual(expectedQuestions.ElementAtOrDefault(0).Id, result.ElementAtOrDefault(0).Id);
+        Assert.AreEqual(expectedQuestions.ElementAtOrDefault(0).QuestionText, result.ElementAtOrDefault(0).QuestionText);
+        Assert.AreEqual(expectedQuestions.ElementAtOrDefault(0).QuestionType, result.ElementAtOrDefault(0).QuestionType);
+
+        Assert.AreEqual(
+            expectedQuestions.ElementAtOrDefault(0).QuestionParameters.Options.ElementAtOrDefault(0),
+            result.ElementAtOrDefault(0).QuestionParameters.Options.ElementAtOrDefault(0));
+
+        Assert.AreEqual(
+            expectedQuestions.ElementAtOrDefault(0).QuestionParameters.Options.ElementAtOrDefault(1),
+            result.ElementAtOrDefault(0).QuestionParameters.Options.ElementAtOrDefault(1));
+
+        Assert.AreEqual(
+            expectedQuestions.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex,
+            result.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex);
+
+        _mockQuizRepository.Verify(repo => repo.GetQuizById(0), Times.Once);
     }
 }
