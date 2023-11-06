@@ -4,6 +4,6 @@ namespace QuizAppApi.Dtos
     {
         public int QuestionId { get; set; }
         public bool Correct { get; set; }
-        public string? Explanation { get; set; } = string.Empty;
+        public string? Explanation { get; set; }
     }
 }

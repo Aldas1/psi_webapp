@@ -2,7 +2,7 @@
 
 public class QuizResponseDto
 {
-    public string Name { get; set; } = String.Empty;
+    public string Name { get; set; }
     public int Id { get; set; }
     public int NumberOfSubmitters { get; set; }
 }
