@@ -1,6 +1,6 @@
 using Moq;
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
@@ -27,11 +27,11 @@ public class AnswerServiceTest
     public void SubmitAnswers_ReturnsErrorForNonexistentQuiz_1()
     {
         // Arrange
-        var answerRequest = new List<AnswerSubmitRequestDTO>
+        var answerRequest = new List<AnswerSubmitRequestDto>
         {
-            new AnswerSubmitRequestDTO { QuestionId = 1, OptionName = "Paris" }
+            new AnswerSubmitRequestDto { QuestionId = 1, OptionName = "Paris" }
         };
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
+        var expectedResponse = new AnswerSubmitResponseDto { Status = "success" };
     
         var questions = new List<Question>
         {
@@ -72,16 +72,16 @@ public class AnswerServiceTest
     public void SubmitAnswers_ReturnsErrorForNonexistentQuiz_2()
     {
         // Arrange
-        var answerRequest = new List<AnswerSubmitRequestDTO>
+        var answerRequest = new List<AnswerSubmitRequestDto>
         {
-            new AnswerSubmitRequestDTO
+            new AnswerSubmitRequestDto
             {
                 QuestionId = 1,
                 OptionNames = new List<string> { "Option1", "Option2" }
             }
         };
     
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
+        var expectedResponse = new AnswerSubmitResponseDto { Status = "success" };
     
         var questions = new List<Question>
         {
@@ -122,16 +122,16 @@ public class AnswerServiceTest
     public void SubmitAnswers_ReturnsErrorForNonexistentQuiz_3()
     {
         // Arrange
-        var answerRequest = new List<AnswerSubmitRequestDTO>
+        var answerRequest = new List<AnswerSubmitRequestDto>
         {
-            new AnswerSubmitRequestDTO
+            new AnswerSubmitRequestDto
             {
                 QuestionId = 1,
                 AnswerText = "Your answer goes here"
             }
         };
     
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
+        var expectedResponse = new AnswerSubmitResponseDto { Status = "success" };
     
         var questions = new List<Question>
         {

@@ -1,6 +1,6 @@
-namespace QuizAppApi.DTOs
+namespace QuizAppApi.Dtos
 {
-    public class ExplanationDTO
+    public class ExplanationDto
     {
         public int QuestionId { get; set; }
         public bool Correct { get; set; }

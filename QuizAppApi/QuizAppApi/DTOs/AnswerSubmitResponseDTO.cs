@@ -1,6 +1,6 @@
-﻿namespace QuizAppApi.DTOs;
+﻿namespace QuizAppApi.Dtos;
 
-public class AnswerSubmitResponseDTO
+public class AnswerSubmitResponseDto
 {
     public int Score { get; set; }
     public int CorrectlyAnswered { get; set; } // number of correctly answered questions

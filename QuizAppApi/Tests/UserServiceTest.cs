@@ -1,6 +1,6 @@
 using Moq;
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Services;
@@ -30,7 +30,7 @@ public class UserServiceTest
     [Test]
     public void CreateUser_CreatesNewUser()
     {
-        var request = new UserRequestDTO { Username = "testUser", Password = "securePassword" };
+        var request = new UserRequestDto { Username = "testUser", Password = "securePassword" };
 
         var response = _userService.CreateUser(request);
 

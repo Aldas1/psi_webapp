@@ -1,9 +1,9 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 
 namespace QuizAppApi.Interfaces;
 
 public interface IUserService
 {
-    UserResponseDTO? CreateUser(UserRequestDTO request);
-    UserResponseDTO? GetUser(string username);
+    UserResponseDto? CreateUser(UserRequestDto request);
+    UserResponseDto? GetUser(string username);
 }

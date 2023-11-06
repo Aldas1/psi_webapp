@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
@@ -7,33 +7,33 @@ using QuizAppApi.Services;
 namespace Tests;
 
 [TestFixture]
-public class OpenTextQuestionDTOConverterServiceTests
+public class OpenTextQuestionDtoConverterServiceTests
 {
-    private OpenTextQuestionDTOConverterService _openTextConverter;
+    private OpenTextQuestionDtoConverterService _openTextConverter;
         
     [SetUp]
     public void Setup()
     {
-        _openTextConverter = new OpenTextQuestionDTOConverterService();
+        _openTextConverter = new OpenTextQuestionDtoConverterService();
     }
 
     [Test]
     public void CreateFromParameters_ReturnsOpenTextQuestion()
     {
-        var questionDTO = new QuestionParametersDTO
+        var questionDto = new QuestionParametersDto
         {
             CorrectText = "ValidAnswer?"
         };
 
-        var result = _openTextConverter.CreateFromParameters(questionDTO);
+        var result = _openTextConverter.CreateFromParameters(questionDto);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<OpenTextQuestion>(result);
-        Assert.AreEqual(questionDTO.CorrectText, result.CorrectAnswer);
+        Assert.AreEqual(questionDto.CorrectText, result.CorrectAnswer);
     }
 
     [Test]
-    public void GenerateParameters_ReturnsQuestionParametersDTO()
+    public void GenerateParameters_ReturnsQuestionParametersDto()
     {
         var question = new OpenTextQuestion
         {
@@ -43,7 +43,7 @@ public class OpenTextQuestionDTOConverterServiceTests
         var result = _openTextConverter.GenerateParameters(question);
 
         Assert.IsNotNull(result);
-        Assert.IsInstanceOf<QuestionParametersDTO>(result);
+        Assert.IsInstanceOf<QuestionParametersDto>(result);
         Assert.AreEqual(question.CorrectAnswer, result.CorrectText);
     }
 }

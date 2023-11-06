@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Exceptions;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Services;
@@ -7,9 +7,9 @@ using QuizAppApi.Services;
 namespace Tests;
 
 [TestFixture]
-public class MultipleChoiceQuestionDTOConverterServiceTests
+public class MultipleChoiceQuestionDtoConverterServiceTests
 {
-    private MultipleChoiceQuestionDTOConverterService _multipleChoiceConverter;
+    private MultipleChoiceQuestionDtoConverterService _multipleChoiceConverter;
 
     string optionName1 = "Option1";
     string optionName2 = "Option2";
@@ -18,19 +18,19 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     [SetUp]
     public void Setup()
     {
-        _multipleChoiceConverter = new MultipleChoiceQuestionDTOConverterService();
+        _multipleChoiceConverter = new MultipleChoiceQuestionDtoConverterService();
     }
 
     [Test]
     public void CreateFromParameters_ReturnsMultipleChoiceQuestion()
     {
-        var questionDTO = new QuestionParametersDTO
+        var questionDto = new QuestionParametersDto
         {
             Options = new List<string> { optionName1, optionName2, optionName3 },
             CorrectOptionIndexes = new List<int> { 0, 2 }
         };
 
-        var result = _multipleChoiceConverter.CreateFromParameters(questionDTO);
+        var result = _multipleChoiceConverter.CreateFromParameters(questionDto);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<MultipleChoiceQuestion>(result);
@@ -42,19 +42,19 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
     }
 
     [Test]
-    public void CreateFromParameters_ThrowsDTOConversionException()
+    public void CreateFromParameters_ThrowsDtoConversionException()
     {
-        var questionDTO = new QuestionParametersDTO
+        var questionDto = new QuestionParametersDto
         {
             Options = new List<string> { optionName1, optionName2, optionName3 },
             CorrectOptionIndexes = new List<int> { 0, 3 }
         };
 
-        Assert.Throws<DTOConversionException>(() => _multipleChoiceConverter.CreateFromParameters(questionDTO));
+        Assert.Throws<DtoConversionException>(() => _multipleChoiceConverter.CreateFromParameters(questionDto));
     }
 
     [Test]
-    public void GenerateParameters_ReturnsQuestionParametersDTO()
+    public void GenerateParameters_ReturnsQuestionParametersDto()
     {
         var question = new MultipleChoiceQuestion
         {
@@ -69,7 +69,7 @@ public class MultipleChoiceQuestionDTOConverterServiceTests
         var result = _multipleChoiceConverter.GenerateParameters(question);
 
         Assert.IsNotNull(result);
-        Assert.IsInstanceOf<QuestionParametersDTO>(result);
+        Assert.IsInstanceOf<QuestionParametersDto>(result);
         Assert.AreEqual(3, result.Options.Count);
         Assert.IsTrue(result.Options.Any(option => option == optionName1));
         Assert.IsTrue(result.Options.Any(option => option == optionName2));

@@ -1,9 +1,9 @@
-﻿namespace QuizAppApi.DTOs;
+﻿namespace QuizAppApi.Dtos;
 
-public class QuestionResponseDTO
+public class QuestionResponseDto
 {
     public int Id { get; set; }
     public string QuestionText { get; set; } = String.Empty;
     public string QuestionType { get; set; } = String.Empty;
-    public QuestionParametersDTO QuestionParameters { get; set; } = new QuestionParametersDTO();
+    public QuestionParametersDto QuestionParameters { get; set; } = new QuestionParametersDto();
 }

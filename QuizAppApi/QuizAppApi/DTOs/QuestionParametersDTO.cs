@@ -1,6 +1,6 @@
-namespace QuizAppApi.DTOs;
+namespace QuizAppApi.Dtos;
 
-public class QuestionParametersDTO
+public class QuestionParametersDto
 {
     public List<string>? Options { get; set; }
     public int? CorrectOptionIndex { get; set; }

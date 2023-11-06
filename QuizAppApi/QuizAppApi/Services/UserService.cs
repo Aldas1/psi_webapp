@@ -1,4 +1,4 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using BC = BCrypt.Net.BCrypt;
@@ -14,13 +14,13 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    private static UserResponseDTO MapUserToResponse(User user)
+    private static UserResponseDto MapUserToResponse(User user)
     {
-        return new UserResponseDTO
+        return new UserResponseDto
             { Username = user.Username, TotalScore = user.TotalScore, NumberOfSubmissions = user.NumberOfSubmissions };
     }
 
-    public UserResponseDTO? CreateUser(UserRequestDTO request)
+    public UserResponseDto? CreateUser(UserRequestDto request)
     {
         if (_userRepository.GetUser(request.Username) != null) return null;
         var user = new User(request.Username, BC.HashPassword(request.Password));
@@ -28,7 +28,7 @@ public class UserService : IUserService
         return MapUserToResponse(user);
     }
 
-    public UserResponseDTO? GetUser(string username)
+    public UserResponseDto? GetUser(string username)
     {
         var user = _userRepository.GetUser(username);
         return user == null ? null : MapUserToResponse(user);

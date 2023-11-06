@@ -1,7 +1,7 @@
-﻿namespace QuizAppApi.DTOs;
-public class QuizManipulationQuestionRequestDTO
+﻿namespace QuizAppApi.Dtos;
+public class QuizManipulationQuestionRequestDto
 {
     public string QuestionText { get; set; } = string.Empty;
     public string QuestionType { get; set; } = string.Empty;
-    public QuestionParametersDTO QuestionParameters { get; set; } = new QuestionParametersDTO();
+    public QuestionParametersDto QuestionParameters { get; set; } = new QuestionParametersDto();
 }
