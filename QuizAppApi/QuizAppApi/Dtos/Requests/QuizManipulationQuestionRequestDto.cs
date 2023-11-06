@@ -1,4 +1,5 @@
 ﻿namespace QuizAppApi.Dtos;
+
 public class QuizManipulationQuestionRequestDto
 {
     public string QuestionText { get; set; }
