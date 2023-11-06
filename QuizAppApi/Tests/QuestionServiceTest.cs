@@ -72,8 +72,6 @@ public class QuestionServiceTest
             }
         };
 
-        //_mockQuizRepository.Setup(repo => repo.AddQuiz(It.IsAny<Quiz>())).;
-
         var expectedQuestions = new List<QuestionResponseDTO>
         {
             new QuestionResponseDTO
