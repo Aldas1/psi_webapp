@@ -8,6 +8,5 @@ public interface IQuizService
     IEnumerable<QuestionResponseDTO>? GetQuestions(int id);
     IEnumerable<QuizResponseDTO> GetQuizzes();
     QuizResponseDTO? GetQuiz(int id);
-    Task<AnswerSubmitResponseDTO> SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request);
     bool DeleteQuiz(int id);
 }

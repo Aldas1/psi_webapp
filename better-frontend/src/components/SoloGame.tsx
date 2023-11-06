@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
@@ -10,7 +10,6 @@ import {
   Flex,
   Box,
   IconButton,
-  Container,
   Heading,
   VStack,
   RadioGroup,
@@ -22,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
+import { AuthContext } from "../contexts/AuthContext";
 
 function SingleChoiceControls({
   parameters,
@@ -173,66 +173,65 @@ function SoloGame({ quiz }: { quiz: QuizManipulationRequestDto }) {
   const [answers, setAnswers] = useState<AnswerSubmitRequestDto[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [results, setResults] = useState<AnswerSubmitResponseDto | null>(null);
+  const [authInfo, setAuthInfo] = useContext(AuthContext);
 
   const answer = answers.find(
     (a) => a.questionId === quiz.questions[currentQuestionIndex].id
   );
 
   if (results) {
-    return (
-      <Container maxWidth="3xl">
-        <Results quiz={quiz} results={results} />
-      </Container>
-    );
+    return <Results quiz={quiz} results={results} />;
   }
 
   return (
-    <Container maxWidth="3xl">
-      <VStack>
-        <Progress
-          width="100%"
-          value={((currentQuestionIndex + 1) * 100) / quiz.questions.length}
+    <VStack>
+      <Progress
+        width="100%"
+        value={((currentQuestionIndex + 1) * 100) / quiz.questions.length}
+      />
+      <Flex width="100%">
+        <IconButton
+          isDisabled={currentQuestionIndex === 0}
+          onClick={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
+          aria-label="Previous question"
+          flex="1"
+          variant="ghost"
+          icon={<ChevronLeftIcon />}
         />
-        <Flex width="100%">
-          <IconButton
-            isDisabled={currentQuestionIndex === 0}
-            onClick={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
-            aria-label="Previous question"
-            flex="1"
-            variant="ghost"
-            icon={<ChevronLeftIcon />}
-          />
-          <IconButton
-            onClick={async () => {
-              const results = await submitAnswers(quiz.id ?? 0, answers);
-              setResults(results);
-            }}
-            aria-label="Submit"
-            flex="1"
-            variant="ghost"
-            icon={<CheckIcon />}
-          />
-          <IconButton
-            isDisabled={currentQuestionIndex + 1 === quiz.questions.length}
-            onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-            aria-label="Next question"
-            flex="1"
-            variant="ghost"
-            icon={<ChevronRightIcon />}
-          />
-        </Flex>
-        <QuestionDisplay
-          question={quiz.questions[currentQuestionIndex]}
-          answer={answer}
-          onAnswerChange={(newAnswer) => {
-            setAnswers([
-              ...answers.filter((a) => a.questionId !== newAnswer.questionId),
-              newAnswer,
-            ]);
+        <IconButton
+          onClick={async () => {
+            const results = await submitAnswers(
+              quiz.id ?? 0,
+              answers,
+              authInfo === null ? null : authInfo.token
+            );
+            setResults(results);
           }}
+          aria-label="Submit"
+          flex="1"
+          variant="ghost"
+          icon={<CheckIcon />}
         />
-      </VStack>
-    </Container>
+        <IconButton
+          isDisabled={currentQuestionIndex + 1 === quiz.questions.length}
+          onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
+          aria-label="Next question"
+          flex="1"
+          variant="ghost"
+          icon={<ChevronRightIcon />}
+        />
+      </Flex>
+      <QuestionDisplay
+        question={quiz.questions[currentQuestionIndex]}
+        answer={answer}
+        onAnswerChange={(newAnswer) => {
+          setAnswers([
+            ...answers.filter((a) => a.questionId !== newAnswer.questionId),
+            newAnswer,
+          ]);
+        }}
+      />
+    </VStack>
   );
 }
 

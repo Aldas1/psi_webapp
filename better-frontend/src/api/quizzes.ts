@@ -48,10 +48,23 @@ async function deleteQuiz(id: number) {
   return axios.delete(`/api/quizzes/${id}`);
 }
 
-async function submitAnswers(id: number, answers: AnswerSubmitRequestDto[]) {
+async function submitAnswers(
+  id: number,
+  answers: AnswerSubmitRequestDto[],
+  token: string | null
+) {
+  const config =
+    token === null
+      ? {}
+      : {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
   const response = await axios.post<AnswerSubmitResponseDto>(
-    `/api/quizzes/${id}/submit`,
-    answers
+    `/api/answers/${id}/submit`,
+    answers,
+    config
   );
   return response.data;
 }

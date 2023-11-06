@@ -1,11 +1,4 @@
-import {
-  Container,
-  HStack,
-  Heading,
-  VStack,
-  Box,
-  Text,
-} from "@chakra-ui/layout";
+import { HStack, Heading, VStack, Box, Text } from "@chakra-ui/layout";
 import {
   QuestionParametersDto,
   QuizManipulationQuestionRequestDto,
@@ -379,102 +372,100 @@ function QuizEditor({
   onSubmit?: () => void;
 }) {
   return (
-    <Container maxWidth="3xl">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-      >
-        <VStack align="flex-start">
-          {preview ? (
-            <Heading size="lg" as="h3">
-              {quiz.name}
-            </Heading>
-          ) : (
-            <Input
-              required
-              value={quiz.name}
-              onChange={(e) => onQuizChange({ ...quiz, name: e.target.value })}
-              maxLength={80}
-              placeholder="Quiz name"
-              width="100%"
-            />
-          )}
-          {preview && previewBody}
-          <Heading size="md" as="h4">
-            Questions
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      <VStack align="flex-start">
+        {preview ? (
+          <Heading size="lg" as="h3">
+            {quiz.name}
           </Heading>
-          <Accordion width="100%">
-            {quiz.questions.map((q, i) => (
-              <AccordionItem key={i}>
-                <AccordionButton>
-                  <Box flex="1" textAlign="left">
-                    Question #{i + 1}{" "}
-                    {!preview && ` (${formatQuestionType(q.questionType)})`}
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel>
-                  <VStack align="start">
-                    <QuestionEditor
-                      question={q}
-                      preview={preview}
-                      onQuestionChange={(newQuestion) =>
+        ) : (
+          <Input
+            required
+            value={quiz.name}
+            onChange={(e) => onQuizChange({ ...quiz, name: e.target.value })}
+            maxLength={80}
+            placeholder="Quiz name"
+            width="100%"
+          />
+        )}
+        {preview && previewBody}
+        <Heading size="md" as="h4">
+          Questions
+        </Heading>
+        <Accordion width="100%">
+          {quiz.questions.map((q, i) => (
+            <AccordionItem key={i}>
+              <AccordionButton>
+                <Box flex="1" textAlign="left">
+                  Question #{i + 1}{" "}
+                  {!preview && ` (${formatQuestionType(q.questionType)})`}
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <VStack align="start">
+                  <QuestionEditor
+                    question={q}
+                    preview={preview}
+                    onQuestionChange={(newQuestion) =>
+                      onQuizChange({
+                        ...quiz,
+                        questions: quiz.questions.map((question) =>
+                          question === q ? newQuestion : question
+                        ),
+                      })
+                    }
+                  />
+                  {!preview && (
+                    <Button
+                      onClick={() => {
                         onQuizChange({
                           ...quiz,
-                          questions: quiz.questions.map((question) =>
-                            question === q ? newQuestion : question
+                          questions: quiz.questions.filter(
+                            (question) => q !== question
                           ),
-                        })
-                      }
-                    />
-                    {!preview && (
-                      <Button
-                        onClick={() => {
-                          onQuizChange({
-                            ...quiz,
-                            questions: quiz.questions.filter(
-                              (question) => q !== question
-                            ),
-                          });
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    )}
-                  </VStack>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          {!preview && (
-            <HStack>
-              <Button
-                onClick={() =>
-                  onQuizChange({
-                    ...quiz,
-                    questions: [
-                      ...quiz.questions,
-                      {
-                        questionText: "",
-                        questionType: "singleChoiceQuestion",
-                        questionParameters: createQuestionParameters(
-                          "singleChoiceQuestion"
-                        ),
-                      },
-                    ],
-                  })
-                }
-              >
-                Add question
-              </Button>
-              <Button type="submit">Submit</Button>
-            </HStack>
-          )}
-        </VStack>
-      </form>
-    </Container>
+                        });
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </VStack>
+              </AccordionPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
+        {!preview && (
+          <HStack>
+            <Button
+              onClick={() =>
+                onQuizChange({
+                  ...quiz,
+                  questions: [
+                    ...quiz.questions,
+                    {
+                      questionText: "",
+                      questionType: "singleChoiceQuestion",
+                      questionParameters: createQuestionParameters(
+                        "singleChoiceQuestion"
+                      ),
+                    },
+                  ],
+                })
+              }
+            >
+              Add question
+            </Button>
+            <Button type="submit">Submit</Button>
+          </HStack>
+        )}
+      </VStack>
+    </form>
   );
 }
 

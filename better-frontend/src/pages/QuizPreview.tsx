@@ -1,20 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
-import {
-  deleteQuiz,
-  getQuestions,
-  getQuiz,
-  updateQuiz,
-} from "../../api/quizzes";
+import { deleteQuiz, getQuestions, getQuiz, updateQuiz } from "../api/quizzes";
 import { Button, HStack, Spinner, useToast } from "@chakra-ui/react";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
   QuizResponseDto,
-} from "../../types";
-import QuizEditor from "../../components/QuizEditor";
+} from "../types";
+import QuizEditor from "../components/QuizEditor";
 import { useState } from "react";
-import SoloGame from "../../components/SoloGame";
+import SoloGame from "../components/SoloGame";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,

@@ -12,29 +12,23 @@ namespace Tests;
 public class QuizServiceTests
 {
     private IQuizService? _quizService;
-    private Mock<IExplanationService>? _mockChatGptService;
     private Mock<IQuizRepository>? _mockQuizRepository;
     private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
     private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
-    private Mock<IAnswerCheckerService>? _mockAnswerCheckerService;
 
     [SetUp]
     public void Setup()
     {
         _mockQuizRepository = new Mock<IQuizRepository>();
-        _mockChatGptService = new Mock<IExplanationService>();
         _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
         _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
         _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
-        _mockAnswerCheckerService = new Mock<IAnswerCheckerService>();
         _quizService = new QuizService(
             _mockQuizRepository.Object,
-            _mockChatGptService.Object,
             _mockSingleChoiceQuestionDTOConverterService.Object,
             _mockMultipleChoiceQuestionDTOConverterService.Object,
-            _mockOpenTextQuestionDTOConverterService.Object,
-            _mockAnswerCheckerService.Object);
+            _mockOpenTextQuestionDTOConverterService.Object);
     }
 
     [TearDown]
@@ -90,139 +84,6 @@ public class QuizServiceTests
         Assert.IsNotNull(createdQuiz);
         Assert.IsNotNull(result);
         _mockQuizRepository.Verify(repo => repo.GetQuizzes(), Times.Once);
-    }
-
-    [Test]
-    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_1()
-    {
-        var answerRequest = new List<AnswerSubmitRequestDTO>
-        {
-            new AnswerSubmitRequestDTO { QuestionId = 1, OptionName = "Paris" }
-        };
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
-
-        var questions = new List<Question>
-        {
-            new SingleChoiceQuestion
-            {
-                Id = 1,
-            },
-            new SingleChoiceQuestion
-            {
-                Id = 2,
-            },
-            new SingleChoiceQuestion
-            {
-                Id = 3,
-            }
-        };
-
-        var fakeQuiz = new Quiz
-        {
-            Id = 1,
-            Name = "Fake Quiz",
-            Questions = questions
-        };
-
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
-
-        var result = await _quizService.SubmitAnswers(1, answerRequest);
-        _mockAnswerCheckerService.Verify(mock => mock.CheckSingleChoiceAnswer(It.IsAny<SingleChoiceQuestion>(), It.IsAny<string>()), Times.Once);
-
-        Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
-    }
-
-    [Test]
-    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_2()
-    {
-        var answerRequest = new List<AnswerSubmitRequestDTO>
-        {
-            new AnswerSubmitRequestDTO
-            {
-                QuestionId = 1,
-                OptionNames = new List<string> { "Option1", "Option2" }
-            }
-        };
-
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
-
-        var questions = new List<Question>
-        {
-            new MultipleChoiceQuestion
-            {
-                Id = 1,
-            },
-            new MultipleChoiceQuestion
-            {
-                Id = 2,
-            },
-            new MultipleChoiceQuestion
-            {
-                Id = 3,
-            }
-        };
-
-        var fakeQuiz = new Quiz
-        {
-            Id = 2,
-            Name = "Fake Quiz",
-            Questions = questions
-        };
-
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
-
-        var result = await _quizService.SubmitAnswers(1, answerRequest);
-        _mockAnswerCheckerService.Verify(mock => mock.CheckMultipleChoiceAnswer(It.IsAny<MultipleChoiceQuestion>(), It.IsAny<List<Option>>()), Times.Once);
-
-        Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
-    }
-
-    [Test]
-    public async Task SubmitAnswers_ReturnsErrorForNonexistentQuiz_3()
-    {
-        var answerRequest = new List<AnswerSubmitRequestDTO>
-        {
-            new AnswerSubmitRequestDTO
-            {
-                QuestionId = 1,
-                AnswerText = "Your answer goes here"
-            }
-        };
-
-        var expectedResponse = new AnswerSubmitResponseDTO { Status = "success" };
-
-        var questions = new List<Question>
-        {
-            new OpenTextQuestion
-            {
-                Id = 1,
-            },
-            new OpenTextQuestion
-            {
-                Id = 2,
-            },
-            new OpenTextQuestion
-            {
-                Id = 3,
-            }
-        };
-
-        var fakeQuiz = new Quiz
-        {
-            Id = 2,
-            Name = "Fake Quiz",
-            Questions = questions
-        };
-
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
-
-        var result = await _quizService.SubmitAnswers(1, answerRequest);
-        _mockAnswerCheckerService.Verify(mock => mock.CheckOpenTextAnswer(It.IsAny<OpenTextQuestion>(), It.IsAny<string>(), false, true), Times.Once);
-
-        Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
     }
 
     [Test]
