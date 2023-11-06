@@ -94,15 +94,7 @@ public class QuestionServiceTest
         _mockQuizRepository.Setup(repo => repo.GetQuizById(0)).Returns(mockQuiz);
 
         _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.GenerateParameters(It.IsAny<SingleChoiceQuestion>()))
-            .Returns(new QuestionParametersDTO
-            {
-                Options = new List<string>
-                    {
-                        "Option numero uno",
-                        "Option correcto"
-                    },
-                CorrectOptionIndex = 1
-            });
+            .Returns(expectedQuestions.ElementAt(0).QuestionParameters);
 
         var result = _questionService.GetQuestions(0);
 
