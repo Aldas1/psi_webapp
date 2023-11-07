@@ -28,4 +28,9 @@ public class UserRepository : IUserRepository
     {
         return _quizContext.Users;
     }
+
+    public void Save()
+    {
+        _quizContext.SaveChanges();
+    }
 }

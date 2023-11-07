@@ -89,6 +89,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddEventHandler<AnswerSubmittedEventHandlerQuizUpdater>();
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerUserUpdater>();
 
 var app = builder.Build();
 
