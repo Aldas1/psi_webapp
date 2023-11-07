@@ -1,8 +1,8 @@
 using QuizAppApi.Dtos;
+using QuizAppApi.Events;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
-using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 
@@ -17,7 +17,7 @@ public class AnswerService : IAnswerService
         _answerCheckerService = answerCheckerService;
     }
 
-    public AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request)
+    public AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
         var response = new AnswerSubmitResponseDto();
         var quiz = _quizRepository.GetQuizById(id);
@@ -44,6 +44,14 @@ public class AnswerService : IAnswerService
 
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
+        
+        AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
+        {
+            QuizId = quiz.Id,
+            Score = response.Score,
+            Username = username
+        });
+        
         return response;
     }
 

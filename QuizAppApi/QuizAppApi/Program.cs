@@ -87,7 +87,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddEventHandler<AnswerSubmittedEventHandler>();
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerQuizUpdater>();
 
 var app = builder.Build();
 
