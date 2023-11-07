@@ -18,16 +18,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("log.txt")
+    .WriteTo.Console() // temporary
     .CreateLogger();
 
-builder.Services.AddSingleton<IWindsorContainer>(new WindsorContainer());
-builder.Services.AddSingleton<IServiceProviderFactory<IWindsorContainer>>(new WindsorServiceProviderFactory());
 builder.Services.AddSingleton<IWindsorContainer>(provider =>
 {
-    var container = provider.GetRequiredService<IWindsorContainer>();
+    var container = new WindsorContainer();
     container.Install(new WindsorInstaller());
     return container;
 });
+builder.Services.AddSingleton<IServiceProviderFactory<IWindsorContainer>>(new WindsorServiceProviderFactory());
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

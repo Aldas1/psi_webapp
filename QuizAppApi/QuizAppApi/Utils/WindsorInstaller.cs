@@ -21,6 +21,9 @@ public class WindsorInstaller : IWindsorInstaller
 
             Component.For<IExplanationService>().ImplementedBy<ExplanationService>()
                 .Interceptors<ExceptionLoggingInterceptor>()
+                .LifestyleTransient(),
+            Component.For<IQuizService>().ImplementedBy<QuizService>()
+                .Interceptors<ExceptionLoggingInterceptor>()
                 .LifestyleTransient()
         );
     }
