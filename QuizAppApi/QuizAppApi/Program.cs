@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuizAppApi.Data;
+using QuizAppApi.Events;
+using QuizAppApi.Extensions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
@@ -85,7 +87,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddEventHandler<AnswerSubmittedEventHandler>();
+
 var app = builder.Build();
+
+app.UseEventHandlers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
