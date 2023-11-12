@@ -30,14 +30,14 @@ jobs:
     - name: Test
       run: dotnet test -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal
     - name: Reformat coverage file
-      run: sed 's/sequenceCoverage="\([^"]*\)"/branchCoverage="\1"/' Tests/TestResults/coverage.opencover.xml
+      run: sed 's/sequenceCoverage="\([^"]*\)"/sequenceCoverage="\1" branchCoverage="\1"/' Tests/TestResults/coverage.opencover.xml
     - name: Create Test Coverage Badge
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: create_coverage_badge
       with:
         label: Unit Test Coverage
         color: brightgreen
-        path: Tests/TestResults/coverage.opencover.xml
+        path: QuizAppApi/Tests/TestResults/coverage.opencover.xml
         gist-filename: code-coverage.json
         gist-id: f04a7acd2cbaa647c6515030113c444b
         gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}    
