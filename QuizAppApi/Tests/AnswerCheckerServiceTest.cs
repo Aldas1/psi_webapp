@@ -54,16 +54,15 @@ public class AnswerCheckerServiceTests
 
         var correctMultipleChoiceAnswer = new List<Option>
         {
-            new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = true },
-            new Option { Name = "Paris", Correct = true }
+            new Option { Name = "Paris" },
+            new Option { Name = "Berlin" }
         };
 
         Assert.IsTrue(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, correctMultipleChoiceAnswer));
     }
 
     [Test]
-    public void CheckMultipleChoiceAnswer_ValidatingIncorrectAnswer()
+    public void CheckMultipleChoiceAnswer_ValidatingIncorrectAnswerWithOnlyOneCorrectOption()
     {
         var option1 = new Option { Name = "Paris", Correct = true };
         var option2 = new Option { Name = "Berlin", Correct = false };
@@ -76,9 +75,27 @@ public class AnswerCheckerServiceTests
 
         var incorrectMultipleChoiceAnswer = new List<Option>
         {
-            new Option { Name = "London", Correct = false },
-            new Option { Name = "Berlin", Correct = false },
-            new Option { Name = "Paris", Correct = false }
+            new Option { Name = "Paris" }
+        };
+
+        Assert.IsFalse(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
+    }
+
+    [Test]
+    public void CheckMultipleChoiceAnswer_ValidatingIncorrectAnswerWithNoCorrectOptions()
+    {
+        var option1 = new Option { Name = "Paris", Correct = true };
+        var option2 = new Option { Name = "Berlin", Correct = false };
+        var option3 = new Option { Name = "London", Correct = true };
+
+        var multipleChoiceQuestion = new MultipleChoiceQuestion
+        {
+            Options = new List<Option> { option1, option2, option3 }
+        };
+
+        var incorrectMultipleChoiceAnswer = new List<Option>
+        {
+            new Option { Name = "Berlin" }
         };
 
         Assert.IsFalse(_answerCheckerService.CheckMultipleChoiceAnswer(multipleChoiceQuestion, incorrectMultipleChoiceAnswer));
