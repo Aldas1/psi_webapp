@@ -30,7 +30,9 @@ jobs:
     - name: Test
       run: dotnet test -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal
     - name: Reformat coverage file
-      run: sed 's/sequenceCoverage="[0-9.]*"/sequenceCoverage="'"$(sed -n 's/branchCoverage="\([0-9.]*\)"/\1/p' Tests/TestResults/coverage.opencover.xml)"'"/' Tests/TestResults/coverage.opencover.xml
+      run: |
+        sed -i '/sequenceCoverage=".*"/d' Tests/TestResults/coverage.opencover.xml
+        sed -i 's/branchCoverage/sequenceCoverage/' Tests/TestResults/coverage.opencover.xml
     - name: Create Test Coverage Badge
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: create_coverage_badge
