@@ -57,7 +57,7 @@ public class AnswerServiceTest
         };
     
         // Mock repository setup
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
         var result = _answerService.SubmitAnswers(1, answerRequest);
@@ -65,7 +65,7 @@ public class AnswerServiceTest
     
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
     
     [Test]
@@ -107,7 +107,7 @@ public class AnswerServiceTest
         };
     
         // Mock repository setup
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
         var result = _answerService.SubmitAnswers(1, answerRequest);
@@ -115,7 +115,7 @@ public class AnswerServiceTest
     
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
     
     [Test]
@@ -157,7 +157,7 @@ public class AnswerServiceTest
         };
     
         // Mock repository setup
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(It.IsAny<int>())).Returns(fakeQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(It.IsAny<int>())).Returns(fakeQuiz);
     
         // Act
         var result = _answerService.SubmitAnswers(1, answerRequest);
@@ -165,6 +165,6 @@ public class AnswerServiceTest
     
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(It.IsAny<int>()), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
 }

@@ -40,7 +40,7 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDto { Status = e.Message };
         }
 
-        Quiz? createdQuiz = _quizRepository.AddQuiz(newQuiz);
+        Quiz? createdQuiz = _quizRepository.AddQuizAsync(newQuiz);
 
         if (createdQuiz == null)
         {
@@ -54,7 +54,7 @@ public class QuizService : IQuizService
 
     public QuizManipulationResponseDto UpdateQuiz(int id, QuizManipulationRequestDto editRequest)
     {
-        var newQuiz = _quizRepository.GetQuizById(id);
+        var newQuiz = _quizRepository.GetQuizByIdAsync(id);
         if (newQuiz == null)
         {
             return new QuizManipulationResponseDto { Status = "Quiz not found" };
@@ -69,13 +69,13 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDto { Status = e.Message };
         }
 
-        _quizRepository.Save();
+        _quizRepository.SaveAsync();
         return new QuizManipulationResponseDto { Status = "success", Id = id };
     }
 
     public IEnumerable<QuizResponseDto> GetQuizzes()
     {
-        var quizzes = _quizRepository.GetQuizzes();
+        var quizzes = _quizRepository.GetQuizzesAsync();
 
         return quizzes.Select(quiz => new QuizResponseDto
             { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
@@ -83,7 +83,7 @@ public class QuizService : IQuizService
 
     public QuizResponseDto? GetQuiz(int id)
     {
-        var quiz = _quizRepository.GetQuizById(id);
+        var quiz = _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return null;
@@ -95,13 +95,13 @@ public class QuizService : IQuizService
 
     public bool DeleteQuiz(int id)
     {
-        var quiz = _quizRepository.GetQuizById(id);
+        var quiz = _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return false;
         }
 
-        _quizRepository.DeleteQuiz(id);
+        _quizRepository.DeleteQuizAsync(id);
         return true;
     }
 

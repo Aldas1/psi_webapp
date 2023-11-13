@@ -26,7 +26,7 @@ public class QuestionService : IQuestionService
 
     public IEnumerable<QuestionResponseDto>? GetQuestions(int id)
     {
-        var quiz = _quizRepository.GetQuizById(id);
+        var quiz = _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return null;

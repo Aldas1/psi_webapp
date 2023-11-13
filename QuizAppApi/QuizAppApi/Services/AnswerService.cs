@@ -20,7 +20,7 @@ public class AnswerService : IAnswerService
     public AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
         var response = new AnswerSubmitResponseDto();
-        var quiz = _quizRepository.GetQuizById(id);
+        var quiz = _quizRepository.GetQuizByIdAsync(id);
         var correctAnswers = 0;
         
         if (quiz == null)

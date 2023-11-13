@@ -15,11 +15,11 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
     {
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IQuizRepository>();
-        var quiz = repo?.GetQuizById(args.QuizId);
+        var quiz = repo?.GetQuizByIdAsync(args.QuizId);
         if (quiz != null)
         {
             quiz.NumberOfSubmitters++;
-            repo?.Save();
+            repo?.SaveAsync();
         }
     }
     
