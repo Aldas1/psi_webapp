@@ -41,7 +41,7 @@ function UserLeaderboard() {
               return (
                 <Tr key={item.username}>
                   <Td>{item.username}</Td>
-                  <Td>{item.averageScore}</Td>
+                  <Td>{item.averageScore.toFixed(2)}</Td>
                   <Td>{item.numberOfSubmissions}</Td>
                 </Tr>
               );
