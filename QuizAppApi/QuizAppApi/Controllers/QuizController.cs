@@ -18,19 +18,19 @@ public class QuizController : ControllerBase
     [HttpPost]
     public ActionResult<QuizManipulationResponseDto> CreateQuiz([FromBody] QuizManipulationRequestDto request)
     {
-        return _quizService.CreateQuiz(request);
+        return _quizService.CreateQuizAsync(request);
     }
 
     [HttpPut("{id}")]
     public ActionResult<QuizManipulationResponseDto> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDto updateRequest)
     {
-        return _quizService.UpdateQuiz(id, updateRequest);
+        return _quizService.UpdateQuizAsync(id, updateRequest);
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<QuizResponseDto>> GetQuizzes()
     {
-        var quizzes = _quizService.GetQuizzes();
+        var quizzes = _quizService.GetQuizzesAsync();
         if (quizzes == null)
         {
             return NotFound();
@@ -41,7 +41,7 @@ public class QuizController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<QuizResponseDto> GetQuiz(int id)
     {
-        var quiz = _quizService.GetQuiz(id);
+        var quiz = _quizService.GetQuizAsync(id);
         if (quiz == null)
         {
             return NotFound();
@@ -53,7 +53,7 @@ public class QuizController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteQuiz(int id)
     {
-        bool response = _quizService.DeleteQuiz(id);
+        bool response = _quizService.DeleteQuizAsync(id);
         if (response)
         {
             return Ok();

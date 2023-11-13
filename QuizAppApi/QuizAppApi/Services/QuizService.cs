@@ -27,7 +27,7 @@ public class QuizService : IQuizService
         _openTextDtoConverter = openTextDtoConverter;
     }
 
-    public QuizManipulationResponseDto CreateQuiz(QuizManipulationRequestDto request)
+    public async Task<QuizManipulationResponseDto> CreateQuizAsync(QuizManipulationRequestDto request)
     {
         var newQuiz = new Quiz();
 
@@ -40,7 +40,7 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDto { Status = e.Message };
         }
 
-        Quiz? createdQuiz = _quizRepository.AddQuizAsync(newQuiz);
+        Quiz? createdQuiz = await _quizRepository.AddQuizAsync(newQuiz);
 
         if (createdQuiz == null)
         {
@@ -52,9 +52,9 @@ public class QuizService : IQuizService
         return new QuizManipulationResponseDto { Status = "success", Id = createdQuizId };
     }
 
-    public QuizManipulationResponseDto UpdateQuiz(int id, QuizManipulationRequestDto editRequest)
+    public async Task<QuizManipulationResponseDto> UpdateQuizAsync(int id, QuizManipulationRequestDto editRequest)
     {
-        var newQuiz = _quizRepository.GetQuizByIdAsync(id);
+        var newQuiz = await _quizRepository.GetQuizByIdAsync(id);
         if (newQuiz == null)
         {
             return new QuizManipulationResponseDto { Status = "Quiz not found" };
@@ -69,21 +69,21 @@ public class QuizService : IQuizService
             return new QuizManipulationResponseDto { Status = e.Message };
         }
 
-        _quizRepository.SaveAsync();
+        await _quizRepository.SaveAsync();
         return new QuizManipulationResponseDto { Status = "success", Id = id };
     }
 
-    public IEnumerable<QuizResponseDto> GetQuizzes()
+    public async Task<IEnumerable<QuizResponseDto>> GetQuizzesAsync()
     {
-        var quizzes = _quizRepository.GetQuizzesAsync();
+        var quizzes = await _quizRepository.GetQuizzesAsync();
 
         return quizzes.Select(quiz => new QuizResponseDto
             { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
     }
 
-    public QuizResponseDto? GetQuiz(int id)
+    public async Task<QuizResponseDto?> GetQuizAsync(int id)
     {
-        var quiz = _quizRepository.GetQuizByIdAsync(id);
+        var quiz = await _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return null;
@@ -93,15 +93,15 @@ public class QuizService : IQuizService
     }
 
 
-    public bool DeleteQuiz(int id)
+    public async Task<bool> DeleteQuizAsync(int id)
     {
-        var quiz = _quizRepository.GetQuizByIdAsync(id);
+        var quiz = await _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return false;
         }
 
-        _quizRepository.DeleteQuizAsync(id);
+        await _quizRepository.DeleteQuizAsync(id);
         return true;
     }
 
