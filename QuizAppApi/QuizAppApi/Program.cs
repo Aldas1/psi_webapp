@@ -15,6 +15,19 @@ using QuizAppApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "DevClient",
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
 builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -97,6 +110,7 @@ builder.Services.AddEventHandler<AnswerSubmittedEventHandlerUserUpdater>();
 var app = builder.Build();
 
 app.UseEventHandlers();
+app.UseCors("DevClient");
 app.MapHub<DiscussionHub>("/discussionHub");
 
 // Configure the HTTP request pipeline.
