@@ -15,7 +15,7 @@ public class LeaderboardController : ControllerBase
         _leaderboardService = leaderboardService;
     }
 
-    [HttpGet("/users")]
+    [HttpGet("users")]
     public ActionResult<IEnumerable<UserLeaderboardResponseDto>> GetUsersLeaderboard()
     {
         return Ok(_leaderboardService.GetUsersLeaderboard());
