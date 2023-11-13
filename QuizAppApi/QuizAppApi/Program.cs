@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuizAppApi.Data;
+using QuizAppApi.Events;
+using QuizAppApi.Extensions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
@@ -72,6 +74,7 @@ builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -85,7 +88,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerQuizUpdater>();
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerUserUpdater>();
+
 var app = builder.Build();
+
+app.UseEventHandlers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

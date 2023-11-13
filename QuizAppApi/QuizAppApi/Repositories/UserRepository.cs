@@ -23,4 +23,14 @@ public class UserRepository : IUserRepository
     {
         return _quizContext.Users.Find(username);
     }
+
+    public IEnumerable<User> GetUsers()
+    {
+        return _quizContext.Users;
+    }
+
+    public void Save()
+    {
+        _quizContext.SaveChanges();
+    }
 }

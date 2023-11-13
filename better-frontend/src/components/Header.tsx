@@ -39,9 +39,12 @@ function Header() {
       zIndex="1000"
       bg={theme.styles.global.body.bg}
     >
-      <ReactRouterLink to="/">
-        <Heading>Quiz App</Heading>
-      </ReactRouterLink>
+      <HStack gap="2rem">
+        <ReactRouterLink to="/">
+          <Heading>Quiz App</Heading>
+        </ReactRouterLink>
+        <NavSection />
+      </HStack>
       <HStack>
         <DarkModeToggle />
         <ReactRouterLink to="/createQuiz">
@@ -59,6 +62,16 @@ function Header() {
         )}
       </HStack>
     </Flex>
+  );
+}
+
+function NavSection() {
+  return (
+    <HStack>
+      <ReactRouterLink to="/leaderboard/users">
+        <Button variant="link">Leaderboard</Button>
+      </ReactRouterLink>
+    </HStack>
   );
 }
 

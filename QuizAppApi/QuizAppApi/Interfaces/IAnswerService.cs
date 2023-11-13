@@ -5,5 +5,5 @@ namespace QuizAppApi.Interfaces;
 
 public interface IAnswerService
 {
-    AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request);
+    AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request, string? username = null);
 }

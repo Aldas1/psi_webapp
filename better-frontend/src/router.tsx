@@ -6,6 +6,7 @@ import CreateQuiz from "./pages/CreateQuiz";
 import QuizPreview from "./pages/QuizPreview";
 import Auth from "./pages/Auth";
 import ContainerLayout from "./layouts/ContainerLayout";
+import UserLeaderboard from "./pages/UserLeaderboard";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
           <Route path="/quizzes/:id" element={<QuizPreview />} />
           <Route path="/createQuiz" element={<CreateQuiz />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/leaderboard/users" element={<UserLeaderboard />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Route>
