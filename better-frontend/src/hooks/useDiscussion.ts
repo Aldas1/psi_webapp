@@ -67,10 +67,19 @@ export default function useDiscussion(id: number) {
   useEffect(() => {
     if (connection === null) return;
     connection.on("NewMessage", (newMessage: DiscussionComment) => {
-      setComments([...comments, newMessage]);
+      setComments((c) => [...c, newMessage]);
     });
 
-    return () => connection.off("NewMessage");
+    connection.on("NewMessages", (newMessages: DiscussionComment[]) => {
+      console.log("got new messages");
+      console.log(newMessages);
+      setComments((c) => c.concat(newMessages));
+    });
+
+    return () => {
+      connection.off("NewMessage");
+      connection.off("NewMessages");
+    };
   }, [connection, comments]);
 
   async function postComment(content: string) {

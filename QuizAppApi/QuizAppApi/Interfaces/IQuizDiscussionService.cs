@@ -4,5 +4,6 @@ namespace QuizAppApi.Interfaces;
 
 public interface IQuizDiscussionService
 {
-    CommentDto SaveMessage(int quizId, string username, string content);
+    Task<CommentDto> SaveMessage(int quizId, string? username, string content);
+    Task<IEnumerable<CommentDto>> GetRecentComments(int quizId);
 }
