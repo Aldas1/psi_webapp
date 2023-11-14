@@ -2,7 +2,7 @@ namespace QuizAppApi.Events;
 
 public class EventBase<TEventArgs> where TEventArgs : EventArgs
 {
-    public static event EventHandler<TEventArgs>? Event;
+    public static event Func<object, TEventArgs, Task>? Event;
 
     public static void Raise(object sender, TEventArgs args)
     {

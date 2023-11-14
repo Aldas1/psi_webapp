@@ -14,7 +14,7 @@ public class LeaderboardService : ILeaderboardService
 
     public IEnumerable<UserLeaderboardResponseDto> GetUsersLeaderboard()
     {
-        return _userRepository.GetUsers().Select(user =>
+        return _userRepository.GetUsersAsync().Select(user =>
         {
             return new UserLeaderboardResponseDto
             {

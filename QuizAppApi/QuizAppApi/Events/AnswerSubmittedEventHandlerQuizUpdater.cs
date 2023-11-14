@@ -31,11 +31,11 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
 
     public override void RegisterEventHandler()
     {
-        AnswerSubmittedEvent.Event += UpdateQuizData;
+        AnswerSubmittedEvent.Event += UpdateQuizDataAsync;
     }
 
     protected override void UnregisterEventHandler()
     {
-        AnswerSubmittedEvent.Event -= UpdateQuizData;
+        AnswerSubmittedEvent.Event -= UpdateQuizDataAsync;
     }
 }

@@ -20,7 +20,7 @@ public class LoginService : ILoginService
 
     public string? Login(string username, string password)
     {
-        var user = _userRepository.GetUser(username);
+        var user = _userRepository.GetUserAsync(username);
         if (user == null) return null;
         if (!BC.Verify(password, user.PasswordHash)) return null;
 

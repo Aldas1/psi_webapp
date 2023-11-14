@@ -36,12 +36,12 @@ public class LoginServiceTest
     {
         var password = "secure password";
         var user = new User("testUser", BC.HashPassword(password));
-        _mockUserRepository.Setup(repo => repo.GetUser(user.Username)).Returns(user);
+        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).Returns(user);
 
         var result = _loginService.Login(user.Username, "wrong password");
 
         Assert.IsNull(result);
-        _mockUserRepository.Verify(repo => repo.GetUser(user.Username), Times.Once);
+        _mockUserRepository.Verify(repo => repo.GetUserAsync(user.Username), Times.Once);
     }
 
     [Test]
@@ -49,12 +49,12 @@ public class LoginServiceTest
     {
         var password = "secure password";
         var user = new User("testUser", BC.HashPassword(password));
-        _mockUserRepository.Setup(repo => repo.GetUser(user.Username)).Returns(user);
+        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).Returns(user);
         _mockConfiguration.Setup(conf => conf["JWT_SECRET"]).Returns("sekjf;lkjfkjalkdjf;f   fadf dfad f dfalkdjf");
 
         var result = _loginService.Login(user.Username, password);
 
         Assert.IsNotNull(result);
-        _mockUserRepository.Verify(repo => repo.GetUser(user.Username), Times.Once);
+        _mockUserRepository.Verify(repo => repo.GetUserAsync(user.Username), Times.Once);
     }
 }

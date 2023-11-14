@@ -16,11 +16,11 @@ public class AnswerSubmittedEventHandlerUserUpdater : EventHandlerBase
         if (args.Username == null) return;
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IUserRepository>();
-        var user = repo?.GetUser(args.Username);
+        var user = repo?.GetUserAsync(args.Username);
         if (user == null) return;
         user.TotalScore += args.Score;
         user.NumberOfSubmissions++;
-        repo?.Save();
+        repo?.SaveAsync();
     }
     
     public override void RegisterEventHandler()

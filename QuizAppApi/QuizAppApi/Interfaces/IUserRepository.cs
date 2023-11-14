@@ -4,8 +4,8 @@ namespace QuizAppApi.Interfaces;
 
 public interface IUserRepository
 {
-    void AddUser(User user);
-    User? GetUser(string username);
-    IEnumerable<User> GetUsers();
-    void Save();
+    Task AddUserAsync(User user);
+    Task<User?> GetUserAsync(string username);
+    Task<IEnumerable<User>> GetUsersAsync();
+    Task SaveAsync();
 }
