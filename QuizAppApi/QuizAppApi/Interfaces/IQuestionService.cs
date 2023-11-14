@@ -3,5 +3,5 @@
 namespace QuizAppApi.Interfaces;
 public interface IQuestionService
 {
-    IEnumerable<QuestionResponseDto>? GetQuestions(int id);
+    Task<IEnumerable<QuestionResponseDto>?> GetQuestions(int id);
 }

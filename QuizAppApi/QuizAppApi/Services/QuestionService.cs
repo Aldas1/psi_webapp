@@ -24,9 +24,9 @@ public class QuestionService : IQuestionService
         _openTextDtoConverter = openTextDtoConverter;
     }
 
-    public IEnumerable<QuestionResponseDto>? GetQuestions(int id)
+    public async Task<IEnumerable<QuestionResponseDto>?> GetQuestions(int id)
     {
-        var quiz = _quizRepository.GetQuizByIdAsync(id);
+        var quiz = await _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
         {
             return null;
