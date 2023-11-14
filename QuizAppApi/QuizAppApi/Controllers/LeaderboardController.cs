@@ -18,6 +18,6 @@ public class LeaderboardController : ControllerBase
     [HttpGet("users")]
     public ActionResult<IEnumerable<UserLeaderboardResponseDto>> GetUsersLeaderboard()
     {
-        return Ok(_leaderboardService.GetUsersLeaderboard());
+        return Ok(_leaderboardService.GetUsersLeaderboardAsync());
     }
 }

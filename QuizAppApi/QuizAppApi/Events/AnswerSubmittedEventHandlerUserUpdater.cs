@@ -11,25 +11,25 @@ public class AnswerSubmittedEventHandlerUserUpdater : EventHandlerBase
         _serviceProvider = serviceProvider;
     }
 
-    private void UpdateUserData(object sender, AnswerSubmittedEventArgs args)
+    private async Task UpdateUserDataAsync(object sender, AnswerSubmittedEventArgs args)
     {
         if (args.Username == null) return;
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IUserRepository>();
-        var user = repo?.GetUserAsync(args.Username);
+        var user = await repo?.GetUserAsync(args.Username);
         if (user == null) return;
         user.TotalScore += args.Score;
         user.NumberOfSubmissions++;
-        repo?.SaveAsync();
+        await repo?.SaveAsync();
     }
     
     public override void RegisterEventHandler()
     {
-        AnswerSubmittedEvent.Event += UpdateUserData;
+        AnswerSubmittedEvent.Event += UpdateUserDataAsync;
     }
 
     protected override void UnregisterEventHandler()
     {
-        AnswerSubmittedEvent.Event -= UpdateUserData;
+        AnswerSubmittedEvent.Event -= UpdateUserDataAsync;
     }
 }
