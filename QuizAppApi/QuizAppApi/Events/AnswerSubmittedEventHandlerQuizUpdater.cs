@@ -11,7 +11,7 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
         _serviceProvider = serviceProvider;
     }
 
-    private async Task UpdateQuizData(object sender, AnswerSubmittedEventArgs args)
+    private async Task UpdateQuizDataAsync(object sender, AnswerSubmittedEventArgs args)
     {
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IQuizRepository>();
@@ -22,7 +22,12 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
             await repo?.SaveAsync();
         }
     }
-    
+
+    private void UpdateQuizData(object sender, AnswerSubmittedEventArgs args)
+    {
+        _ = UpdateQuizDataAsync(sender, args);
+    }
+
     public override void RegisterEventHandler()
     {
         AnswerSubmittedEvent.Event += UpdateQuizData;

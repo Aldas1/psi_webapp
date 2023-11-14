@@ -24,6 +24,8 @@ public class QuizRepository : IQuizRepository
     public async Task<IEnumerable<Quiz>> GetQuizzesAsync()
     {
         return _context.Quizzes;
+        //    return await _context.Quizzes.ToListAsync();
+        //works fine without this, but the compiler threw a warning that return _context.Quizzes; is synchronous 
     }
 
     public async Task<Quiz?> GetQuizByIdAsync(int id)
