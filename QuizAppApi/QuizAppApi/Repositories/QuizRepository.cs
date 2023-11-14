@@ -28,11 +28,6 @@ public class QuizRepository : IQuizRepository
     
     public async Task<Quiz?> GetQuizByIdAsync(int id)
     {
-        /*return await _context.Quizzes
-            .Include(
-            quiz => quiz.Questions
-            .Where(question => question.Quiz.Id == id))
-            .ToListAsync();*/
         return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
     }
 

@@ -20,7 +20,6 @@ public class AnswerService : IAnswerService
     public async Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
         var response = new AnswerSubmitResponseDto();
-        //sometimes it crashes here
         var quiz = await _quizRepository.GetQuizByIdAsync(id);
         var correctAnswers = 0;
 
