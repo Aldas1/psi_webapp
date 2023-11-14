@@ -59,10 +59,9 @@ interface UserLeaderboardResponseDto {
   numberOfSubmissions: number;
 }
 interface DiscussionComment {
-  commentId: number;
   content: string;
   username?: string;
-  date: Date;
+  date: string;
 }
 
 export type {

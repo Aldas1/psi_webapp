@@ -151,8 +151,8 @@ function QuizPreview() {
         <ModalContent>
           <ModalHeader>Quiz discussion</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <QuizDiscussionBlock />
+          <ModalBody display="flex" alignItems="stretch">
+            <QuizDiscussionBlock id={quiz.id} />
           </ModalBody>
         </ModalContent>
       </Modal>
