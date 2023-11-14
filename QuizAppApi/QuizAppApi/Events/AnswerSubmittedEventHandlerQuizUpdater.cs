@@ -15,6 +15,7 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
     {
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IQuizRepository>();
+        //crashed here as well
         var quiz = await repo?.GetQuizByIdAsync(args.QuizId);
         if (quiz != null)
         {
@@ -25,7 +26,7 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
 
     private void UpdateQuizData(object sender, AnswerSubmittedEventArgs args)
     {
-        _ = UpdateQuizDataAsync(sender, args);
+        UpdateQuizDataAsync(sender, args).Wait();
     }
 
     public override void RegisterEventHandler()

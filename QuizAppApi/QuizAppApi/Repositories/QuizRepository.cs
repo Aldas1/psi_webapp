@@ -23,13 +23,16 @@ public class QuizRepository : IQuizRepository
 
     public async Task<IEnumerable<Quiz>> GetQuizzesAsync()
     {
-        return _context.Quizzes;
-        //    return await _context.Quizzes.ToListAsync();
-        //works fine without this, but the compiler threw a warning that return _context.Quizzes; is synchronous 
+        return await _context.Quizzes.ToListAsync();
     }
-
+    
     public async Task<Quiz?> GetQuizByIdAsync(int id)
     {
+        /*return await _context.Quizzes
+            .Include(
+            quiz => quiz.Questions
+            .Where(question => question.Quiz.Id == id))
+            .ToListAsync();*/
         return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
     }
 

@@ -17,18 +17,19 @@ public class AnswerService : IAnswerService
         _answerCheckerService = answerCheckerService;
     }
 
-    public async  Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username)
+    public async Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
         var response = new AnswerSubmitResponseDto();
+        //sometimes it crashes here
         var quiz = await _quizRepository.GetQuizByIdAsync(id);
         var correctAnswers = 0;
-        
+
         if (quiz == null)
         {
             response.Status = "failed";
             return response;
         }
-        
+
         response.Status = "success";
 
         foreach (var answer in request)
@@ -44,14 +45,14 @@ public class AnswerService : IAnswerService
 
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
-        
+
         AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
         {
             QuizId = quiz.Id,
             Score = response.Score,
             Username = username
         });
-        
+
         return response;
     }
 
@@ -65,9 +66,9 @@ public class AnswerService : IAnswerService
                 {
                     return true;
                 }
-        
+
                 break;
-        
+
             case MultipleChoiceQuestion multipleChoiceQuestion:
                 if (answerRequest.OptionNames != null)
                 {
@@ -77,9 +78,9 @@ public class AnswerService : IAnswerService
                         return true;
                     }
                 }
-        
+
                 break;
-        
+
             case OpenTextQuestion openTextQuestion:
                 var answerText = answerRequest.AnswerText;
                 if (answerText != null &&
@@ -87,7 +88,7 @@ public class AnswerService : IAnswerService
                 {
                     return true;
                 }
-        
+
                 break;
         }
 
