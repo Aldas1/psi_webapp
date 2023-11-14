@@ -24,11 +24,6 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
         }
     }
 
-    private void UpdateQuizData(object sender, AnswerSubmittedEventArgs args)
-    {
-        UpdateQuizDataAsync(sender, args).Wait();
-    }
-
     public override void RegisterEventHandler()
     {
         AnswerSubmittedEvent.Event += UpdateQuizDataAsync;

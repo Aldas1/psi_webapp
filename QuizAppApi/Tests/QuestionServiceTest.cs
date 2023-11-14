@@ -118,8 +118,6 @@ public class QuestionServiceTest
             expectedQuestions.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex,
             result.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex);
 
-        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(0), Times.Once);
-        //better version. use it once verified that all tests work correctly after async
-        //_mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
 }

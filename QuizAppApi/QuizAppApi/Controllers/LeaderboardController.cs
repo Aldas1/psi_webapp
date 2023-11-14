@@ -16,8 +16,8 @@ public class LeaderboardController : ControllerBase
     }
 
     [HttpGet("users")]
-    public ActionResult<IEnumerable<UserLeaderboardResponseDto>> GetUsersLeaderboard()
+    public async Task<ActionResult<IEnumerable<UserLeaderboardResponseDto>>> GetUsersLeaderboard()
     {
-        return Ok(_leaderboardService.GetUsersLeaderboardAsync());
+        return Ok(await _leaderboardService.GetUsersLeaderboardAsync());
     }
 }
