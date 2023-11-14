@@ -18,9 +18,9 @@ public class LoginService : ILoginService
         _configuration = configuration;
     }
 
-    public string? Login(string username, string password)
+    public async Task<string?> LoginAsync(string username, string password)
     {
-        var user = _userRepository.GetUserAsync(username);
+        var user = await _userRepository.GetUserAsync(username);
         if (user == null) return null;
         if (!BC.Verify(password, user.PasswordHash)) return null;
 

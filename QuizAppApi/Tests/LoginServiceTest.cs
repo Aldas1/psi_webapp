@@ -32,27 +32,27 @@ public class LoginServiceTest
     }
 
     [Test]
-    public void Login_HandlesUnauthorizedUser()
+    public async Task Login_HandlesUnauthorizedUser()
     {
         var password = "secure password";
         var user = new User("testUser", BC.HashPassword(password));
-        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).Returns(user);
+        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).ReturnsAsync(user);
 
-        var result = _loginService.Login(user.Username, "wrong password");
+        var result = await _loginService.LoginAsync(user.Username, "wrong password");
 
         Assert.IsNull(result);
         _mockUserRepository.Verify(repo => repo.GetUserAsync(user.Username), Times.Once);
     }
 
     [Test]
-    public void Login_GeneratesToken()
+    public async Task Login_GeneratesToken()
     {
         var password = "secure password";
         var user = new User("testUser", BC.HashPassword(password));
-        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).Returns(user);
+        _mockUserRepository.Setup(repo => repo.GetUserAsync(user.Username)).ReturnsAsync(user);
         _mockConfiguration.Setup(conf => conf["JWT_SECRET"]).Returns("sekjf;lkjfkjalkdjf;f   fadf dfad f dfalkdjf");
 
-        var result = _loginService.Login(user.Username, password);
+        var result = await _loginService.LoginAsync(user.Username, password);
 
         Assert.IsNotNull(result);
         _mockUserRepository.Verify(repo => repo.GetUserAsync(user.Username), Times.Once);
