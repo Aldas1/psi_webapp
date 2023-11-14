@@ -39,7 +39,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void CreateQuiz_ReturnsCorrectResponse()
+    public async Task CreateQuiz_ReturnsCorrectResponse()
     {
         var request = new QuizManipulationRequestDto
         {
@@ -60,10 +60,10 @@ public class QuizServiceTests
         };
         var expectedResponse = new QuizManipulationResponseDto { Status = "success", Id = 1 };
 
-        _mockQuizRepository.Setup(repo => repo.AddQuizAsync(It.IsAny<Quiz>())).Returns(new Quiz { Id = 1 });
+        _mockQuizRepository.Setup(repo => repo.AddQuizAsync(It.IsAny<Quiz>())).ReturnsAsync(new Quiz { Id = 1 });
         _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
-        var result = _quizService.CreateQuizAsync(request);
+        var result = await _quizService.CreateQuizAsync(request);
 
         Assert.AreEqual(expectedResponse.Status, result.Status);
         Assert.AreEqual(expectedResponse.Id, result.Id);
@@ -71,7 +71,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void GetQuizzes_ReturnsCorrectQuizzes()
+    public async Task GetQuizzes_ReturnsCorrectQuizzes()
     {
         var quizzes = new List<Quiz>
         {
@@ -79,9 +79,9 @@ public class QuizServiceTests
             new Quiz { Id = 2, Name = "Quiz 2"}
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizzesAsync()).Returns(quizzes);
+        _mockQuizRepository.Setup(repo => repo.GetQuizzesAsync()).ReturnsAsync(quizzes);
 
-        var result = _quizService.GetQuizzesAsync();
+        var result = await _quizService.GetQuizzesAsync();
 
         Assert.AreEqual(quizzes.Count, result.Count());
         Assert.IsTrue(result.Any(q => q.Name == "Quiz 1"));
@@ -89,14 +89,14 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void DeleteQuiz_DeletesCorrectQuiz()
+    public async Task DeleteQuiz_DeletesCorrectQuiz()
     {
         int quizIdToDelete = 1;
         var quizToDelete = new Quiz { Id = quizIdToDelete, Name = "Quiz that will soon be *poof*" };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizIdToDelete)).Returns(quizToDelete);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizIdToDelete)).ReturnsAsync(quizToDelete);
 
-        var result = _quizService.DeleteQuizAsync(quizIdToDelete);
+        var result = await _quizService.DeleteQuizAsync(quizIdToDelete);
 
         Assert.IsTrue(result);
         _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(quizIdToDelete), Times.Once);
@@ -104,13 +104,13 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void GetQuiz_ReturnsProperQuiz()
+    public async Task GetQuiz_ReturnsProperQuiz()
     {
         int quizId = 10;
         var quiz = new Quiz { Id = quizId, Name = "Cool name" };
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizId)).Returns(quiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizId)).ReturnsAsync(quiz);
 
-        var result = _quizService.GetQuizAsync(quizId);
+        var result = await _quizService.GetQuizAsync(quizId);
 
         Assert.AreEqual(quiz.Name, result.Name);
         Assert.AreEqual(quiz.Id, result.Id);
@@ -118,7 +118,7 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void UpdateQuiz_SuccessfulUpdate()
+    public async Task UpdateQuiz_SuccessfulUpdate()
     {
         var existingQuizId = 1;
         var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
@@ -141,11 +141,11 @@ public class QuizServiceTests
             }
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(existingQuizId)).Returns(existingQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(existingQuizId)).ReturnsAsync(existingQuiz);
         _mockQuizRepository.Setup(repo => repo.SaveAsync()).Verifiable();
         _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
-        var result = _quizService.UpdateQuizAsync(existingQuizId, newQuizData);
+        var result = await _quizService.UpdateQuizAsync(existingQuizId, newQuizData);
 
         Assert.AreEqual("success", result.Status);
         Assert.AreEqual(existingQuizId, result.Id);
@@ -153,23 +153,23 @@ public class QuizServiceTests
     }
 
     [Test]
-    public void UpdateQuiz_QuizNotFound()
+    public async Task UpdateQuiz_QuizNotFound()
     {
         var nonExistentQuizId = 100;
         var editRequest = new QuizManipulationRequestDto
         {
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(nonExistentQuizId)).Returns((Quiz)null);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(nonExistentQuizId)).ReturnsAsync((Quiz)null);
         _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
-        var result = _quizService.UpdateQuizAsync(nonExistentQuizId, editRequest);
+        var result = await _quizService.UpdateQuizAsync(nonExistentQuizId, editRequest);
 
         Assert.AreEqual("Quiz not found", result.Status);
     }
 
     [Test]
-    public void UpdateQuiz_DataConversionException()
+    public async Task UpdateQuiz_DataConversionException()
     {
         var existingQuizId = 1;
         var existingQuiz = new Quiz { Id = existingQuizId, Name = "Old Name" };
@@ -188,10 +188,10 @@ public class QuizServiceTests
             }
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(existingQuizId)).Returns(existingQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(existingQuizId)).ReturnsAsync(existingQuiz);
         _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.CreateFromParameters(It.IsAny<QuestionParametersDto>())).Returns(new SingleChoiceQuestion());
 
-        var result = _quizService.UpdateQuizAsync(existingQuizId, editRequest);
+        var result = await _quizService.UpdateQuizAsync(existingQuizId, editRequest);
 
         Assert.AreEqual("Failed to create a question", result.Status);
     }

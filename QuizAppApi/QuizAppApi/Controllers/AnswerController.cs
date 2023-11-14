@@ -19,6 +19,6 @@ public class AnswerController : ControllerBase
     [RequireHttps]
     public ActionResult<AnswerSubmitResponseDto> SubmitQuizAnswers(int id, [FromBody] List<AnswerSubmitRequestDto> request)
     {
-        return Ok(_answerService.SubmitAnswers(id, request, (string?)HttpContext.Items["UserName"]));
+        return Ok(_answerService.SubmitAnswersAsync(id, request, (string?)HttpContext.Items["UserName"]));
     }
 }

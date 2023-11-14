@@ -18,7 +18,7 @@ public class QuestionController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuestionResponseDto>>> GetQuestions(int id)
     {
-        var questions = await _questionService.GetQuestions(id);
+        var questions = await _questionService.GetQuestionsAsync(id);
         if (questions == null)
         {
             return NotFound();

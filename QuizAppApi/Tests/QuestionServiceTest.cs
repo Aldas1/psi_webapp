@@ -43,7 +43,7 @@ public class QuestionServiceTest
     }
 
     [Test]
-    public void GetQuestions_ReturnsCorrectQuestions()
+    public async Task GetQuestions_ReturnsCorrectQuestions()
     {
         var mockQuiz = new Quiz
         {
@@ -91,12 +91,12 @@ public class QuestionServiceTest
             }
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(0)).Returns(mockQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(0)).ReturnsAsync(mockQuiz);
 
         _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.GenerateParameters(It.IsAny<SingleChoiceQuestion>()))
             .Returns(expectedQuestions.ElementAt(0).QuestionParameters);
 
-        var result = _questionService.GetQuestions(0);
+        var result = await _questionService.GetQuestionsAsync(0);
 
         Assert.IsNotNull(expectedQuestions);
         Assert.IsNotNull(result);
@@ -119,5 +119,7 @@ public class QuestionServiceTest
             result.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex);
 
         _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(0), Times.Once);
+        //better version. use it once verified that all tests work correctly after async
+        //_mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
 }

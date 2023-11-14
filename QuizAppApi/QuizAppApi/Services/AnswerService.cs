@@ -17,10 +17,10 @@ public class AnswerService : IAnswerService
         _answerCheckerService = answerCheckerService;
     }
 
-    public AnswerSubmitResponseDto SubmitAnswers(int id, List<AnswerSubmitRequestDto> request, string? username)
+    public async  Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
         var response = new AnswerSubmitResponseDto();
-        var quiz = _quizRepository.GetQuizByIdAsync(id);
+        var quiz = await _quizRepository.GetQuizByIdAsync(id);
         var correctAnswers = 0;
         
         if (quiz == null)
