@@ -15,7 +15,6 @@ public class DiscussionHub : Hub
 
     public async Task PostComment(string? username, string content, int quizId)
     {
-        Console.WriteLine($"Got message. Quiz id: {quizId}");
         var comment = await _discussionService.SaveMessage(quizId, username, content);
         await Clients.Group(quizId.ToString()).SendAsync("NewMessage", comment);
     }
