@@ -161,7 +161,7 @@ public class AnswerServiceTest
     
         // Act
         var result = _answerService.SubmitAnswers(1, answerRequest);
-        _mockAnswerCheckerService.Verify(mock => mock.CheckOpenTextAnswer(It.IsAny<OpenTextQuestion>(), It.IsAny<string>(), false, true), Times.Once);
+        _mockAnswerCheckerService.Verify(mock => mock.CheckOpenTextAnswer(It.IsAny<OpenTextQuestion>(), It.IsAny<string>(), true, true), Times.Once);
     
         // Assert
         Assert.AreEqual(expectedResponse.Status, result.Status);
