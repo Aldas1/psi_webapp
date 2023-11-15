@@ -15,7 +15,7 @@ public class DiscussionHub : Hub
 
     public async Task PostComment(string? username, string content, int quizId)
     {
-        var comment = await _discussionService.SaveMessage(quizId, username, content);
+        var comment = _discussionService.SaveMessage(quizId, username, content);
         await Clients.Group(quizId.ToString()).SendAsync("NewMessage", comment);
     }
 
@@ -23,7 +23,7 @@ public class DiscussionHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, quizId.ToString());
         await Clients.Client(Context.ConnectionId)
-            .SendAsync("NewMessages", await _discussionService.GetRecentComments(quizId));
+            .SendAsync("NewMessages", _discussionService.GetRecentComments(quizId));
         await Clients.Client(Context.ConnectionId).SendAsync("NewMessage",
             new CommentDto { Content = "Welcome to quiz discussion. Be polite!", Username = "system", Date = DateTime.Now });
     }

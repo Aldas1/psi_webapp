@@ -73,6 +73,7 @@ builder.Services
 builder.Services.AddScoped<IQuestionDtoConverterService<OpenTextQuestion>, OpenTextQuestionDtoConverterService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddSingleton<ICacheRepository, CacheRepository>();
 builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
