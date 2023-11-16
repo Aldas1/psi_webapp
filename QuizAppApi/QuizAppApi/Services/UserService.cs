@@ -20,17 +20,17 @@ public class UserService : IUserService
             { Username = user.Username, TotalScore = user.TotalScore, NumberOfSubmissions = user.NumberOfSubmissions };
     }
 
-    public UserResponseDto? CreateUser(UserRequestDto request)
+    public async Task<UserResponseDto?> CreateUserAsync(UserRequestDto request)
     {
-        if (_userRepository.GetUser(request.Username) != null) return null;
+        if (await _userRepository.GetUserAsync(request.Username) != null) return null;
         var user = new User(request.Username, BC.HashPassword(request.Password));
-        _userRepository.AddUser(user);
+        await _userRepository.AddUserAsync(user);
         return MapUserToResponse(user);
     }
 
-    public UserResponseDto? GetUser(string username)
+    public async Task<UserResponseDto?> GetUserAsync(string username)
     {
-        var user = _userRepository.GetUser(username);
+        var user = await _userRepository.GetUserAsync(username);
         return user == null ? null : MapUserToResponse(user);
     }
 }

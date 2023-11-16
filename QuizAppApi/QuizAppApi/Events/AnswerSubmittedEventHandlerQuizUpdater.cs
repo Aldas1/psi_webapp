@@ -11,25 +11,25 @@ public class AnswerSubmittedEventHandlerQuizUpdater : EventHandlerBase
         _serviceProvider = serviceProvider;
     }
 
-    private void UpdateQuizData(object sender, AnswerSubmittedEventArgs args)
+    private async Task UpdateQuizDataAsync(object sender, AnswerSubmittedEventArgs args)
     {
         using var scope = _serviceProvider.CreateScope();
         var repo = scope.ServiceProvider.GetService<IQuizRepository>();
-        var quiz = repo?.GetQuizById(args.QuizId);
+        var quiz = await repo?.GetQuizByIdAsync(args.QuizId);
         if (quiz != null)
         {
             quiz.NumberOfSubmitters++;
-            repo?.Save();
+            await repo?.SaveAsync();
         }
     }
-    
+
     public override void RegisterEventHandler()
     {
-        AnswerSubmittedEvent.Event += UpdateQuizData;
+        AnswerSubmittedEvent.Event += UpdateQuizDataAsync;
     }
 
     protected override void UnregisterEventHandler()
     {
-        AnswerSubmittedEvent.Event -= UpdateQuizData;
+        AnswerSubmittedEvent.Event -= UpdateQuizDataAsync;
     }
 }
