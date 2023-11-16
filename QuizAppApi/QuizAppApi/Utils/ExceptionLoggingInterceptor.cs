@@ -1,5 +1,6 @@
 using System;
 using Castle.DynamicProxy;
+using QuizAppApi.Exceptions;
 using Serilog;
 
 namespace QuizAppApi.Utils;
@@ -21,7 +22,18 @@ public class ExceptionLoggingInterceptor : IInterceptor
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception in method {MethodName}", invocation.Method.Name);
+            LogException(ex);
+            throw;
+        }
+    }
+    
+    private void LogException(Exception exception)
+    {
+        _logger.LogError(exception, "Exception in method {MethodName}", exception.Message);
+
+        if (exception is CustomException customException)
+        {
+            Log.Information("CustomException details: {Details}, ErrorCode: {ErrorCode}", customException.Message, customException.ErrorCode);
         }
     }
 }

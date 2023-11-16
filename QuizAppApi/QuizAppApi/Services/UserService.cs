@@ -1,4 +1,5 @@
 using QuizAppApi.DTOs;
+using QuizAppApi.Exceptions;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using BC = BCrypt.Net.BCrypt;
@@ -22,7 +23,11 @@ public class UserService : IUserService
 
     public UserResponseDTO? CreateUser(UserRequestDTO request)
     {
-        if (_userRepository.GetUser(request.Username) != null) return null;
+        if (_userRepository.GetUser(request.Username) != null)
+        {
+            throw new CustomException("User already exists.", "USER_EXISTS");
+        }
+
         var user = new User(request.Username, BC.HashPassword(request.Password));
         _userRepository.AddUser(user);
         return MapUserToResponse(user);

@@ -14,6 +14,27 @@ ASP.NET based quiz app, which helps students and teachers to conduct quizes and 
 ![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 
+## Table of contents
+
+- [Quiz app](#quiz-app)
+  - [Description](#description)
+  - [Tech stack](#tech-stack)
+  - [Table of contents](#table-of-contents)
+  - [Development setup](#development-setup)
+    - [DB \& OpenAI API setup](#db--openai-api-setup)
+    - [Backend setup](#backend-setup)
+    - [Backend tests](#backend-tests)
+    - [Frontend setup](#frontend-setup)
+  - [Branching strategy](#branching-strategy)
+    - [Branches](#branches)
+  - [Naming](#naming)
+    - [Branch naming](#branch-naming)
+      - [Example](#example)
+    - [Commit naming](#commit-naming)
+      - [Example](#example-1)
+  - [Repository rules](#repository-rules)
+  - [Authors](#authors)
+
 ## Development setup
 
 This repo contains two projects: the web api written using ASP.NET (`QuizAppApi`) and react frontend using Vite (`better-frontend`).
@@ -65,27 +86,6 @@ cd better-frontend/
 npm install
 npm run dev
 ```
-
-## Table of contents
-
-- [Quiz app](#quiz-app)
-  - [Description](#description)
-  - [Tech stack](#tech-stack)
-  - [Development setup](#development-setup)
-    - [DB setup](#db-setup)
-    - [Backend setup](#backend-setup)
-    - [Backend tests](#backend-tests)
-    - [Frontend setup](#frontend-setup)
-  - [Table of contents](#table-of-contents)
-  - [Branching strategy](#branching-strategy)
-    - [Branches](#branches)
-  - [Naming](#naming)
-    - [Branch naming](#branch-naming)
-      - [Example](#example)
-    - [Commit naming](#commit-naming)
-      - [Example](#example-1)
-  - [Repository rules](#repository-rules)
-  - [Authors](#authors)
 
 ## Branching strategy
 
