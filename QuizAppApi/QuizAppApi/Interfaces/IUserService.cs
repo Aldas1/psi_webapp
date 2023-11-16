@@ -4,6 +4,6 @@ namespace QuizAppApi.Interfaces;
 
 public interface IUserService
 {
-    UserResponseDto? CreateUser(UserRequestDto request);
-    UserResponseDto? GetUser(string username);
+    Task<UserResponseDto?> CreateUserAsync(UserRequestDto request);
+    Task<UserResponseDto?> GetUserAsync(string username);
 }
