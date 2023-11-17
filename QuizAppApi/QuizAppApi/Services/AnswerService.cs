@@ -83,7 +83,7 @@ public class AnswerService : IAnswerService
             case OpenTextQuestion openTextQuestion:
                 var answerText = answerRequest.AnswerText;
                 if (answerText != null &&
-                    _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true))
+                    _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true, useLowercaseComparison: true))
                 {
                     return true;
                 }

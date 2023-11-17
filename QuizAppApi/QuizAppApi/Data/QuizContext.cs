@@ -27,4 +27,5 @@ public class QuizContext : DbContext
     public DbSet<OpenTextQuestion> OpenTextQuestions { get; set; }
     public DbSet<Option> Options { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 }

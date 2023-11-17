@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizAppApi.Data;
 
@@ -11,9 +12,11 @@ using QuizAppApi.Data;
 namespace QuizAppApi.Data.Migrations
 {
     [DbContext(typeof(QuizContext))]
-    partial class QuizContextModelSnapshot : ModelSnapshot
+    [Migration("20231113111354_AddComments")]
+    partial class AddComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,13 +43,15 @@ namespace QuizAppApi.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("QuizId")
+                    b.Property<int?>("QuizId")
                         .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("QuizId");
 
                     b.ToTable("Comments");
                 });
@@ -171,6 +176,13 @@ namespace QuizAppApi.Data.Migrations
                     b.HasDiscriminator().HasValue("SingleChoiceQuestion");
                 });
 
+            modelBuilder.Entity("QuizAppApi.Models.Comment", b =>
+                {
+                    b.HasOne("QuizAppApi.Models.Quiz", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("QuizId");
+                });
+
             modelBuilder.Entity("QuizAppApi.Models.Question", b =>
                 {
                     b.HasOne("QuizAppApi.Models.Quiz", "Quiz")
@@ -195,6 +207,8 @@ namespace QuizAppApi.Data.Migrations
 
             modelBuilder.Entity("QuizAppApi.Models.Quiz", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Questions");
                 });
 
