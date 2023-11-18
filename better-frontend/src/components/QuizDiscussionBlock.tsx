@@ -9,17 +9,17 @@ import {
 } from "@chakra-ui/react";
 import useDiscussion from "../hooks/useDiscussion";
 import { DiscussionComment } from "../types";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function QuizDiscussionBlock({ id }: { id: number }) {
   const { comments, postComment } = useDiscussion(id);
 
   return (
-    <Container display="flex" flexDirection="column">
+    <Container>
       {comments !== null ? (
         <CommentArea comments={comments} />
       ) : (
-        <Box flex="9">Loading...</Box>
+        <Box>Loading...</Box>
       )}
       <PostComment postComment={postComment} />
     </Container>
@@ -40,7 +40,7 @@ function PostComment({
   }
 
   return (
-    <HStack flex="1">
+    <HStack>
       <Input
         value={inpValue}
         onChange={(e) => setInpValue(e.target.value)}
@@ -60,8 +60,18 @@ function CommentArea({ comments }: { comments: DiscussionComment[] }) {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
+  const messagesEnd = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [comments]);
+
   return (
-    <List flex="9">
+    <List height="80vh" overflow="scroll">
       {sortedComments.map((c, i) => {
         return (
           <ListItem key={i}>
@@ -69,6 +79,7 @@ function CommentArea({ comments }: { comments: DiscussionComment[] }) {
           </ListItem>
         );
       })}
+      <div ref={messagesEnd}></div>
     </List>
   );
 }
