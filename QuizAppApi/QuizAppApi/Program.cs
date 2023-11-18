@@ -12,6 +12,7 @@ using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Repositories;
 using QuizAppApi.Services;
+using QuizAppApi.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,7 +73,7 @@ builder.Services
     .AddScoped<IQuestionDtoConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDtoConverterService>();
 builder.Services.AddScoped<IQuestionDtoConverterService<OpenTextQuestion>, OpenTextQuestionDtoConverterService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddTransient<ICommentRepository, CommentRepository>();
 builder.Services.AddSingleton<ICacheRepository, CacheRepository>();
 builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 {
@@ -85,7 +86,7 @@ builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 builder.Services.AddDbContext<QuizContext>(options =>
     options
         .UseLazyLoadingProxies()
-        .UseSqlServer(builder.Configuration["ConnectionString"]));
+        .UseSqlServer(builder.Configuration["ConnectionString"]), ServiceLifetime.Transient, ServiceLifetime.Transient);
 builder.Services.AddScoped<IAnswerCheckerService, AnswerCheckerService>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -109,6 +110,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddEventHandler<AnswerSubmittedEventHandlerQuizUpdater>();
 builder.Services.AddEventHandler<AnswerSubmittedEventHandlerUserUpdater>();
 
+builder.Services.AddSingleton<DiscussionCacheDbSyncWorker>();
+
 var app = builder.Build();
 
 app.UseEventHandlers();
@@ -127,4 +130,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseMiddleware<JwtUserMapperMiddleware>();
+app.Services.GetService<DiscussionCacheDbSyncWorker>()?.Start();
 app.Run();
