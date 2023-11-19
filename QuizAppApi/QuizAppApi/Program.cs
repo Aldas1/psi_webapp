@@ -18,8 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("log.txt")
-    .WriteTo.Console() // temporary
+    //.WriteTo.Console() // temporary
     .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddSingleton<IWindsorContainer>(provider =>
 {
