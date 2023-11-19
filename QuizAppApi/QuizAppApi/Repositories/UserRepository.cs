@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
@@ -13,14 +14,24 @@ public class UserRepository : IUserRepository
         _quizContext = quizContext;
     }
 
-    public void AddUser(User user)
+    public async Task AddUserAsync(User user)
     {
-        _quizContext.Users.Add(user);
-        _quizContext.SaveChanges();
+        await _quizContext.Users.AddAsync(user);
+        await _quizContext.SaveChangesAsync();
     }
 
-    public User? GetUser(string username)
+    public async Task<User?> GetUserAsync(string username)
     {
-        return _quizContext.Users.Find(username);
+        return await _quizContext.Users.FindAsync(username);
+    }
+
+    public async Task<IEnumerable<User>> GetUsersAsync()
+    {
+        return await _quizContext.Users.ToListAsync();
+    }
+
+    public async Task SaveAsync()
+    {
+        await _quizContext.SaveChangesAsync();
     }
 }

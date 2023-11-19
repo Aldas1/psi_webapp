@@ -1,11 +1,11 @@
-﻿using QuizAppApi.DTOs;
+﻿using QuizAppApi.Dtos;
 
 namespace QuizAppApi.Interfaces;
 public interface IQuizService
 {
-    QuizManipulationResponseDTO CreateQuiz(QuizManipulationRequestDTO request);
-    QuizManipulationResponseDTO UpdateQuiz(int id, QuizManipulationRequestDTO editRequest);
-    IEnumerable<QuizResponseDTO> GetQuizzes();
-    QuizResponseDTO? GetQuiz(int id);
-    bool DeleteQuiz(int id);
+    Task<QuizManipulationResponseDto> CreateQuizAsync(QuizManipulationRequestDto request);
+    Task<QuizManipulationResponseDto> UpdateQuizAsync(int id, QuizManipulationRequestDto editRequest);
+    Task<IEnumerable<QuizResponseDto>> GetQuizzesAsync();
+    Task<QuizResponseDto?> GetQuizAsync(int id);
+    Task<bool> DeleteQuizAsync(int id);
 }

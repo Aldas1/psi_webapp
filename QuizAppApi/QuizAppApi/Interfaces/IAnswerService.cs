@@ -1,9 +1,9 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Utils;
 
 namespace QuizAppApi.Interfaces;
 
 public interface IAnswerService
 {
-    AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request);
+    Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username = null);
 }

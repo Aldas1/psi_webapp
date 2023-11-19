@@ -1,14 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
+import { deleteQuiz, getQuiz, updateQuiz } from "../api/quizzes";
+import { getQuestions } from "../api/questions";
 import {
-  deleteQuiz,
-  getQuiz,
-  updateQuiz,
-} from "../api/quizzes";
-import {
-  getQuestions
-} from "../api/questions";
-import { Button, HStack, Spinner, useToast } from "@chakra-ui/react";
+  Button,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -17,6 +23,7 @@ import {
 import QuizEditor from "../components/QuizEditor";
 import { useState } from "react";
 import SoloGame from "../components/SoloGame";
+import QuizDiscussionBlock from "../components/QuizDiscussionBlock";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,
@@ -84,6 +91,8 @@ function QuizPreview() {
   const questionsIsLoading = questionsQuery.isLoading;
   const questionsIsError = questionsQuery.isError;
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   if (quizIsLoading || questionsIsLoading) {
     return <Spinner />;
   }
@@ -104,35 +113,50 @@ function QuizPreview() {
   }
 
   return (
-    <QuizEditor
-      quiz={quizForEdit ?? quiz}
-      preview={quizForEdit === null}
-      onQuizChange={(newQuiz) => setQuizForEdit(newQuiz)}
-      onSubmit={() => {
-        if (quizForEdit) {
-          quizMutation.mutate(quizForEdit);
+    <>
+      <QuizEditor
+        quiz={quizForEdit ?? quiz}
+        preview={quizForEdit === null}
+        onQuizChange={(newQuiz) => setQuizForEdit(newQuiz)}
+        onSubmit={() => {
+          if (quizForEdit) {
+            quizMutation.mutate(quizForEdit);
+          }
+        }}
+        previewBody={
+          <HStack>
+            {quiz.questions.length > 0 && (
+              <Button onClick={() => setInGame(true)}>Solo game</Button>
+            )}
+            <Button colorScheme="purple" onClick={() => setQuizForEdit(quiz)}>
+              Edit quiz
+            </Button>
+            <Button
+              colorScheme="red"
+              onClick={async () => {
+                await deleteQuiz(id);
+                navigate("/");
+              }}
+            >
+              Delete
+            </Button>
+            <Button variant="outline" onClick={onOpen}>
+              Discussion
+            </Button>
+          </HStack>
         }
-      }}
-      previewBody={
-        <HStack>
-          {quiz.questions.length > 0 && (
-            <Button onClick={() => setInGame(true)}>Solo game</Button>
-          )}
-          <Button colorScheme="purple" onClick={() => setQuizForEdit(quiz)}>
-            Edit quiz
-          </Button>
-          <Button
-            colorScheme="red"
-            onClick={async () => {
-              await deleteQuiz(id);
-              navigate("/");
-            }}
-          >
-            Delete
-          </Button>
-        </HStack>
-      }
-    />
+      />
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="full">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Quiz discussion</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display="flex" alignItems="stretch">
+            <QuizDiscussionBlock id={quiz.id} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
 

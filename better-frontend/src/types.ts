@@ -53,6 +53,17 @@ interface AnswerSubmitResponseDto {
   status: string;
 }
 
+interface UserLeaderboardResponseDto {
+  username: string;
+  averageScore: number;
+  numberOfSubmissions: number;
+}
+interface DiscussionComment {
+  content: string;
+  username?: string;
+  date: string;
+}
+
 export type {
   QuestionTypeDto,
   QuestionParametersDto,
@@ -63,4 +74,6 @@ export type {
   QuestionResponseDto,
   AnswerSubmitRequestDto,
   AnswerSubmitResponseDto,
+  UserLeaderboardResponseDto,
+  DiscussionComment,
 };

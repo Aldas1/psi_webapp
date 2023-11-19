@@ -1,8 +1,8 @@
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
+using QuizAppApi.Events;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
-using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 
@@ -17,18 +17,18 @@ public class AnswerService : IAnswerService
         _answerCheckerService = answerCheckerService;
     }
 
-    public AnswerSubmitResponseDTO SubmitAnswers(int id, List<AnswerSubmitRequestDTO> request)
+    public async Task<AnswerSubmitResponseDto> SubmitAnswersAsync(int id, List<AnswerSubmitRequestDto> request, string? username)
     {
-        var response = new AnswerSubmitResponseDTO();
-        var quiz = _quizRepository.GetQuizById(id);
+        var response = new AnswerSubmitResponseDto();
+        var quiz = await _quizRepository.GetQuizByIdAsync(id);
         var correctAnswers = 0;
-        
+
         if (quiz == null)
         {
             response.Status = "failed";
             return response;
         }
-        
+
         response.Status = "success";
 
         foreach (var answer in request)
@@ -44,10 +44,18 @@ public class AnswerService : IAnswerService
 
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
+
+        AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
+        {
+            QuizId = quiz.Id,
+            Score = response.Score,
+            Username = username
+        });
+
         return response;
     }
 
-    private bool IsAnswerCorrect(Question question, AnswerSubmitRequestDTO answerRequest)
+    private bool IsAnswerCorrect(Question question, AnswerSubmitRequestDto answerRequest)
     {
         switch (question)
         {
@@ -57,9 +65,9 @@ public class AnswerService : IAnswerService
                 {
                     return true;
                 }
-        
+
                 break;
-        
+
             case MultipleChoiceQuestion multipleChoiceQuestion:
                 if (answerRequest.OptionNames != null)
                 {
@@ -69,17 +77,17 @@ public class AnswerService : IAnswerService
                         return true;
                     }
                 }
-        
+
                 break;
-        
+
             case OpenTextQuestion openTextQuestion:
                 var answerText = answerRequest.AnswerText;
                 if (answerText != null &&
-                    _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true))
+                    _answerCheckerService.CheckOpenTextAnswer(openTextQuestion, answerText, trimWhitespace: true, useLowercaseComparison: true))
                 {
                     return true;
                 }
-        
+
                 break;
         }
 

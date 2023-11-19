@@ -1,6 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Enums;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
@@ -15,23 +15,23 @@ public class QuestionServiceTest
 {
     private IQuestionService? _questionService;
     private Mock<IQuizRepository>? _mockQuizRepository;
-    private Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDTOConverterService;
-    private Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDTOConverterService;
-    private Mock<IQuestionDTOConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDTOConverterService;
+    private Mock<IQuestionDtoConverterService<SingleChoiceQuestion>>? _mockSingleChoiceQuestionDtoConverterService;
+    private Mock<IQuestionDtoConverterService<MultipleChoiceQuestion>>? _mockMultipleChoiceQuestionDtoConverterService;
+    private Mock<IQuestionDtoConverterService<OpenTextQuestion>>? _mockOpenTextQuestionDtoConverterService;
 
     [SetUp]
     public void Setup()
     {
         _mockQuizRepository = new Mock<IQuizRepository>();
-        _mockSingleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<SingleChoiceQuestion>>();
-        _mockMultipleChoiceQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<MultipleChoiceQuestion>>();
-        _mockOpenTextQuestionDTOConverterService = new Mock<IQuestionDTOConverterService<OpenTextQuestion>>();
+        _mockSingleChoiceQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<SingleChoiceQuestion>>();
+        _mockMultipleChoiceQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<MultipleChoiceQuestion>>();
+        _mockOpenTextQuestionDtoConverterService = new Mock<IQuestionDtoConverterService<OpenTextQuestion>>();
 
         _questionService = new QuestionService(
             _mockQuizRepository.Object,
-            _mockSingleChoiceQuestionDTOConverterService.Object,
-            _mockMultipleChoiceQuestionDTOConverterService.Object,
-            _mockOpenTextQuestionDTOConverterService.Object
+            _mockSingleChoiceQuestionDtoConverterService.Object,
+            _mockMultipleChoiceQuestionDtoConverterService.Object,
+            _mockOpenTextQuestionDtoConverterService.Object
         );
     }
 
@@ -43,7 +43,7 @@ public class QuestionServiceTest
     }
 
     [Test]
-    public void GetQuestions_ReturnsCorrectQuestions()
+    public async Task GetQuestions_ReturnsCorrectQuestions()
     {
         var mockQuiz = new Quiz
         {
@@ -72,14 +72,14 @@ public class QuestionServiceTest
             }
         };
 
-        var expectedQuestions = new List<QuestionResponseDTO>
+        var expectedQuestions = new List<QuestionResponseDto>
         {
-            new QuestionResponseDTO
+            new QuestionResponseDto
             {
                 Id = 0,
                 QuestionText = "The one and only, question 1",
                 QuestionType = QuestionTypeConverter.ToString(QuestionType.SingleChoiceQuestion),
-                QuestionParameters = new QuestionParametersDTO
+                QuestionParameters = new QuestionParametersDto
                 {
                     Options = new List<string>
                     {
@@ -91,12 +91,12 @@ public class QuestionServiceTest
             }
         };
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizById(0)).Returns(mockQuiz);
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(0)).ReturnsAsync(mockQuiz);
 
-        _mockSingleChoiceQuestionDTOConverterService.Setup(service => service.GenerateParameters(It.IsAny<SingleChoiceQuestion>()))
+        _mockSingleChoiceQuestionDtoConverterService.Setup(service => service.GenerateParameters(It.IsAny<SingleChoiceQuestion>()))
             .Returns(expectedQuestions.ElementAt(0).QuestionParameters);
 
-        var result = _questionService.GetQuestions(0);
+        var result = await _questionService.GetQuestionsAsync(0);
 
         Assert.IsNotNull(expectedQuestions);
         Assert.IsNotNull(result);
@@ -118,6 +118,6 @@ public class QuestionServiceTest
             expectedQuestions.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex,
             result.ElementAtOrDefault(0).QuestionParameters.CorrectOptionIndex);
 
-        _mockQuizRepository.Verify(repo => repo.GetQuizById(0), Times.Once);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(It.IsAny<int>()), Times.Once);
     }
 }

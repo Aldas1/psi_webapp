@@ -6,6 +6,7 @@ name: .NET build & test
 on:
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 defaults:
   run:
@@ -28,6 +29,10 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal
+    - name: Reformat coverage file
+      run: |
+        sed -i 's/sequenceCoverage="[^"]*"//' Tests/TestResults/coverage.opencover.xml
+        sed -i 's/branchCoverage/sequenceCoverage/' Tests/TestResults/coverage.opencover.xml
     - name: Create Test Coverage Badge
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: create_coverage_badge
@@ -37,4 +42,4 @@ jobs:
         path: QuizAppApi/Tests/TestResults/coverage.opencover.xml
         gist-filename: code-coverage.json
         gist-id: f04a7acd2cbaa647c6515030113c444b
-        gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}       
+        gist-auth-token: ${{ secrets.GIST_AUTH_TOKEN }}

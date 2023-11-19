@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuizAppApi.Data;
+using QuizAppApi.Events;
+using QuizAppApi.Extensions;
+using QuizAppApi.Hubs;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
@@ -29,6 +32,20 @@ builder.Services.AddSingleton<IWindsorContainer>(provider =>
 });
 builder.Services.AddSingleton<IServiceProviderFactory<IWindsorContainer>>(new WindsorServiceProviderFactory());
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "DevClient",
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
+builder.Services.AddSignalR();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition =
@@ -67,11 +84,12 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services
-    .AddScoped<IQuestionDTOConverterService<SingleChoiceQuestion>, SingleChoiceQuestionDTOConverterService>();
+    .AddScoped<IQuestionDtoConverterService<SingleChoiceQuestion>, SingleChoiceQuestionDtoConverterService>();
 builder.Services
-    .AddScoped<IQuestionDTOConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDTOConverterService>();
-builder.Services.AddScoped<IQuestionDTOConverterService<OpenTextQuestion>, OpenTextQuestionDTOConverterService>();
+    .AddScoped<IQuestionDtoConverterService<MultipleChoiceQuestion>, MultipleChoiceQuestionDtoConverterService>();
+builder.Services.AddScoped<IQuestionDtoConverterService<OpenTextQuestion>, OpenTextQuestionDtoConverterService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IExplanationService, ExplanationService>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -89,6 +107,8 @@ builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
+builder.Services.AddScoped<IQuizDiscussionService, QuizDiscussionService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -102,7 +122,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerQuizUpdater>();
+builder.Services.AddEventHandler<AnswerSubmittedEventHandlerUserUpdater>();
+
 var app = builder.Build();
+
+app.UseEventHandlers();
+app.UseCors("DevClient");
+app.MapHub<DiscussionHub>("/discussionHub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

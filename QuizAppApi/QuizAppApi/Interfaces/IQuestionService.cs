@@ -1,7 +1,7 @@
-﻿using QuizAppApi.DTOs;
+﻿using QuizAppApi.Dtos;
 
 namespace QuizAppApi.Interfaces;
 public interface IQuestionService
 {
-    IEnumerable<QuestionResponseDTO>? GetQuestions(int id);
+    Task<IEnumerable<QuestionResponseDto>?> GetQuestionsAsync(int id);
 }

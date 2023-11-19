@@ -1,5 +1,5 @@
-using QuizAppApi.DTOs;
 using QuizAppApi.Exceptions;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using BC = BCrypt.Net.BCrypt;
@@ -15,27 +15,23 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    private static UserResponseDTO MapUserToResponse(User user)
+    private static UserResponseDto MapUserToResponse(User user)
     {
-        return new UserResponseDTO
+        return new UserResponseDto
             { Username = user.Username, TotalScore = user.TotalScore, NumberOfSubmissions = user.NumberOfSubmissions };
     }
 
-    public UserResponseDTO? CreateUser(UserRequestDTO request)
+    public async Task<UserResponseDto?> CreateUserAsync(UserRequestDto request)
     {
-        if (_userRepository.GetUser(request.Username) != null)
-        {
-            throw new CustomException("User already exists.", "USER_EXISTS");
-        }
-
+        if (await _userRepository.GetUserAsync(request.Username) != null) return null;
         var user = new User(request.Username, BC.HashPassword(request.Password));
-        _userRepository.AddUser(user);
+        await _userRepository.AddUserAsync(user);
         return MapUserToResponse(user);
     }
 
-    public UserResponseDTO? GetUser(string username)
+    public async Task<UserResponseDto?> GetUserAsync(string username)
     {
-        var user = _userRepository.GetUser(username);
+        var user = await _userRepository.GetUserAsync(username);
         return user == null ? null : MapUserToResponse(user);
     }
 }

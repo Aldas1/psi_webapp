@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -17,9 +17,9 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<TokenResponseDto> Login([FromBody] UserRequestDTO request)
+    public async Task<ActionResult<TokenResponseDto>> Login([FromBody] UserRequestDto request)
     {
-        var token = _loginService.Login(request.Username, request.Password);
+        var token = await _loginService.LoginAsync(request.Username, request.Password);
         if (token == null) return Unauthorized();
         return Ok(new TokenResponseDto { Token = token });
     }

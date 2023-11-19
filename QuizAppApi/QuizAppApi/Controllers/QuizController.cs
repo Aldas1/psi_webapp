@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuizAppApi.DTOs;
+using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Controllers;
@@ -16,21 +16,21 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<QuizManipulationResponseDTO> CreateQuiz([FromBody] QuizManipulationRequestDTO request)
+    public async Task<ActionResult<QuizManipulationResponseDto>> CreateQuiz([FromBody] QuizManipulationRequestDto request)
     {
-        return _quizService.CreateQuiz(request);
+        return await _quizService.CreateQuizAsync(request);
     }
 
     [HttpPut("{id}")]
-    public ActionResult<QuizManipulationResponseDTO> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDTO updateRequest)
+    public async Task<ActionResult<QuizManipulationResponseDto>> UpdateQuiz(int id, [FromBody] QuizManipulationRequestDto updateRequest)
     {
-        return _quizService.UpdateQuiz(id, updateRequest);
+        return await _quizService.UpdateQuizAsync(id, updateRequest);
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<QuizResponseDTO>> GetQuizzes()
+    public async Task<ActionResult<IEnumerable<QuizResponseDto>>> GetQuizzes()
     {
-        var quizzes = _quizService.GetQuizzes();
+        var quizzes = await _quizService.GetQuizzesAsync();
         if (quizzes == null)
         {
             return NotFound();
@@ -39,9 +39,9 @@ public class QuizController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<QuizResponseDTO> GetQuiz(int id)
+    public async Task<ActionResult<QuizResponseDto>> GetQuiz(int id)
     {
-        var quiz = _quizService.GetQuiz(id);
+        var quiz = await _quizService.GetQuizAsync(id);
         if (quiz == null)
         {
             return NotFound();
@@ -51,9 +51,9 @@ public class QuizController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult DeleteQuiz(int id)
+    public async Task<ActionResult> DeleteQuiz(int id)
     {
-        bool response = _quizService.DeleteQuiz(id);
+        bool response = await _quizService.DeleteQuizAsync(id);
         if (response)
         {
             return Ok();
