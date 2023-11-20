@@ -7,7 +7,7 @@ public class User
     [Key]
     public string Username { get; set; }
     public string PasswordHash { get; set; }
-    public int TotalScore { get; set; }
+    public double TotalScore { get; set; }
     public int NumberOfSubmissions { get; set; }
 
     public User(string username, string passwordHash)

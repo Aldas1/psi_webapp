@@ -21,7 +21,7 @@ public class AnswerService : IAnswerService
     {
         var response = new AnswerSubmitResponseDto();
         var quiz = await _quizRepository.GetQuizByIdAsync(id);
-        var correctAnswers = 0;
+        int correctAnswers = 0;
 
         if (quiz == null)
         {

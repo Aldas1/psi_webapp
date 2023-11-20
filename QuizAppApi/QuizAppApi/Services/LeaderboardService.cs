@@ -20,7 +20,7 @@ public class LeaderboardService : ILeaderboardService
             return new UserLeaderboardResponseDto
             {
                 Username = user.Username,
-                AverageScore = (double)user.TotalScore / (user.NumberOfSubmissions > 0 ? user.NumberOfSubmissions : 1),
+                AverageScore = user.TotalScore / (user.NumberOfSubmissions > 0 ? user.NumberOfSubmissions : 1),
                 NumberOfSubmissions = user.NumberOfSubmissions
             };
         }).OrderByDescending(user => user.AverageScore).ThenByDescending(user => user.NumberOfSubmissions);
