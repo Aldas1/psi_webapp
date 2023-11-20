@@ -14,30 +14,30 @@ public class CacheRepository : ICacheRepository
             _cache[key] = new List<object>();
         }
 
-        try 
-        {
-            if (entity != null) _cache[key].Add(entity);
-        }
-        catch (TypeMismatchException)
+        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
             throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
         }
-        
+
+        else
+        {
+            if (entity != null) _cache[key].Add(entity);
+        }
     }
 
     public IEnumerable<TEntity> Retrieve<TEntity>(string key)
     {
         if (!_cache.ContainsKey(key)) return new List<TEntity>();
 
-        try
-        {
-            return _cache[key].Cast<TEntity>();
-        }
-        catch (TypeMismatchException)
+        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
             throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
         }
-        
+
+        else
+        {
+            return _cache[key].Cast<TEntity>();
+        }
     }
 
     public void Clear(string key)
