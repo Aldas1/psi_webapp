@@ -43,7 +43,7 @@ public class AnswerService : IAnswerService
         }
 
         response.CorrectlyAnswered = correctAnswers;
-        response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
+        response.Score = quiz.Questions.Count == 0 ? 0 : ((double)correctAnswers * 100 / quiz.Questions.Count);
 
         AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
         {
