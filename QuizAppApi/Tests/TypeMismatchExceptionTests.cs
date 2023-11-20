@@ -12,8 +12,9 @@ public class TypeMismatchExceptionTests
     {
         Type attemptedType = typeof(string);
         Type existingType = typeof(int);
+        string customMessage = "add";
 
-        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType);
+        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType, customMessage);
 
         Assert.AreEqual(attemptedType, exception.AttemptedType);
     }
@@ -23,8 +24,9 @@ public class TypeMismatchExceptionTests
     {
         Type attemptedType = typeof(string);
         Type existingType = typeof(int);
+        string customMessage = "add";
 
-        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType);
+        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType, customMessage);
 
         Assert.AreEqual(existingType, exception.ExistingType);
     }
@@ -34,10 +36,11 @@ public class TypeMismatchExceptionTests
     {
         Type attemptedType = typeof(string);
         Type existingType = typeof(int);
+        string customMessage = "add";
 
-        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType);
+        TypeMismatchException exception = new TypeMismatchException(attemptedType, existingType, customMessage);
 
-        string expectedErrorMessage = $"Attempted to access an object of type {attemptedType} with a key that contains objects of type {existingType}.";
+        string expectedErrorMessage = $"Attempted to {customMessage} an object of type {attemptedType} with a key that contains objects of type {existingType}.";
         Assert.AreEqual(expectedErrorMessage, exception.Message);
     }
 }
