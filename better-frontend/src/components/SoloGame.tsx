@@ -161,7 +161,7 @@ function Results({
 
   return (
     <>
-      <Heading textAlign="center">Score: {results.score}</Heading>
+      <Heading textAlign="center">Score: {results.score.toFixed(2)}</Heading>
       <Heading textAlign="center" size="sm">
         {results.correctlyAnswered} / {quiz.questions.length} answered correctly
       </Heading>
