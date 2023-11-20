@@ -1,6 +1,7 @@
 using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using QuizAppApi.Exceptions;
 
 namespace QuizAppApi.Services;
 
@@ -27,6 +28,12 @@ public class QuizDiscussionService : IQuizDiscussionService
         {
             _cacheRepository.Add("comments", comment);
         }
+        catch(TypeMismatchException)
+        {
+            _cacheRepository.Clear("comments");
+            _cacheRepository.Add("comments", comment);
+            throw;
+        }
         finally
         {
             Monitor.Exit(_cacheRepository.Lock);
@@ -42,6 +49,12 @@ public class QuizDiscussionService : IQuizDiscussionService
         try
         {
             comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+        }
+        catch (TypeMismatchException)
+        {
+            _cacheRepository.Clear("comments");
+            comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+            throw;
         }
         finally
         {

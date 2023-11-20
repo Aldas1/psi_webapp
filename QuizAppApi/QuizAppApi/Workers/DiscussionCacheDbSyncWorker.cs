@@ -1,5 +1,6 @@
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using QuizAppApi.Exceptions;
 
 namespace QuizAppApi.Workers;
 
@@ -35,6 +36,17 @@ public class DiscussionCacheDbSyncWorker
         try
         {
             if (commentRepo == null) return;
+            var comments = cacheRepo.Retrieve<Comment>("comments");
+            foreach (var comment in comments)
+            {
+                if (comment.Stored) continue;
+                commentRepo.AddComment(comment);
+                comment.Stored = true;
+            }
+        }
+        catch (TypeMismatchException)
+        {
+            cacheRepo.Clear("comments");
             var comments = cacheRepo.Retrieve<Comment>("comments");
             foreach (var comment in comments)
             {

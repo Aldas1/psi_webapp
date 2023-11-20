@@ -16,13 +16,10 @@ public class CacheRepository : ICacheRepository
 
         if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
-            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "add", "to");
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
         }
 
-        else
-        {
-            if (entity != null) _cache[key].Add(entity);
-        }
+        if (entity != null) _cache[key].Add(entity);
     }
 
     public IEnumerable<TEntity> Retrieve<TEntity>(string key)
@@ -31,13 +28,10 @@ public class CacheRepository : ICacheRepository
 
         if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
-            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "retrieve", "from");
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
         }
 
-        else
-        {
-            return _cache[key].Cast<TEntity>();
-        }
+        return _cache[key].Cast<TEntity>();
     }
 
     public void Clear(string key)
