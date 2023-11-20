@@ -6,14 +6,14 @@ namespace QuizAppApi.Services;
 
 public class QuizDiscussionService : IQuizDiscussionService
 {
-    private readonly ICommentRepository _commentRepository;
+    private readonly ICacheRepository _cacheRepository;
 
-    public QuizDiscussionService(ICommentRepository commentRepository)
+    public QuizDiscussionService(ICacheRepository cacheRepository)
     {
-        _commentRepository = commentRepository;
+        _cacheRepository = cacheRepository;
     }
 
-    public async Task<CommentDto> SaveMessage(int quizId, string? username, string content)
+    public CommentDto SaveMessage(int quizId, string? username, string content)
     {
         var comment = new Comment
         {
@@ -22,17 +22,36 @@ public class QuizDiscussionService : IQuizDiscussionService
             Username = username,
             QuizId = quizId
         };
-        var addedComment = await _commentRepository.AddCommentAsync(comment);
-        return ConverToDto(addedComment);
+        Monitor.Enter(_cacheRepository.Lock);
+        try
+        {
+            _cacheRepository.Add("comments", comment);
+        }
+        finally
+        {
+            Monitor.Exit(_cacheRepository.Lock);
+        }
+
+        return ConvertToDto(comment);
     }
 
-    public async Task<IEnumerable<CommentDto>> GetRecentComments(int quizId)
+    public IEnumerable<CommentDto> GetRecentComments(int quizId)
     {
-        var comments = await _commentRepository.GetByConditionAsync(c => c.QuizId == quizId);
-        return comments.Select(ConverToDto);
+        Monitor.Enter(_cacheRepository.Lock);
+        IEnumerable<Comment> comments;
+        try
+        {
+            comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+        }
+        finally
+        {
+            Monitor.Exit(_cacheRepository.Lock);
+        }
+
+        return comments.Select(ConvertToDto);
     }
 
-    private CommentDto ConverToDto(Comment c)
+    private static CommentDto ConvertToDto(Comment c)
     {
         return new CommentDto
         {

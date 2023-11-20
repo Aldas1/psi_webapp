@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace QuizAppApi.Models;
 
 public class Comment
@@ -6,6 +8,7 @@ public class Comment
     public string Content { get; set; }
     public string? Username { get; set; }
     public DateTime Date { get; set; }
-    
+    [NotMapped] public bool Stored { get; set; }
+
     public int QuizId { get; set; }
 }

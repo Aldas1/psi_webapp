@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import DiscussionHub from "../api/discussionHub";
 import { DiscussionComment } from "../types";
 import { AuthContext } from "../contexts/AuthContext";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
@@ -7,27 +6,9 @@ import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 const connectionUrl = "https://localhost:7280/discussionHub";
 
 export default function useDiscussion(id: number) {
-  // const [discussionHub, setDiscussionHub] = useState(new DiscussionHub());
-  // const [comments, setComments] = useState<DiscussionComment[] | null>(null);
-  // const [connected, setConnected] = useState(false);
-
-  // useEffect(() => {
-  //   if (connected) return;
-  //   const startup = async () => {
-  //     await discussionHub.openConnection();
-  //     setConnected(true);
-  //     //await discussionHub.addToGroup(id);
-  //     console.log("opening connection");
-  //   };
-  //   startup();
-  // });
-
-  // async function postComment(comment: string) {
-  //   discussionHub.postComment(comment);
-  //}
   const [connection, setConnection] = useState<HubConnection | null>(null);
   const [connected, setConnected] = useState(false);
-  const [userInfo, setUserInfo] = useContext(AuthContext);
+  const [userInfo] = useContext(AuthContext);
   const [comments, setComments] = useState<DiscussionComment[]>([]);
 
   useEffect(() => {

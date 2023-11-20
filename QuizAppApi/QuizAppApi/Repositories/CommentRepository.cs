@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using QuizAppApi.Data;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
@@ -15,15 +14,15 @@ public class CommentRepository : ICommentRepository
         _quizContext = quizContext;
     }
 
-    public async Task<IEnumerable<Comment>> GetByConditionAsync(Expression<Func<Comment, bool>> condition)
+    public IEnumerable<Comment> GetByCondition(Expression<Func<Comment, bool>> condition)
     {
-        return await _quizContext.Set<Comment>().Where(condition).ToListAsync();
+        return _quizContext.Set<Comment>().Where(condition);
     }
 
-    public async Task<Comment?> AddCommentAsync(Comment c)
+    public Comment? AddComment(Comment c)
     {
-        await _quizContext.Comments.AddAsync(c);
-        await _quizContext.SaveChangesAsync();
-        return c;
+        var updatedC = _quizContext.Comments.Add(c).Entity;
+        _quizContext.SaveChanges();
+        return updatedC;
     }
 }
