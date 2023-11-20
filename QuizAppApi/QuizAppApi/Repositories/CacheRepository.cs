@@ -16,7 +16,7 @@ public class CacheRepository : ICacheRepository
 
         if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
-            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "add", "to");
         }
 
         else
@@ -31,7 +31,7 @@ public class CacheRepository : ICacheRepository
 
         if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
         {
-            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType());
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "retrieve", "from");
         }
 
         else
