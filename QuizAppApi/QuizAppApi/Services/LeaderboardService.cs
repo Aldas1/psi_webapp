@@ -12,9 +12,10 @@ public class LeaderboardService : ILeaderboardService
         _userRepository = userRepository;
     }
 
-    public IEnumerable<UserLeaderboardResponseDto> GetUsersLeaderboard()
+    public async Task<IEnumerable<UserLeaderboardResponseDto>> GetUsersLeaderboardAsync()
     {
-        return _userRepository.GetUsers().Select(user =>
+        var user = await _userRepository.GetUsersAsync();
+        return user.Select(user =>
         {
             return new UserLeaderboardResponseDto
             {

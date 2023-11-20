@@ -4,9 +4,9 @@ namespace QuizAppApi.Interfaces;
 
 public interface IQuizRepository
 {
-    Quiz? AddQuiz(Quiz quiz);
-    IEnumerable<Quiz> GetQuizzes();
-    Quiz? GetQuizById(int id);
-    void DeleteQuiz(int id);
-    void Save();
+    Task<Quiz?> AddQuizAsync(Quiz quiz);
+    Task<IEnumerable<Quiz>> GetQuizzesAsync();
+    Task<Quiz?> GetQuizByIdAsync(int id);
+    Task DeleteQuizAsync(int id);
+    Task SaveAsync();
 }

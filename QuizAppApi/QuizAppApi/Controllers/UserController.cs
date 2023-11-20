@@ -17,9 +17,9 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [RequireHttps]
-    public ActionResult<UserResponseDto> CreateUser([FromBody] UserRequestDto request)
+    public async Task<ActionResult<UserResponseDto>> CreateUser([FromBody] UserRequestDto request)
     {
-        var user = _userService.CreateUser(request);
+        var user = await _userService.CreateUserAsync(request);
         if (user == null) return Conflict();
         return CreatedAtAction(nameof(GetUser), new {
             username = request.Username
@@ -27,9 +27,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{username}")]
-    public ActionResult<UserResponseDto> GetUser(string username)
+    public async Task<ActionResult<UserResponseDto>> GetUser(string username)
     {
-        var user = _userService.GetUser(username);
+        var user = await _userService.GetUserAsync(username);
         if (user == null) return NotFound();
         return Ok(user);
     }

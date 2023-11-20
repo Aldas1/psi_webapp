@@ -4,5 +4,5 @@ namespace QuizAppApi.Interfaces;
 
 public interface ILeaderboardService
 {
-    public IEnumerable<UserLeaderboardResponseDto> GetUsersLeaderboard();
+    public Task<IEnumerable<UserLeaderboardResponseDto>> GetUsersLeaderboardAsync();
 }

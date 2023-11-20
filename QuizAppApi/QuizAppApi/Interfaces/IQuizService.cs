@@ -3,9 +3,9 @@
 namespace QuizAppApi.Interfaces;
 public interface IQuizService
 {
-    QuizManipulationResponseDto CreateQuiz(QuizManipulationRequestDto request);
-    QuizManipulationResponseDto UpdateQuiz(int id, QuizManipulationRequestDto editRequest);
-    IEnumerable<QuizResponseDto> GetQuizzes();
-    QuizResponseDto? GetQuiz(int id);
-    bool DeleteQuiz(int id);
+    Task<QuizManipulationResponseDto> CreateQuizAsync(QuizManipulationRequestDto request);
+    Task<QuizManipulationResponseDto> UpdateQuizAsync(int id, QuizManipulationRequestDto editRequest);
+    Task<IEnumerable<QuizResponseDto>> GetQuizzesAsync();
+    Task<QuizResponseDto?> GetQuizAsync(int id);
+    Task<bool> DeleteQuizAsync(int id);
 }
