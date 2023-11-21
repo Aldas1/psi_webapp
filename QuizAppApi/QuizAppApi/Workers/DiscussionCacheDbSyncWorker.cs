@@ -33,31 +33,27 @@ public class DiscussionCacheDbSyncWorker
         var commentRepo = _serviceProvider.GetService<ICommentRepository>();
         if (cacheRepo == null) return;
         Monitor.Enter(cacheRepo.Lock);
-        try
+        for (int attempt = 0; attempt < 3; attempt++)
         {
-            if (commentRepo == null) return;
-            var comments = cacheRepo.Retrieve<Comment>("comments");
-            foreach (var comment in comments)
+            try
             {
-                if (comment.Stored) continue;
-                commentRepo.AddComment(comment);
-                comment.Stored = true;
+                if (commentRepo == null) return;
+                var comments = cacheRepo.Retrieve<Comment>("comments");
+                foreach (var comment in comments)
+                {
+                    if (comment.Stored) continue;
+                    commentRepo.AddComment(comment);
+                    comment.Stored = true;
+                }
             }
-        }
-        catch (TypeMismatchException)
-        {
-            cacheRepo.Clear("comments");
-            var comments = cacheRepo.Retrieve<Comment>("comments");
-            foreach (var comment in comments)
+            catch (TypeMismatchException)
             {
-                if (comment.Stored) continue;
-                commentRepo.AddComment(comment);
-                comment.Stored = true;
+                cacheRepo.Clear("comments");
             }
-        }
-        finally
-        {
-            Monitor.Exit(cacheRepo.Lock);
+            finally
+            {
+                Monitor.Exit(cacheRepo.Lock);
+            }
         }
     }
 
