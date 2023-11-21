@@ -11,49 +11,39 @@ namespace QuizAppApi.Tests.Repositories
     {
         private ICacheRepository _cacheRepository;
 
-        [SetUp]
-        public void Setup()
+        [Test]
+        public void AddWrongType_ThrowsTypeMismatch()
         {
             _cacheRepository = new CacheRepository();
-        }
-
-        [Test]
-        public void Add_ThrowsTypeMismatchException()
-        {
             _cacheRepository.Add("key", 42);
 
             Assert.Throws<TypeMismatchException>(() => _cacheRepository.Add("key", "string"));
         }
 
         [Test]
-        public void Add_DoesNotThrowException()
+        public void AddSameType_StoresItems()
         {
-            _cacheRepository.Add("key", "firstString");
+            _cacheRepository = new CacheRepository();
+            string stringValue = "firstString";
+            _cacheRepository.Add("key", stringValue);
 
-            Assert.DoesNotThrow(() => _cacheRepository.Add("key", "secondString"));
+            Assert.AreEqual(stringValue, _cacheRepository.Retrieve<string>("key").FirstOrDefault());
         }
 
         [Test]
-        public void Retrieve_ThrowsTypeMismatchException()
+        public void RetrieveWrongType_ThrowsTypeMismatch()
         {
+            _cacheRepository = new CacheRepository();
             _cacheRepository.Add("key", 42);
 
             Assert.Throws<TypeMismatchException>(() => _cacheRepository.Retrieve<string>("key"));
         }
 
         [Test]
-        public void Retrieve_DoesNotThrowException()
+        public void Clear_RemovesItems()
         {
-            _cacheRepository.Add("key", "stringValue");
-
-            Assert.DoesNotThrow(() => _cacheRepository.Retrieve<string>("key"));
-        }
-
-        [Test]
-        public void Clear_RemovesKey()
-        {
+            _cacheRepository = new CacheRepository();
             _cacheRepository.Add("key", "value");
-
             _cacheRepository.Clear("key");
 
             Assert.IsEmpty(_cacheRepository.Retrieve<string>("key"));
