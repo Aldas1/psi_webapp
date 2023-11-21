@@ -45,6 +45,7 @@ public class DiscussionCacheDbSyncWorker
                     commentRepo.AddComment(comment);
                     comment.Stored = true;
                 }
+                break;
             }
             catch (TypeMismatchException)
             {
