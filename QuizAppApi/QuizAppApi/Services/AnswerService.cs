@@ -21,7 +21,7 @@ public class AnswerService : IAnswerService
     {
         var response = new AnswerSubmitResponseDto();
         var quiz = await _quizRepository.GetQuizByIdAsync(id);
-        var correctAnswers = 0;
+        int correctAnswers = 0;
 
         if (quiz == null)
         {
@@ -43,7 +43,7 @@ public class AnswerService : IAnswerService
         }
 
         response.CorrectlyAnswered = correctAnswers;
-        response.Score = quiz.Questions.Count == 0 ? 0 : (correctAnswers * 100 / quiz.Questions.Count);
+        response.Score = quiz.Questions.Count == 0 ? 0 : ((double)correctAnswers * 100 / quiz.Questions.Count);
 
         AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
         {
