@@ -1,6 +1,7 @@
 using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
+using QuizAppApi.Exceptions;
 
 namespace QuizAppApi.Services;
 
@@ -22,14 +23,23 @@ public class QuizDiscussionService : IQuizDiscussionService
             Username = username,
             QuizId = quizId
         };
-        Monitor.Enter(_cacheRepository.Lock);
-        try
+
+        for (int attempt = 0; attempt < 3; attempt++)
         {
-            _cacheRepository.Add("comments", comment);
-        }
-        finally
-        {
-            Monitor.Exit(_cacheRepository.Lock);
+            Monitor.Enter(_cacheRepository.Lock);
+            try
+            {
+                _cacheRepository.Add("comments", comment);
+                break;
+            }
+            catch (TypeMismatchException)
+            {
+                _cacheRepository.Clear("comments");
+            }
+            finally
+            {
+                Monitor.Exit(_cacheRepository.Lock);
+            }
         }
 
         return ConvertToDto(comment);
@@ -37,15 +47,24 @@ public class QuizDiscussionService : IQuizDiscussionService
 
     public IEnumerable<CommentDto> GetRecentComments(int quizId)
     {
-        Monitor.Enter(_cacheRepository.Lock);
-        IEnumerable<Comment> comments;
-        try
+        IEnumerable<Comment> comments = null;
+
+        for (int attempt = 0; attempt < 3; attempt++)
         {
-            comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
-        }
-        finally
-        {
-            Monitor.Exit(_cacheRepository.Lock);
+            Monitor.Enter(_cacheRepository.Lock);
+            try
+            {
+                comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+                break;
+            }
+            catch (TypeMismatchException)
+            {
+                _cacheRepository.Clear("comments");
+            }
+            finally
+            {
+                Monitor.Exit(_cacheRepository.Lock);
+            }
         }
 
         return comments.Select(ConvertToDto);

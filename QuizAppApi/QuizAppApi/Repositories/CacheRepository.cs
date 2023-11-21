@@ -1,4 +1,5 @@
 using QuizAppApi.Interfaces;
+using QuizAppApi.Exceptions;
 
 namespace QuizAppApi.Repositories;
 
@@ -13,12 +14,23 @@ public class CacheRepository : ICacheRepository
             _cache[key] = new List<object>();
         }
 
+        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
+        {
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "Failed to add element to cache.");
+        }
+
         if (entity != null) _cache[key].Add(entity);
     }
 
     public IEnumerable<TEntity> Retrieve<TEntity>(string key)
     {
         if (!_cache.ContainsKey(key)) return new List<TEntity>();
+
+        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
+        {
+            throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "Failed to retrieve element from cache");
+        }
+
         return _cache[key].Cast<TEntity>();
     }
 
