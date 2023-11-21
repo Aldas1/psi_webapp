@@ -14,7 +14,7 @@ public class CacheRepository : ICacheRepository
             _cache[key] = new List<object>();
         }
 
-        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
+        if (_cache[key].Any() && !_cache[key].First().GetType().IsAssignableTo(typeof(TEntity)))
         {
             throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "Failed to add element to cache.");
         }
@@ -26,7 +26,7 @@ public class CacheRepository : ICacheRepository
     {
         if (!_cache.ContainsKey(key)) return new List<TEntity>();
 
-        if (_cache[key].Any() && _cache[key].First().GetType() != typeof(TEntity))
+        if (_cache[key].Any() && !_cache[key].First().GetType().IsAssignableTo(typeof(TEntity)))
         {
             throw new TypeMismatchException(typeof(TEntity), _cache[key].First().GetType(), "Failed to retrieve element from cache");
         }
