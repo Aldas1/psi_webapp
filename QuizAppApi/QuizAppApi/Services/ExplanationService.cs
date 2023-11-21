@@ -40,7 +40,7 @@ public class ExplanationService : IExplanationService
 
             return string.Join("\n", explanationResponses);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
