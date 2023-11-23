@@ -8,14 +8,18 @@ namespace QuizAppApi.Services;
 public class QuizDiscussionService : IQuizDiscussionService
 {
     private readonly ICacheRepository _cacheRepository;
+    private readonly IExplanationService _explanationService;
 
-    public QuizDiscussionService(ICacheRepository cacheRepository)
+    public QuizDiscussionService(ICacheRepository cacheRepository, IExplanationService explanationService)
     {
         _cacheRepository = cacheRepository;
+        _explanationService = explanationService;
     }
 
     public CommentDto SaveMessage(int quizId, string? username, string content)
     {
+        const string explainPrefix = "/explain";
+
         var comment = new Comment
         {
             Content = content,
@@ -24,6 +28,17 @@ public class QuizDiscussionService : IQuizDiscussionService
             QuizId = quizId
         };
 
+        if (content.Trim().StartsWith(explainPrefix))
+        {
+            int startIndex = explainPrefix.Length;
+            string? explainQuery = content.Trim()[startIndex..];
+
+            var explanation = _explanationService.GenerateCommentExplanationAsync(explainQuery).Result;
+
+            comment.Content = explanation;
+            comment.Username = "ChatGPT";
+        }
+     
         for (int attempt = 0; attempt < 3; attempt++)
         {
             Monitor.Enter(_cacheRepository.Lock);

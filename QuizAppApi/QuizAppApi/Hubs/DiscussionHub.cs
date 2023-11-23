@@ -25,6 +25,6 @@ public class DiscussionHub : Hub
         await Clients.Client(Context.ConnectionId)
             .SendAsync("NewMessages", _discussionService.GetRecentComments(quizId));
         await Clients.Client(Context.ConnectionId).SendAsync("NewMessage",
-            new CommentDto { Content = "Welcome to quiz discussion. Be polite!", Username = "system", Date = DateTime.Now });
+            new CommentDto { Content = "Welcome to quiz discussion. To call ChatGPT start your message with \"/explain\". Be polite!", Username = "system", Date = DateTime.Now });
     }
 }
