@@ -28,7 +28,7 @@ public class QuizDiscussionService : IQuizDiscussionService
 
         if (isAiAnswer)
         {
-            var explanation = _explanationService.GenerateCommentExplanationAsync(content).Result; //shouldn't be any deadlocks as we are in 
+            var explanation = _explanationService.GenerateCommentExplanationAsync(content).Result; //shouldn't be any deadlocks as we are in .NET core
 
             comment.Content = explanation;
         }
