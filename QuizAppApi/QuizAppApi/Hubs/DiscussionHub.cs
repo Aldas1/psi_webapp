@@ -17,6 +17,16 @@ public class DiscussionHub : Hub
     {
         var comment = _discussionService.SaveMessage(quizId, username, content);
         await Clients.Group(quizId.ToString()).SendAsync("NewMessage", comment);
+
+        const string explainPrefix = "/explain";
+        if (content.Trim().StartsWith(explainPrefix))
+        {
+            int startIndex = explainPrefix.Length;
+            string? explainQuery = content.Trim()[startIndex..];
+
+            var aiAnswer = _discussionService.SaveMessage(quizId, "ChatGPT", explainQuery, isAiAnswer: true);
+            await Clients.Group(quizId.ToString()).SendAsync("NewMessage", aiAnswer);
+        }
     }
 
     public async Task AddToGroup(int quizId)

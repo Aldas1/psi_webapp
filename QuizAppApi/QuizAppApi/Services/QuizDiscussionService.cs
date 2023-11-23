@@ -16,10 +16,8 @@ public class QuizDiscussionService : IQuizDiscussionService
         _explanationService = explanationService;
     }
 
-    public CommentDto SaveMessage(int quizId, string? username, string content)
+    public CommentDto SaveMessage(int quizId, string? username, string content, bool isAiAnswer = false)
     {
-        const string explainPrefix = "/explain";
-
         var comment = new Comment
         {
             Content = content,
@@ -28,15 +26,11 @@ public class QuizDiscussionService : IQuizDiscussionService
             QuizId = quizId
         };
 
-        if (content.Trim().StartsWith(explainPrefix))
+        if (isAiAnswer)
         {
-            int startIndex = explainPrefix.Length;
-            string? explainQuery = content.Trim()[startIndex..];
-
-            var explanation = _explanationService.GenerateCommentExplanationAsync(explainQuery).Result;
+            var explanation = _explanationService.GenerateCommentExplanationAsync(content).Result; //shouldn't be any deadlocks as we are in 
 
             comment.Content = explanation;
-            comment.Username = "ChatGPT";
         }
      
         for (int attempt = 0; attempt < 3; attempt++)
