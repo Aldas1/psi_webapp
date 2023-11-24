@@ -1,6 +1,7 @@
 interface QuizResponseDto {
   id: number;
   name: string;
+  owner?: string;
 }
 
 interface QuizManipulationQuestionRequestDto {
@@ -14,6 +15,7 @@ interface QuizManipulationRequestDto {
   name: string;
   questions: QuizManipulationQuestionRequestDto[];
   id?: number;
+  owner?: string;
 }
 
 interface QuizManipulationResponseDto {

@@ -21,9 +21,10 @@ import {
   QuizResponseDto,
 } from "../types";
 import QuizEditor from "../components/QuizEditor";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import SoloGame from "../components/SoloGame";
 import QuizDiscussionBlock from "../components/QuizDiscussionBlock";
+import { AuthContext } from "../contexts/AuthContext";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,
@@ -33,6 +34,7 @@ function generateQuiz(
     id: quizResponse.id,
     name: quizResponse.name,
     questions: questionsResponse,
+    owner: quizResponse.owner,
   };
 }
 
@@ -40,6 +42,7 @@ function QuizPreview() {
   const toast = useToast();
   const params = useParams();
   const id = parseInt(params.id ?? "0");
+  const [authInfo] = useContext(AuthContext);
 
   const [inGame, setInGame] = useState(false);
   const [quizForEdit, setQuizForEdit] =
@@ -128,18 +131,26 @@ function QuizPreview() {
             {quiz.questions.length > 0 && (
               <Button onClick={() => setInGame(true)}>Solo game</Button>
             )}
-            <Button colorScheme="purple" onClick={() => setQuizForEdit(quiz)}>
-              Edit quiz
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={async () => {
-                await deleteQuiz(id);
-                navigate("/");
-              }}
-            >
-              Delete
-            </Button>
+            {(quiz.owner === undefined ||
+              quiz.owner === authInfo?.username) && (
+              <>
+                <Button
+                  colorScheme="purple"
+                  onClick={() => setQuizForEdit(quiz)}
+                >
+                  Edit quiz
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={async () => {
+                    await deleteQuiz(id);
+                    navigate("/");
+                  }}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
             <Button variant="outline" onClick={onOpen}>
               Discussion
             </Button>

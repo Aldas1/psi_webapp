@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
 
 namespace QuizAppApi.Controllers;
 
 [ApiController]
 [Route("quizzes")]
+[RequireHttps]
 public class QuizController : ControllerBase
 {
     private readonly IQuizService _quizService;
@@ -18,7 +20,7 @@ public class QuizController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<QuizManipulationResponseDto>> CreateQuiz([FromBody] QuizManipulationRequestDto request)
     {
-        return await _quizService.CreateQuizAsync(request);
+        return await _quizService.CreateQuizAsync(request, (User?)HttpContext.Items["User"]);
     }
 
     [HttpPut("{id}")]
