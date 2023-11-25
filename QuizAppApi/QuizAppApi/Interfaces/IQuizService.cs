@@ -9,4 +9,5 @@ public interface IQuizService
     Task<IEnumerable<QuizResponseDto>> GetQuizzesAsync();
     Task<QuizResponseDto?> GetQuizAsync(int id);
     Task<bool> DeleteQuizAsync(int id);
+    Task<bool> CanUserEditQuizAsync(User? user, int quizId);
 }

@@ -109,6 +109,12 @@ public class QuizService : IQuizService
         return true;
     }
 
+    public async Task<bool> CanUserEditQuizAsync(User? user, int quizId)
+    {
+        var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+        return quiz?.Username == null || quiz.Username == user?.Username;
+    }
+
     private void PopulateQuizFromDto(Quiz quiz, QuizManipulationRequestDto request)
     {
         quiz.Name = request.Name;
