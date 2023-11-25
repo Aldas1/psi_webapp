@@ -1,4 +1,6 @@
-﻿namespace QuizAppApi.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace QuizAppApi.Models;
 
 public class Quiz
 {
@@ -7,4 +9,6 @@ public class Quiz
     public int NumberOfSubmitters { get; set; }
         
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public virtual User? User { get; set; }
+    public string? Username { get; set; }
 }

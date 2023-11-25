@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 
+import { setToken } from "../api/quizzes";
+
 interface AuthInfo {
   username: string;
   token: string;
@@ -27,8 +29,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       localStorage.setItem("authInfo", JSON.stringify(authInfo));
     }
+    setToken(authInfo?.token);
   }, [authInfo]);
-
   return (
     <AuthContext.Provider value={[authInfo, setAuthInfo]}>
       {children}

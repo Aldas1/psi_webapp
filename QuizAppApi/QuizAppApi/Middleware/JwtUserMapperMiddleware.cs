@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using QuizAppApi.Interfaces;
 
 namespace QuizAppApi.Middleware;
 
@@ -15,6 +16,23 @@ public class JwtUserMapperMiddleware
     {
         var username = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         context.Items["UserName"] = username;
+        if (username != null)
+        {
+            var userRepo = context.RequestServices.GetService<IUserRepository>();
+            if (userRepo == null)
+            {
+                await _next(context);
+                return;
+            }
+            var user = await userRepo.GetUserAsync(username);
+            if (user == null)
+            {
+                context.Items["UserName"] = null;
+            }
+
+            context.Items["User"] = user;
+        }
+
         await _next(context);
     }
 }

@@ -17,6 +17,11 @@ public class QuizContext : DbContext
             o.Name,
             o.QuestionId
         });
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Quizzes)
+            .WithOne(q => q.User)
+            .HasForeignKey(q => q.Username);
     }
 
     public DbSet<Quiz> Quizzes { get; set; }
