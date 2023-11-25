@@ -10,6 +10,6 @@ namespace QuizAppApi.Interfaces
 
         Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText);
 
-        Task<string?> GenerateCommentExplanationAsync(string explainQuery);
+        Task<string?> GenerateCommentExplanationAsync(string? userComment);
     }
 }

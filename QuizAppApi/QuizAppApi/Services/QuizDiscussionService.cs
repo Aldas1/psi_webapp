@@ -16,7 +16,7 @@ public class QuizDiscussionService : IQuizDiscussionService
         _explanationService = explanationService;
     }
 
-    public CommentDto SaveMessage(int quizId, string? username, string content, bool isAiAnswer = false)
+    public async  Task<CommentDto> SaveMessageAsync(int quizId, string? username, string content, bool isAiAnswer = false)
     {
         var comment = new Comment
         {
@@ -28,7 +28,7 @@ public class QuizDiscussionService : IQuizDiscussionService
 
         if (isAiAnswer)
         {
-            var explanation = _explanationService.GenerateCommentExplanationAsync(content).Result; //shouldn't be any deadlocks as we are in .NET core
+            var explanation = await _explanationService.GenerateCommentExplanationAsync(content);
 
             comment.Content = explanation;
         }

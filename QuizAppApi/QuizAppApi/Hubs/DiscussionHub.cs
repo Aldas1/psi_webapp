@@ -15,7 +15,7 @@ public class DiscussionHub : Hub
 
     public async Task PostComment(string? username, string content, int quizId)
     {
-        var comment = _discussionService.SaveMessage(quizId, username, content);
+        var comment = await _discussionService.SaveMessageAsync(quizId, username, content);
         await Clients.Group(quizId.ToString()).SendAsync("NewMessage", comment);
 
         const string explainPrefix = "/explain";
@@ -24,7 +24,7 @@ public class DiscussionHub : Hub
             int startIndex = explainPrefix.Length;
             string? explainQuery = content.Trim()[startIndex..];
 
-            var aiAnswer = _discussionService.SaveMessage(quizId, "ChatGPT", explainQuery, isAiAnswer: true);
+            var aiAnswer = await _discussionService.SaveMessageAsync(quizId, "ChatGPT", explainQuery, isAiAnswer: true);
             await Clients.Group(quizId.ToString()).SendAsync("NewMessage", aiAnswer);
         }
     }
