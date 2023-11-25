@@ -33,6 +33,9 @@ builder.Services.AddProxiedScoped<IUserRepository, UserRepository>();
 builder.Services.AddProxiedTransient<ICommentRepository, CommentRepository>();
 builder.Services.AddProxiedSingleton<ICacheRepository, CacheRepository>();
 
+builder.Services.AddProxiedScoped<IFlashcardCollectionRepository, FlashcardCollectionRepository>();
+builder.Services.AddProxiedScoped<IFlashcardRepository, FlashcardRepository>();
+
 // Services
 builder.Services.AddProxiedScoped<IQuizService, QuizService>();
 builder.Services.AddProxiedScoped<IQuestionService, QuestionService>();
@@ -54,6 +57,9 @@ builder.Services.AddProxiedScoped<IUserService, UserService>();
 builder.Services.AddProxiedScoped<ILoginService, LoginService>();
 builder.Services.AddProxiedScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddProxiedScoped<IQuizDiscussionService, QuizDiscussionService>();
+
+builder.Services.AddProxiedScoped<IFlashcardCollectionService, FlashcardCollectionService>();
+builder.Services.AddProxiedScoped<IFlashcardService, FlashcardService>();
 
 builder.Services.AddCors(options =>
 {
