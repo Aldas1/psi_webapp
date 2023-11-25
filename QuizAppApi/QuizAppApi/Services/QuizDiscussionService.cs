@@ -16,7 +16,7 @@ public class QuizDiscussionService : IQuizDiscussionService
         _explanationService = explanationService;
     }
 
-    public async  Task<CommentDto> SaveMessageAsync(int quizId, string? username, string content, bool isAiAnswer = false)
+    public async Task<CommentDto> SaveMessageAsync(int quizId, string? username, string content, bool isAiAnswer = false)
     {
         var comment = new Comment
         {
