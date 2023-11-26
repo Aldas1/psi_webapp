@@ -63,7 +63,7 @@ public class QuizDiscussionService : IQuizDiscussionService
             Monitor.Enter(_cacheRepository.Lock);
             try
             {
-                IEnumerable<Comment> comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+                var comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
                 return comments.Select(ConvertToDto);
             }
             catch (TypeMismatchException)
@@ -76,7 +76,7 @@ public class QuizDiscussionService : IQuizDiscussionService
             }
         }
         
-        throw new DataException("Could not retrieve comments.");
+        throw new InternalException("Could not retrieve comments.");
     }
 
     private static CommentDto ConvertToDto(Comment c)
