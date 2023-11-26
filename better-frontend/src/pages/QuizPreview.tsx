@@ -19,7 +19,7 @@ import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
   QuizResponseDto,
-} from "../types";
+} from "../types/quiz";
 import QuizEditor from "../components/QuizEditor";
 import { useState } from "react";
 import SoloGame from "../components/SoloGame";

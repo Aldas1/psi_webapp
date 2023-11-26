@@ -5,7 +5,7 @@ import {
   QuizManipulationRequestDto,
   QuizManipulationResponseDto,
   QuizResponseDto,
-} from "../types";
+} from "../types/quiz";
 
 async function getQuizzes() {
   const response = await axios.get<QuizResponseDto[]>("/api/quizzes");

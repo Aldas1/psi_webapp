@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { DiscussionComment } from "../types";
+import { DiscussionComment } from "../types/quiz";
 import { AuthContext } from "../contexts/AuthContext";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
