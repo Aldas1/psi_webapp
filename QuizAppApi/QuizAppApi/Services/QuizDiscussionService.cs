@@ -2,19 +2,23 @@ using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Exceptions;
+using Microsoft.AspNetCore.Server.IIS.Core;
+using System.Data;
 
 namespace QuizAppApi.Services;
 
 public class QuizDiscussionService : IQuizDiscussionService
 {
     private readonly ICacheRepository _cacheRepository;
+    private readonly IExplanationService _explanationService;
 
-    public QuizDiscussionService(ICacheRepository cacheRepository)
+    public QuizDiscussionService(ICacheRepository cacheRepository, IExplanationService explanationService)
     {
         _cacheRepository = cacheRepository;
+        _explanationService = explanationService;
     }
 
-    public CommentDto SaveMessage(int quizId, string? username, string content)
+    public async Task<CommentDto> SaveMessageAsync(int quizId, string? username, string content, bool isAiAnswer = false)
     {
         var comment = new Comment
         {
@@ -24,6 +28,13 @@ public class QuizDiscussionService : IQuizDiscussionService
             QuizId = quizId
         };
 
+        if (isAiAnswer)
+        {
+            var explanation = await _explanationService.GenerateCommentExplanationAsync(content);
+
+            comment.Content = explanation ?? "Sorry, but we are experiencing technical issues.";
+        }
+     
         for (int attempt = 0; attempt < 3; attempt++)
         {
             Monitor.Enter(_cacheRepository.Lock);
@@ -47,15 +58,13 @@ public class QuizDiscussionService : IQuizDiscussionService
 
     public IEnumerable<CommentDto> GetRecentComments(int quizId)
     {
-        IEnumerable<Comment> comments = null;
-
         for (int attempt = 0; attempt < 3; attempt++)
         {
             Monitor.Enter(_cacheRepository.Lock);
             try
             {
-                comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
-                break;
+                var comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
+                return comments.Select(ConvertToDto);
             }
             catch (TypeMismatchException)
             {
@@ -66,8 +75,8 @@ public class QuizDiscussionService : IQuizDiscussionService
                 Monitor.Exit(_cacheRepository.Lock);
             }
         }
-
-        return comments.Select(ConvertToDto);
+        
+        throw new InternalException("Could not retrieve comments.");
     }
 
     private static CommentDto ConvertToDto(Comment c)

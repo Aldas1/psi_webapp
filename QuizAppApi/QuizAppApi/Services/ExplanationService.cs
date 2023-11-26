@@ -1,35 +1,32 @@
-using System;
-using Microsoft.Extensions.Options;
-using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using OpenAI_API;
 using QuizAppApi.Models.Questions;
+using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 public class ExplanationService : IExplanationService
 {
     private readonly string _openAiApiKey;
+    private readonly OpenAIAPI? openAi;
 
     public ExplanationService(string? openAiApiKey)
     {
         _openAiApiKey = openAiApiKey ?? throw new ArgumentNullException(nameof(openAiApiKey));
+        openAi = new OpenAIAPI(_openAiApiKey);
+        openAi.Completions.DefaultCompletionRequestArgs.Model = "gpt-3.5-turbo-instruct";
+        openAi.Completions.DefaultCompletionRequestArgs.MaxTokens = 150;
     }
 
-    private async Task<string?> AnswerGeneration(string question, string options, string? answer, string type)
+    private async Task<string?> GenerateAnswer(string prompt)
     {
         try
         {
-            var openAi = new OpenAIAPI(_openAiApiKey);
-
-            var prompt = $"Question: {question}\n{options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
-            var responses = await openAi.Completions.CreateCompletionAsync(
-                model: "gpt-3.5-turbo-instruct",
-                prompt: prompt,
-                max_tokens: 150
-            );
+            var responses = await openAi.Completions.CreateCompletionAsync(prompt);
 
             if (responses?.Completions == null)
+            {
                 return null;
+            }
 
             var explanationResponses = new List<string>();
 
@@ -45,20 +42,35 @@ public class ExplanationService : IExplanationService
             return null;
         }
     }
-    
+
+    private string? GenerateQuestionExplanationQuery(string question, string options, string answer, string type)
+    {
+        return $"Question: {question}\n{options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
+    }
+
+    private string? GenerateCommentExplanationQuery(string userComment)
+    {
+        return "You are a helpful assistant. Keep your answers short. This is the user message: " + userComment;
+
+    }
+
     public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption)
     {
-        return await AnswerGeneration(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), chosenOption, "single choice question");
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), chosenOption, QuestionTypeConverter.ToReadableString(question.Type)));
     }
 
     public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions)
     {
-        return await AnswerGeneration(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), string.Join(", ", chosenOptions), "multiple choice question");
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), string.Join(", ", chosenOptions), QuestionTypeConverter.ToReadableString(question.Type)));
     }
-
 
     public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText)
     {
-        return await AnswerGeneration(question.Text, "", answerText, "open text question");
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "", answerText, QuestionTypeConverter.ToReadableString(question.Type)));
+    }
+
+    public async Task<string?> GenerateCommentExplanationAsync(string? userComment)
+    {
+        return await GenerateAnswer(GenerateCommentExplanationQuery(userComment: userComment));
     }
 }

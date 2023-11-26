@@ -9,5 +9,7 @@ namespace QuizAppApi.Interfaces
         Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions);
 
         Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText);
+
+        Task<string?> GenerateCommentExplanationAsync(string? userComment);
     }
 }

@@ -21,6 +21,23 @@ public static class QuestionTypeConverter
                 return string.Empty;
         }
     }
+    public static string ToReadableString(QuestionType type)
+    {
+        switch (type)
+        {
+            case QuestionType.SingleChoiceQuestion:
+                return Config.ReadableQuestionTypeValues.SingleChoiceQuestionApiString;
+
+            case QuestionType.MultipleChoiceQuestion:
+                return Config.ReadableQuestionTypeValues.MultipleChoiceQuestionApiString;
+
+            case QuestionType.OpenTextQuestion:
+                return Config.ReadableQuestionTypeValues.OpenTextQuestionApiString;
+
+            default:
+                return string.Empty;
+        }
+    }
 
     public static QuestionType FromString(string type) 
     {
