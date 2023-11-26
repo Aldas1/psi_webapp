@@ -30,7 +30,13 @@ public class QuizDiscussionService : IQuizDiscussionService
         {
             var explanation = await _explanationService.GenerateCommentExplanationAsync(content);
 
-            comment.Content = explanation;
+            if (explanation == null)
+            {
+                comment.Content = "I don't know the answer to that question.";
+            } else
+            {
+                comment.Content = explanation;
+            }
         }
      
         for (int attempt = 0; attempt < 3; attempt++)
