@@ -2,8 +2,6 @@ using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Exceptions;
-using Microsoft.AspNetCore.Server.IIS.Core;
-using System.Data;
 
 namespace QuizAppApi.Services;
 
