@@ -2,6 +2,7 @@ using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Exceptions;
+using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace QuizAppApi.Services;
 
@@ -56,7 +57,7 @@ public class QuizDiscussionService : IQuizDiscussionService
 
     public IEnumerable<CommentDto> GetRecentComments(int quizId)
     {
-        IEnumerable<Comment> comments = null;
+        IEnumerable<Comment> comments;
 
         for (int attempt = 0; attempt < 3; attempt++)
         {
@@ -64,7 +65,7 @@ public class QuizDiscussionService : IQuizDiscussionService
             try
             {
                 comments = _cacheRepository.Retrieve<Comment>("comments").Where(c => c.QuizId == quizId);
-                break;
+                return comments.Select(ConvertToDto);
             }
             catch (TypeMismatchException)
             {
@@ -75,8 +76,8 @@ public class QuizDiscussionService : IQuizDiscussionService
                 Monitor.Exit(_cacheRepository.Lock);
             }
         }
-
-        return comments.Select(ConvertToDto);
+        
+        throw new InvalidOperationException("Could not retrieve comments.");
     }
 
     private static CommentDto ConvertToDto(Comment c)
