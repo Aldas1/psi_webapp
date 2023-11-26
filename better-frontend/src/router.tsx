@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import ContainerLayout from "./layouts/ContainerLayout";
 import UserLeaderboard from "./pages/UserLeaderboard";
 import FlashardCollections from "./pages/FlashcardCollections";
+import FlashcardCollectionView from "./pages/FlashcardCollectionView";
 
 function Router() {
   return (
@@ -22,6 +23,10 @@ function Router() {
           <Route
             path="/flashcard-collections"
             element={<FlashardCollections />}
+          />
+          <Route
+            path="/flashcard-collections/:id"
+            element={<FlashcardCollectionView />}
           />
           <Route path="*" element={<NotFound />} />
         </Route>

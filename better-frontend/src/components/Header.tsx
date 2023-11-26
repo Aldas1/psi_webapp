@@ -45,7 +45,7 @@ function DarkModeToggle() {
 function Header() {
   const theme = useTheme();
   const [authInfo, setAuthInfo] = useContext(AuthContext);
-  const match = useMatch("/flashcard-collections");
+  const match = useMatch("/flashcard-collections/*");
 
   return (
     <Flex
