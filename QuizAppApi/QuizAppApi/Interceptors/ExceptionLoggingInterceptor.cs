@@ -29,14 +29,14 @@ public class ExceptionLoggingInterceptor : IAsyncInterceptor
         }
     }
 
-    public void InterceptAsynchronous(IInvocation invocation)
+    public async void InterceptAsynchronous(IInvocation invocation)
     {
-        InternalInterceptAsynchronous(invocation);
+        await InternalInterceptAsynchronous(invocation);
     }
 
-    public void InterceptAsynchronous<TResult>(IInvocation invocation)
+    public async void InterceptAsynchronous<TResult>(IInvocation invocation)
     {
-        InternalInterceptAsynchronous(invocation);
+        await InternalInterceptAsynchronous(invocation);
     }
 
     private async Task InternalInterceptAsynchronous(IInvocation invocation)
