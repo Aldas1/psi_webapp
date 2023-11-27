@@ -26,7 +26,8 @@ import {
 import { FlashcardDto } from "../types/flashcard";
 import React, { useEffect, useState } from "react";
 
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import FlashcardShufflePlay from "../components/FlashcardShufflePlay";
 
 export default function FlashcardCollectionView() {
   const params = useParams();
@@ -39,6 +40,7 @@ export default function FlashcardCollectionView() {
     queryKey: ["flashcards", id],
     queryFn: async () => getFlashcards(id),
   });
+  const [inShufflePlay, setInShufflePlay] = useState(false);
 
   if (id === null) return <Navigate to="not-found" />;
   if (flashcardCollectionQuery.isLoading || flashcardQuery.isLoading)
@@ -54,11 +56,29 @@ export default function FlashcardCollectionView() {
   const flashcardCollection = flashcardCollectionQuery.data;
   const flashcards = flashcardQuery.data;
 
+  if (inShufflePlay) {
+    return (
+      <VStack align="start">
+        {
+          <IconButton
+            icon={<ArrowBackIcon />}
+            aria-label="back"
+            onClick={() => setInShufflePlay(false)}
+          />
+        }
+        <FlashcardShufflePlay flashcards={flashcards} />
+      </VStack>
+    );
+  }
+
   return (
     <VStack align="start">
       <Heading>{flashcardCollection.name}</Heading>
       <HStack>
-        <div>stuff here</div>
+        {flashcards.length > 0 && (
+          <Button onClick={() => setInShufflePlay(true)}>Shuffle play</Button>
+        )}
+        <Button colorScheme="red">Delete</Button>
       </HStack>
       <List w="full" maxH="50rem" overflowY="auto">
         <VStack align="stretch">
