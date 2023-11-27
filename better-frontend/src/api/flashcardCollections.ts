@@ -23,6 +23,10 @@ export async function getFlashcardCollection(id: number) {
   return response.data;
 }
 
+export async function deleteFlashcardCollection(id: number) {
+  await axios.delete(`${BASE_URL}${id}`);
+}
+
 export async function getFlashcards(id: number) {
   const response = await axios.get<FlashcardDto[]>(
     `${BASE_URL}${id}/flashcards`

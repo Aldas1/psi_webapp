@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import {
   createFlashcard,
+  deleteFlashcardCollection,
   getFlashcardCollection,
   getFlashcards,
 } from "../api/flashcardCollections";
@@ -30,6 +31,7 @@ import { DeleteIcon, EditIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import FlashcardShufflePlay from "../components/FlashcardShufflePlay";
 
 export default function FlashcardCollectionView() {
+  const navigate = useNavigate();
   const params = useParams();
   const id = parseInt(params.id ?? "0");
   const flashcardCollectionQuery = useQuery({
@@ -41,6 +43,7 @@ export default function FlashcardCollectionView() {
     queryFn: async () => getFlashcards(id),
   });
   const [inShufflePlay, setInShufflePlay] = useState(false);
+  const queryClient = useQueryClient();
 
   if (id === null) return <Navigate to="not-found" />;
   if (flashcardCollectionQuery.isLoading || flashcardQuery.isLoading)
@@ -78,7 +81,18 @@ export default function FlashcardCollectionView() {
         {flashcards.length > 0 && (
           <Button onClick={() => setInShufflePlay(true)}>Shuffle play</Button>
         )}
-        <Button colorScheme="red">Delete</Button>
+        <Button
+          colorScheme="red"
+          onClick={async () => {
+            navigate("/flashcard-collections");
+            await deleteFlashcardCollection(id);
+            queryClient.invalidateQueries({
+              queryKey: ["flashcard-collections"],
+            });
+          }}
+        >
+          Delete
+        </Button>
       </HStack>
       <List w="full" maxH="50rem" overflowY="auto">
         <VStack align="stretch">
