@@ -9,10 +9,12 @@ namespace QuizAppApi.Controllers;
 public class QuestionController : ControllerBase
 {
     private readonly IQuestionService _questionService;
-
-    public QuestionController(IQuestionService questionService)
+    private readonly IExplanationService _explanationService;
+    
+    public QuestionController(IQuestionService questionService, IExplanationService explanationService)
     {
         _questionService = questionService;
+        _explanationService = explanationService;
     }
     
     [HttpGet]
@@ -24,5 +26,44 @@ public class QuestionController : ControllerBase
             return NotFound();
         }
         return Ok(questions);
+    }
+    
+    [HttpGet("generate-explanation")]
+    public async Task<ActionResult<string>> GenerateExplanation(int quizId, int? questionId)
+    {
+        try
+        {
+            var questions = await _questionService.GetQuestionsAsync(quizId);
+
+            if (questions == null)
+            {
+                return NotFound("Quiz not found");
+            }
+
+            if (questionId.HasValue)
+            {
+                var question = questions.FirstOrDefault(q => q.Id == questionId.Value);
+
+                if (question == null)
+                {
+                    return NotFound("Question not found");
+                }
+
+                var explanation = await _explanationService.GenerateExplanationAsync(question);
+
+                if (string.IsNullOrEmpty(explanation))
+                {
+                    return StatusCode(500, "Failed to generate explanation");
+                }
+
+                return Ok(explanation);
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred");
+        }
+
+        return BadRequest("Invalid request");
     }
 }
