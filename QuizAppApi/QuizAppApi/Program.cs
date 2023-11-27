@@ -10,6 +10,7 @@ using QuizAppApi.Extensions;
 using QuizAppApi.Hubs;
 using QuizAppApi.Interceptors;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Loggers;
 using QuizAppApi.Middleware;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Repositories;
@@ -24,6 +25,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Services.AddSingleton(Log.Logger);
+builder.Services.AddSingleton<RequestLogger>();
 builder.Services.AddSingleton<ProxyGenerator>();
 builder.Services.AddTransient<IAsyncInterceptor, ExceptionLoggingInterceptor>();
 
@@ -152,6 +154,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseMiddleware<JwtUserMapperMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.Services.GetService<DiscussionCacheDbSyncWorker>()?.Start();
 app.Run();
 Log.CloseAndFlush();
