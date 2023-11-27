@@ -1,5 +1,6 @@
 ﻿using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
+using QuizAppApi.Models;
 using QuizAppApi.Models.Questions;
 using QuizAppApi.Utils;
 
@@ -11,17 +12,20 @@ public class QuestionService : IQuestionService
     private readonly IQuestionDtoConverterService<SingleChoiceQuestion> _singleChoiceDtoConverter;
     private readonly IQuestionDtoConverterService<MultipleChoiceQuestion> _multipleChoiceDtoConverter;
     private readonly IQuestionDtoConverterService<OpenTextQuestion> _openTextDtoConverter;
+    private readonly IExplanationService _explanationService;
 
     public QuestionService(
         IQuizRepository quizRepository,
         IQuestionDtoConverterService<SingleChoiceQuestion> singleChoiceDtoConverter,
         IQuestionDtoConverterService<MultipleChoiceQuestion> multipleChoiceDtoConverter,
-        IQuestionDtoConverterService<OpenTextQuestion> openTextDtoConverter)
+        IQuestionDtoConverterService<OpenTextQuestion> openTextDtoConverter,
+        IExplanationService explanationService)
     {
         _quizRepository = quizRepository;
         _singleChoiceDtoConverter = singleChoiceDtoConverter;
         _multipleChoiceDtoConverter = multipleChoiceDtoConverter;
         _openTextDtoConverter = openTextDtoConverter;
+        _explanationService = explanationService;
     }
 
     public async Task<IEnumerable<QuestionResponseDto>?> GetQuestionsAsync(int id)
@@ -59,5 +63,43 @@ public class QuestionService : IQuestionService
         }
 
         return generatedQuestions;
+    }
+
+    public async Task<ExplanationDto?> GetQuestionWithExplanationAsync(int quizId, int questionId)
+    {
+        string? explanation;
+
+        var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+        if (quiz == null)
+        {
+            return null;
+        }
+
+        var question = quiz.Questions.FirstOrDefault(q => q.Id == questionId);
+        if (question == null)
+        {
+            return null;
+        }
+
+        switch (question)
+        {
+            case SingleChoiceQuestion singleChoiceQuestion:
+                explanation = await _explanationService.GenerateExplanationAsync(singleChoiceQuestion);
+                break;
+            case MultipleChoiceQuestion multipleChoiceQuestion:
+                explanation = await _explanationService.GenerateExplanationAsync(multipleChoiceQuestion);
+                break;
+            case OpenTextQuestion openTextQuestion:
+                explanation = await _explanationService.GenerateExplanationAsync(openTextQuestion);
+                break;
+            default:
+                explanation = null;
+                break;
+        }
+        
+        return new ExplanationDto
+        {
+            Explanation = explanation
+        };
     }
 }

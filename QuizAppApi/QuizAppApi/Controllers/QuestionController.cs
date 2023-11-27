@@ -28,42 +28,14 @@ public class QuestionController : ControllerBase
         return Ok(questions);
     }
     
-    [HttpGet("generate-explanation")]
-    public async Task<ActionResult<string>> GenerateExplanation(int quizId, int? questionId)
+    [HttpGet("{questionId}/explanation")]
+    public async Task<ActionResult<QuestionResponseDto>> GetQuestionDetails(int id, int questionId)
     {
-        try
+        var questionExplanation = await _questionService.GetQuestionWithExplanationAsync(id, questionId);
+        if (questionExplanation == null)
         {
-            var questions = await _questionService.GetQuestionsAsync(quizId);
-
-            if (questions == null)
-            {
-                return NotFound("Quiz not found");
-            }
-
-            if (questionId.HasValue)
-            {
-                var question = questions.FirstOrDefault(q => q.Id == questionId.Value);
-
-                if (question == null)
-                {
-                    return NotFound("Question not found");
-                }
-
-                var explanation = await _explanationService.GenerateExplanationAsync(question);
-
-                if (string.IsNullOrEmpty(explanation))
-                {
-                    return StatusCode(500, "Failed to generate explanation");
-                }
-
-                return Ok(explanation);
-            }
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred");
-        }
-
-        return BadRequest("Invalid request");
+        return Ok(questionExplanation);
     }
 }
