@@ -1,18 +1,20 @@
-using System;
-using Microsoft.Extensions.Options;
-using QuizAppApi.Dtos;
 using QuizAppApi.Interfaces;
 using OpenAI_API;
 using QuizAppApi.Models.Questions;
+using QuizAppApi.Utils;
 
 namespace QuizAppApi.Services;
 public class ExplanationService : IExplanationService
 {
     private readonly string _openAiApiKey;
+    private readonly OpenAIAPI? openAi;
 
     public ExplanationService(string? openAiApiKey)
     {
         _openAiApiKey = openAiApiKey ?? throw new ArgumentNullException(nameof(openAiApiKey));
+        openAi = new OpenAIAPI(_openAiApiKey);
+        openAi.Completions.DefaultCompletionRequestArgs.Model = "gpt-3.5-turbo-instruct";
+        openAi.Completions.DefaultCompletionRequestArgs.MaxTokens = 150;
     }
     
     private async Task<string?> AnswerGeneration(string question, string options, string type)
@@ -29,7 +31,9 @@ public class ExplanationService : IExplanationService
             );
 
             if (responses?.Completions == null)
+            {
                 return null;
+            }
 
             var explanationResponses = new List<string>();
 
