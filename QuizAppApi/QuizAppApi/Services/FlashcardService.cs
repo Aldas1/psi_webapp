@@ -28,6 +28,11 @@ public class FlashcardService : IFlashcardService
         return (await _repository.GetByCollectionAsync(collectionId)).Select(ToDto);
     }
 
+    public async Task DeleteAsync(int id)
+    {
+        await _repository.DeleteAsync(id);
+    }
+
     private static FlashcardDto ToDto(Flashcard flashcard)
     {
         return new FlashcardDto

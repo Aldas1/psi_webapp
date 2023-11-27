@@ -35,4 +35,14 @@ public class FlashcardRepository : IFlashcardRepository
     {
         return await _context.Flashcards.Where(f => f.FlashcardCollectionId == collectionId).ToListAsync();
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await GetByIdAsync(id);
+        if (entity != null)
+        {
+            _context.Flashcards.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

@@ -29,4 +29,11 @@ public class FlashcardController : ControllerBase
     {
         return Ok(await _flashcardService.GetAsync(collectionId));
     }
+
+    [HttpDelete("/flashcards/{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _flashcardService.DeleteAsync(id);
+        return NoContent();
+    }
 }
