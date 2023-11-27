@@ -5,6 +5,7 @@ import {
   deleteFlashcardCollection,
   getFlashcardCollection,
   getFlashcards,
+  deleteFlashcard,
 } from "../api/flashcardCollections";
 import {
   Card,
@@ -74,6 +75,13 @@ export default function FlashcardCollectionView() {
     );
   }
 
+  async function removeFlashcard(id: number) {
+    await deleteFlashcard(id);
+    queryClient.invalidateQueries({
+      queryKey: ["flashcards", flashcardCollection.id],
+    });
+  }
+
   return (
     <VStack align="start">
       <Heading>{flashcardCollection.name}</Heading>
@@ -98,7 +106,7 @@ export default function FlashcardCollectionView() {
         <VStack align="stretch">
           {flashcards.map((f) => (
             <ListItem key={f.id}>
-              <FlashcardInPreview flashcard={f} />
+              <FlashcardInPreview flashcard={f} onDelete={removeFlashcard} />
             </ListItem>
           ))}
         </VStack>
@@ -109,7 +117,13 @@ export default function FlashcardCollectionView() {
   );
 }
 
-function FlashcardInPreview({ flashcard }: { flashcard: FlashcardDto }) {
+function FlashcardInPreview({
+  flashcard,
+  onDelete,
+}: {
+  flashcard: FlashcardDto;
+  onDelete: (id: number) => Promise<void>;
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const [editing, setEditing] = useState(false);
   return (
@@ -127,6 +141,11 @@ function FlashcardInPreview({ flashcard }: { flashcard: FlashcardDto }) {
               aria-label="delete"
               icon={<DeleteIcon />}
               variant="ghost"
+              onClick={async () => {
+                if (flashcard.id !== undefined) {
+                  await onDelete(flashcard.id);
+                }
+              }}
             />
           </HStack>
         </HStack>

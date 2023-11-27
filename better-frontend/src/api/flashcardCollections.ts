@@ -38,3 +38,7 @@ export async function createFlashcard(id: number, flashcard: FlashcardDto) {
   const response = await axios.post(`${BASE_URL}${id}/flashcards`, flashcard);
   return response.data;
 }
+
+export async function deleteFlashcard(id: number) {
+  await axios.delete(`/api/flashcards/${id}`);
+}
