@@ -195,4 +195,20 @@ public class QuizServiceTests
 
         Assert.AreEqual("Failed to create a question", result.Status);
     }
+
+    [Test]
+    public async Task CanUserEditQuizAsync_UserCanEdit_ReturnsTrue()
+    {
+        var username = "TestUser";
+
+        var user = new User(username, "Password");
+        var quizId = 1;
+
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizId)).ReturnsAsync(new Quiz { Id = quizId, Username = username});
+
+        var result = await _quizService.CanUserEditQuizAsync(user, quizId);
+
+        Assert.IsTrue(result);
+        _mockQuizRepository.Verify(repo => repo.GetQuizByIdAsync(quizId), Times.Once);
+    }
 }
