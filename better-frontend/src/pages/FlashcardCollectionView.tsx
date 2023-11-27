@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate, useParams } from "react-router-dom";
 import {
+  createFlashcard,
   getFlashcardCollection,
   getFlashcards,
 } from "../api/flashcardCollections";
@@ -15,11 +16,17 @@ import {
   VStack,
   Text,
   IconButton,
+  FormControl,
+  FormLabel,
+  Divider,
+  CardHeader,
+  Input,
+  Button,
 } from "@chakra-ui/react";
 import { FlashcardDto } from "../types/flashcard";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { DeleteIcon, EditIcon, AddIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 export default function FlashcardCollectionView() {
   const params = useParams();
@@ -53,7 +60,7 @@ export default function FlashcardCollectionView() {
       <HStack>
         <div>stuff here</div>
       </HStack>
-      <List w="full">
+      <List w="full" maxH="50rem" overflowY="auto">
         <VStack align="stretch">
           {flashcards.map((f) => (
             <ListItem key={f.id}>
@@ -62,7 +69,8 @@ export default function FlashcardCollectionView() {
           ))}
         </VStack>
       </List>
-      <IconButton icon={<AddIcon />} aria-label="Add flashcard" />
+      <Divider />
+      <CreateFlashcardForm flashcardCollectionId={id} />
     </VStack>
   );
 }
@@ -88,6 +96,66 @@ function FlashcardInPreview({ flashcard }: { flashcard: FlashcardDto }) {
             />
           </HStack>
         </HStack>
+      </CardBody>
+    </Card>
+  );
+}
+
+function CreateFlashcardForm({
+  flashcardCollectionId,
+}: {
+  flashcardCollectionId: number;
+}) {
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    async function post() {
+      if (submitting) {
+        await createFlashcard(flashcardCollectionId, { question, answer });
+        queryClient.invalidateQueries({
+          queryKey: ["flashcards", flashcardCollectionId],
+        });
+        setSubmitting(false);
+      }
+    }
+    post();
+  }, [submitting, question, answer, flashcardCollectionId, queryClient]);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+  }
+
+  if (submitting) return <Spinner />;
+
+  return (
+    <Card w="full">
+      <CardHeader>Create new</CardHeader>
+      <CardBody>
+        <form onSubmit={handleSubmit}>
+          <VStack align="start">
+            <FormControl display="flex" alignItems="center">
+              <FormLabel>Question</FormLabel>
+              <Input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+              />
+            </FormControl>
+            <FormControl display="flex" alignItems="center">
+              <FormLabel>Answer</FormLabel>
+              <Input
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+              />
+            </FormControl>
+            <Button type="submit" isDisabled={!question || !answer}>
+              Add
+            </Button>
+          </VStack>
+        </form>
       </CardBody>
     </Card>
   );

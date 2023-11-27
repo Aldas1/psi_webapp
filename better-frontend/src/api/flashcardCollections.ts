@@ -29,3 +29,8 @@ export async function getFlashcards(id: number) {
   );
   return response.data;
 }
+
+export async function createFlashcard(id: number, flashcard: FlashcardDto) {
+  const response = await axios.post(`${BASE_URL}${id}/flashcards`, flashcard);
+  return response.data;
+}
