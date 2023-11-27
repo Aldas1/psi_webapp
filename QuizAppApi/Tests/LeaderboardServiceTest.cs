@@ -1,8 +1,5 @@
 using NUnit.Framework;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models;
 using QuizAppApi.Dtos;
@@ -24,7 +21,7 @@ namespace Tests
         }
 
         [Test]
-        public async Task GetUsersLeaderboardAsync_ReturnsOrderedLeaderboard()
+        public async Task GetUsersLeaderboardAsync_ReturnsLeaderboard()
         {
         string User1 = "User1";
         string User2 = "User2";

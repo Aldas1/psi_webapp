@@ -199,10 +199,12 @@ public class QuizServiceTests
     [Test]
     public async Task CanUserEditQuizAsync_UserCanEdit_ReturnsTrue()
     {
-        var user = new User("TestUser", "Password");
+        var username = "TestUser";
+
+        var user = new User(username, "Password");
         var quizId = 1;
 
-        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizId)).ReturnsAsync(new Quiz { Id = quizId, Username = "TestUser" });
+        _mockQuizRepository.Setup(repo => repo.GetQuizByIdAsync(quizId)).ReturnsAsync(new Quiz { Id = quizId, Username = username});
 
         var result = await _quizService.CanUserEditQuizAsync(user, quizId);
 
