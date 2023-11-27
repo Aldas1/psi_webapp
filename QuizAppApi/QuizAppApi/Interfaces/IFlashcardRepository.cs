@@ -9,4 +9,5 @@ public interface IFlashcardRepository
     Task<IEnumerable<Flashcard>> GetAsync();
     Task<IEnumerable<Flashcard>> GetByCollectionAsync(int collectionId);
     Task DeleteAsync(int id);
+    Task SaveAsync();
 }

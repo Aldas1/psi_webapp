@@ -30,7 +30,15 @@ public class FlashcardController : ControllerBase
         return Ok(await _flashcardService.GetAsync(collectionId));
     }
 
-    [HttpDelete("/flashcards/{id}")]
+    [HttpPut("/flashcards/{id}")]
+    public async Task<ActionResult<FlashcardCollectionDto>> Update(int id, [FromBody] FlashcardDto flashcardDto)
+    {
+        var res = await _flashcardService.UpdateAsync(id, flashcardDto);
+        if (res == null) return NotFound();
+        return Ok(res);
+    }
+
+    [HttpDelete("/flashcards/{id}")]    
     public async Task<IActionResult> Delete(int id)
     {
         await _flashcardService.DeleteAsync(id);
