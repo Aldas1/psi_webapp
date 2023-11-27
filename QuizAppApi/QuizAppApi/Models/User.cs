@@ -9,6 +9,8 @@ public class User
     public string PasswordHash { get; set; }
     public double TotalScore { get; set; }
     public int NumberOfSubmissions { get; set; }
+    
+    public virtual ICollection<Quiz> Quizzes { get; set; }
 
     public User(string username, string passwordHash)
     {

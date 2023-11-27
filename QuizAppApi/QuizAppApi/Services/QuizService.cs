@@ -27,7 +27,8 @@ public class QuizService : IQuizService
         _openTextDtoConverter = openTextDtoConverter;
     }
 
-    public async Task<QuizManipulationResponseDto> CreateQuizAsync(QuizManipulationRequestDto request)
+    public async Task<QuizManipulationResponseDto> CreateQuizAsync(QuizManipulationRequestDto request,
+        User? user = null)
     {
         var newQuiz = new Quiz();
 
@@ -39,6 +40,8 @@ public class QuizService : IQuizService
         {
             return new QuizManipulationResponseDto { Status = e.Message };
         }
+
+        newQuiz.Username = user?.Username;
 
         Quiz? createdQuiz = await _quizRepository.AddQuizAsync(newQuiz);
 
@@ -78,7 +81,7 @@ public class QuizService : IQuizService
         var quizzes = await _quizRepository.GetQuizzesAsync();
 
         return quizzes.Select(quiz => new QuizResponseDto
-            { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters });
+            { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters, Owner = quiz.Username });
     }
 
     public async Task<QuizResponseDto?> GetQuizAsync(int id)
@@ -89,7 +92,8 @@ public class QuizService : IQuizService
             return null;
         }
 
-        return new QuizResponseDto { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters };
+        return new QuizResponseDto
+            { Name = quiz.Name, Id = quiz.Id, NumberOfSubmitters = quiz.NumberOfSubmitters, Owner = quiz.Username };
     }
 
 
@@ -103,6 +107,12 @@ public class QuizService : IQuizService
 
         await _quizRepository.DeleteQuizAsync(id);
         return true;
+    }
+
+    public async Task<bool> CanUserEditQuizAsync(User? user, int quizId)
+    {
+        var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+        return quiz?.Username == null || quiz.Username == user?.Username;
     }
 
     private void PopulateQuizFromDto(Quiz quiz, QuizManipulationRequestDto request)

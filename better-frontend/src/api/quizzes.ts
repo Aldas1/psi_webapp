@@ -7,6 +7,22 @@ import {
   QuizResponseDto,
 } from "../types/quiz";
 
+let token: string | undefined;
+
+function setToken(newToken: string | undefined) {
+  token = newToken;
+}
+
+function genConfig() {
+  return token === null
+    ? {}
+    : {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+}
+
 async function getQuizzes() {
   const response = await axios.get<QuizResponseDto[]>("/api/quizzes");
   return response.data;
@@ -20,7 +36,8 @@ async function getQuiz(id: number) {
 async function createQuiz(quiz: QuizManipulationRequestDto) {
   const response = await axios.post<QuizManipulationResponseDto>(
     "/api/quizzes",
-    quiz
+    quiz,
+    genConfig()
   );
   return response.data;
 }
@@ -28,7 +45,8 @@ async function createQuiz(quiz: QuizManipulationRequestDto) {
 async function updateQuiz(id: number, quiz: QuizManipulationRequestDto) {
   const response = await axios.put<QuizManipulationResponseDto>(
     `/api/quizzes/${id}`,
-    quiz
+    quiz,
+    genConfig()
   );
   if (response.data.status !== "success") {
     throw new Error(response.data.status);
@@ -37,7 +55,7 @@ async function updateQuiz(id: number, quiz: QuizManipulationRequestDto) {
 }
 
 async function deleteQuiz(id: number) {
-  return axios.delete(`/api/quizzes/${id}`);
+  return axios.delete(`/api/quizzes/${id}`, genConfig());
 }
 
 async function submitAnswers(
@@ -68,4 +86,5 @@ export {
   updateQuiz,
   deleteQuiz,
   submitAnswers,
+  setToken,
 };

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizAppApi.Data;
 
@@ -11,9 +12,11 @@ using QuizAppApi.Data;
 namespace QuizAppApi.Data.Migrations
 {
     [DbContext(typeof(QuizContext))]
-    partial class QuizContextModelSnapshot : ModelSnapshot
+    [Migration("20231124174131_UserStoreQuizzes")]
+    partial class UserStoreQuizzes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,49 +52,6 @@ namespace QuizAppApi.Data.Migrations
                     b.HasKey("CommentId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("QuizAppApi.Models.Flashcards.Flashcard", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FlashcardCollectionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlashcardCollectionId");
-
-                    b.ToTable("Flashcards");
-                });
-
-            modelBuilder.Entity("QuizAppApi.Models.Flashcards.FlashcardCollection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FlashcardCollections");
                 });
 
             modelBuilder.Entity("QuizAppApi.Models.Question", b =>
@@ -219,17 +179,6 @@ namespace QuizAppApi.Data.Migrations
                     b.HasDiscriminator().HasValue("SingleChoiceQuestion");
                 });
 
-            modelBuilder.Entity("QuizAppApi.Models.Flashcards.Flashcard", b =>
-                {
-                    b.HasOne("QuizAppApi.Models.Flashcards.FlashcardCollection", "FlashcardCollection")
-                        .WithMany("Flashcards")
-                        .HasForeignKey("FlashcardCollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FlashcardCollection");
-                });
-
             modelBuilder.Entity("QuizAppApi.Models.Question", b =>
                 {
                     b.HasOne("QuizAppApi.Models.Quiz", "Quiz")
@@ -250,11 +199,6 @@ namespace QuizAppApi.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("QuizAppApi.Models.Flashcards.FlashcardCollection", b =>
-                {
-                    b.Navigation("Flashcards");
                 });
 
             modelBuilder.Entity("QuizAppApi.Models.Quiz", b =>
