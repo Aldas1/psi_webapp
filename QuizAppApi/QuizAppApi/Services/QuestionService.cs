@@ -65,7 +65,7 @@ public class QuestionService : IQuestionService
         return generatedQuestions;
     }
 
-    public async Task<ExplanationDto?> GetQuestionWithExplanationAsync(int quizId, int questionId)
+    public async Task<ExplanationDto?> GetQuestionExplanationAsync(int quizId, int questionId)
     {
         string? explanation;
 

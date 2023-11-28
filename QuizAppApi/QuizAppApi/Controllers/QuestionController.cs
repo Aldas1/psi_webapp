@@ -29,9 +29,9 @@ public class QuestionController : ControllerBase
     }
     
     [HttpGet("{questionId}/explanation")]
-    public async Task<ActionResult<QuestionResponseDto>> GetQuestionDetails(int id, int questionId)
+    public async Task<ActionResult<ExplanationDto>> GetQuestionDetails(int id, int questionId)
     {
-        var questionExplanation = await _questionService.GetQuestionWithExplanationAsync(id, questionId);
+        var questionExplanation = await _questionService.GetQuestionExplanationAsync(id, questionId);
         if (questionExplanation == null)
         {
             return NotFound();
