@@ -89,6 +89,29 @@ public class QuizServiceTests
     }
 
     [Test]
+    public async Task GetQuizzes_ReturnsCorrectQuizzesAndOwner()
+    {
+        var quizzes = new List<Quiz>
+        {
+            new Quiz { Id = 1, Name = "Quiz 1", Username = "Owner1", NumberOfSubmitters = 10 },
+            new Quiz { Id = 2, Name = "Quiz 2", Username = "Owner2", NumberOfSubmitters = 5 }
+        };
+
+        _mockQuizRepository.Setup(repo => repo.GetQuizzesAsync()).ReturnsAsync(quizzes);
+
+        var result = await _quizService.GetQuizzesAsync();
+
+        Assert.AreEqual(quizzes.Count, result.Count());
+
+        Assert.AreEqual("Owner1", result.FirstOrDefault(q => q.Name == "Quiz 1")?.Owner);
+        Assert.AreEqual(10, result.FirstOrDefault(q => q.Name == "Quiz 1")?.NumberOfSubmitters);
+
+        Assert.AreEqual("Owner2", result.FirstOrDefault(q => q.Name == "Quiz 2")?.Owner);
+        Assert.AreEqual(5, result.FirstOrDefault(q => q.Name == "Quiz 2")?.NumberOfSubmitters);
+    }
+
+
+    [Test]
     public async Task DeleteQuiz_DeletesCorrectQuiz()
     {
         int quizIdToDelete = 1;
