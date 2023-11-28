@@ -76,7 +76,7 @@ public class QuizDiscussionService : IQuizDiscussionService
             }
         }
         
-        throw new InternalException("Could not retrieve comments.");
+        throw new InternalException("Could not retrieve comments in quiz: " + quizId + ".");
     }
 
     private static CommentDto ConvertToDto(Comment c)

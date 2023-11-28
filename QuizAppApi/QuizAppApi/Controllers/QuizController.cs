@@ -6,7 +6,7 @@ using QuizAppApi.Models;
 namespace QuizAppApi.Controllers;
 
 [ApiController]
-[Route("quizzes")]
+[Route("[controller]")]
 [RequireHttps]
 public class QuizController : ControllerBase
 {
