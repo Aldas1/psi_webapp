@@ -6,6 +6,7 @@ import {
   getFlashcardCollection,
   getFlashcards,
   deleteFlashcard,
+  udpateFlashcard,
 } from "../api/flashcardCollections";
 import {
   Card,
@@ -28,7 +29,13 @@ import {
 import { FlashcardDto } from "../types/flashcard";
 import React, { useEffect, useState } from "react";
 
-import { DeleteIcon, EditIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import {
+  DeleteIcon,
+  EditIcon,
+  ArrowBackIcon,
+  CloseIcon,
+  CheckIcon,
+} from "@chakra-ui/icons";
 import FlashcardShufflePlay from "../components/FlashcardShufflePlay";
 
 export default function FlashcardCollectionView() {
@@ -126,6 +133,21 @@ function FlashcardInPreview({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [editing, setEditing] = useState(false);
+  const queryClient = useQueryClient();
+
+  function handleEditorExit() {
+    setEditing(false);
+  }
+
+  async function handleEdit(newFlashcard: FlashcardDto) {
+    setEditing(false);
+    if (flashcard.id === undefined) return;
+    await udpateFlashcard(flashcard.id, newFlashcard);
+    queryClient.invalidateQueries({
+      queryKey: ["flashcards"],
+    });
+  }
+
   return (
     <Card
       w="full"
@@ -133,24 +155,63 @@ function FlashcardInPreview({
       onMouseOut={() => setIsHovered(false)}
     >
       <CardBody>
-        <HStack justify="space-between">
-          <Text>{flashcard.question}</Text>
-          <HStack sx={{ visibility: isHovered ? "visible" : "hidden" }}>
-            <IconButton aria-label="edit" icon={<EditIcon />} variant="ghost" />
-            <IconButton
-              aria-label="delete"
-              icon={<DeleteIcon />}
-              variant="ghost"
-              onClick={async () => {
-                if (flashcard.id !== undefined) {
-                  await onDelete(flashcard.id);
-                }
-              }}
-            />
+        {editing ? (
+          <FlashcardEditor
+            flashcard={flashcard}
+            onExit={handleEditorExit}
+            onEdit={handleEdit}
+          />
+        ) : (
+          <HStack justify="space-between">
+            <Text>{flashcard.question}</Text>
+            <HStack sx={{ visibility: isHovered ? "visible" : "hidden" }}>
+              <IconButton
+                aria-label="edit"
+                icon={<EditIcon />}
+                variant="ghost"
+                onClick={() => setEditing(true)}
+              />
+              <IconButton
+                aria-label="delete"
+                icon={<DeleteIcon />}
+                variant="ghost"
+                onClick={async () => {
+                  if (flashcard.id !== undefined) {
+                    await onDelete(flashcard.id);
+                  }
+                }}
+              />
+            </HStack>
           </HStack>
-        </HStack>
+        )}
       </CardBody>
     </Card>
+  );
+}
+
+function FlashcardEditor({
+  flashcard,
+  onEdit,
+  onExit,
+}: {
+  flashcard: FlashcardDto;
+  onEdit: (flashcard: FlashcardDto) => Promise<void>;
+  onExit: () => void;
+}) {
+  const [question, setQuestion] = useState(flashcard.question);
+  const [answer, setAnswer] = useState(flashcard.answer);
+
+  return (
+    <HStack>
+      <Input value={question} onChange={(e) => setQuestion(e.target.value)} />
+      <Input value={answer} onChange={(e) => setAnswer(e.target.value)} />
+      <IconButton
+        icon={<CheckIcon />}
+        aria-label="submit"
+        onClick={() => onEdit({ question, answer })}
+      />
+      <IconButton icon={<CloseIcon />} aria-label="close" onClick={onExit} />
+    </HStack>
   );
 }
 

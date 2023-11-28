@@ -35,7 +35,18 @@ export async function getFlashcards(id: number) {
 }
 
 export async function createFlashcard(id: number, flashcard: FlashcardDto) {
-  const response = await axios.post(`${BASE_URL}${id}/flashcards`, flashcard);
+  const response = await axios.post<FlashcardDto>(
+    `${BASE_URL}${id}/flashcards`,
+    flashcard
+  );
+  return response.data;
+}
+
+export async function udpateFlashcard(id: number, flashcard: FlashcardDto) {
+  const response = await axios.put<FlashcardDto>(
+    `/api/flashcards/${id}`,
+    flashcard
+  );
   return response.data;
 }
 
