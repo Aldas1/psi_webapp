@@ -45,7 +45,21 @@ public class UserControllerTests
     }
 
     [Test]
-    public async Task GetUser_ExistingUser_ReturnsOk()
+    public async Task CreateUser_ReturnsConflictResult()
+    {
+        var existingUsername = "existingUser";
+        var existingUserRequestDto = new UserRequestDto { Username = existingUsername, Password = "ExistingPassword1" };
+
+        _userServiceMock.Setup(x => x.CreateUserAsync(existingUserRequestDto))
+            .ReturnsAsync((UserResponseDto)null);
+
+        var result = await _controller.CreateUser(existingUserRequestDto);
+
+        Assert.IsInstanceOf<ConflictResult>(result.Result);
+    }
+
+    [Test]
+    public async Task GetUser_ReturnsOk()
     {
         var existingUsername = "existingUser";
         var expectedResponse = new UserResponseDto
@@ -67,7 +81,7 @@ public class UserControllerTests
     }
 
     [Test]
-    public async Task GetUser_NonExistingUser_ReturnsNotFound()
+    public async Task GetUser_ReturnsNotFound()
     {
         var nonExistingUsername = "nonExistingUser";
 

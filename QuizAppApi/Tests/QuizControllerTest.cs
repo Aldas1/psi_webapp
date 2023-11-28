@@ -23,7 +23,7 @@ public class QuizControllerTests
     }
 
     [Test]
-    public async Task GetQuizzes_ReturnsOkResultWithQuizzes()
+    public async Task GetQuizzes_ReturnsOk()
     {
         _quizServiceMock.Setup(x => x.GetQuizzesAsync())
             .ReturnsAsync(new List<QuizResponseDto> { new QuizResponseDto() });
@@ -39,7 +39,32 @@ public class QuizControllerTests
     }
 
     [Test]
-    public async Task GetQuiz_WithValidId_ReturnsOkResultWithQuiz()
+    public async Task GetQuizzes_ReturnsNotFound()
+    {
+        _quizServiceMock.Setup(x => x.GetQuizzesAsync())
+            .ReturnsAsync((List<QuizResponseDto>)null);
+
+        var result = await _controller.GetQuizzes();
+
+        Assert.IsInstanceOf<ActionResult<IEnumerable<QuizResponseDto>>>(result);
+        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+    }
+
+
+    [Test]
+    public async Task GetQuiz_ReturnsNotFoundResult()
+    {
+        _quizServiceMock.Setup(x => x.GetQuizAsync(It.IsAny<int>()))
+            .ReturnsAsync((QuizResponseDto)null);
+
+        var result = await _controller.GetQuiz(1);
+
+        Assert.IsInstanceOf<ActionResult<QuizResponseDto>>(result);
+        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+    }
+
+    [Test]
+    public async Task GetQuiz_ReturnsOk()
     {
         _quizServiceMock.Setup(x => x.GetQuizAsync(It.IsAny<int>()))
             .ReturnsAsync(new QuizResponseDto());
@@ -51,7 +76,7 @@ public class QuizControllerTests
     }
 
     [Test]
-    public async Task DeleteQuiz_WhenUserCanEdit_ReturnsOkResult()
+    public async Task DeleteQuiz_ReturnsOkResult()
     {
         _quizServiceMock.Setup(x => x.CanUserEditQuizAsync(It.IsAny<User>(), It.IsAny<int>()))
             .ReturnsAsync(true);
@@ -71,4 +96,25 @@ public class QuizControllerTests
         Assert.IsInstanceOf<ActionResult>(result);
         Assert.IsInstanceOf<OkResult>(result);
     }
+
+    [Test]
+    public async Task DeleteQuiz_ReturnsForbidResult()
+    {
+        _quizServiceMock.Setup(x => x.CanUserEditQuizAsync(It.IsAny<User>(), It.IsAny<int>()))
+            .ReturnsAsync(false);
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Items = { ["User"] = null }
+            }
+        };
+
+        var result = await _controller.DeleteQuiz(1);
+
+        Assert.IsInstanceOf<ActionResult>(result);
+        Assert.IsInstanceOf<ForbidResult>(result);
+    }
+
 }
