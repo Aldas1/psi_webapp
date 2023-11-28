@@ -9,12 +9,10 @@ namespace QuizAppApi.Controllers;
 public class QuestionController : ControllerBase
 {
     private readonly IQuestionService _questionService;
-    private readonly IExplanationService _explanationService;
     
-    public QuestionController(IQuestionService questionService, IExplanationService explanationService)
+    public QuestionController(IQuestionService questionService)
     {
         _questionService = questionService;
-        _explanationService = explanationService;
     }
     
     [HttpGet]
