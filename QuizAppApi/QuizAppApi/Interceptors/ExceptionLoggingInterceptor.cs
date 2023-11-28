@@ -36,7 +36,7 @@ public class ExceptionLoggingInterceptor : IAsyncInterceptor
 
     public void InterceptAsynchronous<TResult>(IInvocation invocation)
     {
-        invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
+        invocation.ReturnValue = InternalInterceptAsynchronous<TResult>(invocation);
     }
 
     private async Task InternalInterceptAsynchronous(IInvocation invocation)
@@ -44,8 +44,22 @@ public class ExceptionLoggingInterceptor : IAsyncInterceptor
         try
         {
             invocation.Proceed();
-            var task = (Task)invocation.ReturnValue;
-            await task;
+            await (Task) invocation.ReturnValue;
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+            throw;
+        }
+    }
+    
+    private async Task<TResult> InternalInterceptAsynchronous<TResult>(IInvocation invocation)
+    {
+        try
+        {
+            invocation.Proceed();
+            var task = (Task<TResult>)invocation.ReturnValue;
+            return await task;
         }
         catch (Exception e)
         {
