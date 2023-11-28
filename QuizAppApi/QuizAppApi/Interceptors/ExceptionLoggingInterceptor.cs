@@ -31,21 +31,22 @@ public class ExceptionLoggingInterceptor : IAsyncInterceptor
 
     public void InterceptAsynchronous(IInvocation invocation)
     {
-        invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
+        invocation.ReturnValue = InternalInterceptAsynchronous<object>(invocation);
     }
 
     public void InterceptAsynchronous<TResult>(IInvocation invocation)
     {
-        invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
+        invocation.ReturnValue = InternalInterceptAsynchronous<TResult>(invocation);
     }
 
-    private async Task InternalInterceptAsynchronous(IInvocation invocation)
+    private async Task<TResult> InternalInterceptAsynchronous<TResult>(IInvocation invocation)
     {
         try
         {
             invocation.Proceed();
-            var task = (Task)invocation.ReturnValue;
-            await task;
+            var task = (Task<TResult>)invocation.ReturnValue;
+            var result = await task;
+            return result;
         }
         catch (Exception e)
         {
