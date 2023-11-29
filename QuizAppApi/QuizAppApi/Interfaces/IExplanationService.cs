@@ -1,15 +1,11 @@
+using QuizAppApi.Dtos;
 using QuizAppApi.Models.Questions;
 
-namespace QuizAppApi.Interfaces
+namespace QuizAppApi.Interfaces;
+public interface IExplanationService
 {
-    public interface IExplanationService
-    {
-        Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption);
-
-        Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions);
-
-        Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText);
-
-        Task<string?> GenerateCommentExplanationAsync(string? userComment);
-    }
+    Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question);
+    Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question);
+    Task<string?> GenerateExplanationAsync(OpenTextQuestion question);
+    Task<string?> GenerateCommentExplanationAsync(string? userComment);
 }

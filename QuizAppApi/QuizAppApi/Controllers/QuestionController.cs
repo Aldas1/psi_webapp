@@ -9,7 +9,7 @@ namespace QuizAppApi.Controllers;
 public class QuestionController : ControllerBase
 {
     private readonly IQuestionService _questionService;
-
+    
     public QuestionController(IQuestionService questionService)
     {
         _questionService = questionService;
@@ -24,5 +24,16 @@ public class QuestionController : ControllerBase
             return NotFound();
         }
         return Ok(questions);
+    }
+    
+    [HttpGet("{questionId}/explanation")]
+    public async Task<ActionResult<ExplanationDto>> GetQuestionDetails(int id, int questionId)
+    {
+        var questionExplanation = await _questionService.GetQuestionExplanationAsync(id, questionId);
+        if (questionExplanation == null)
+        {
+            return NotFound();
+        }
+        return Ok(questionExplanation);
     }
 }

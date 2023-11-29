@@ -43,9 +43,9 @@ public class ExplanationService : IExplanationService
         }
     }
 
-    private string? GenerateQuestionExplanationQuery(string question, string options, string answer, string type)
+    private string? GenerateQuestionExplanationQuery(string question, string options, string type)
     {
-        return $"Question: {question}\n{options}\nAnswer: {answer}\nExplain this {type} answer (keep the explanation short):";
+        return $"Question: {question}\nOptions: {options}\nExplain this {type} answer (keep the explanation short):";
     }
 
     private string? GenerateCommentExplanationQuery(string userComment)
@@ -54,19 +54,19 @@ public class ExplanationService : IExplanationService
 
     }
 
-    public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question, string? chosenOption)
+    public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question)
     {
-        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), chosenOption, QuestionTypeConverter.ToReadableString(question.Type)));
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), QuestionTypeConverter.ToReadableString(question.Type)));
     }
 
-    public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question, List<string> chosenOptions)
+    public async Task<string?> GenerateExplanationAsync(MultipleChoiceQuestion question)
     {
-        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), string.Join(", ", chosenOptions), QuestionTypeConverter.ToReadableString(question.Type)));
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "Options: " + string.Join(", ", question.Options.Select(opt => opt.Name)), QuestionTypeConverter.ToReadableString(question.Type)));
     }
 
-    public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question, string? answerText)
+    public async Task<string?> GenerateExplanationAsync(OpenTextQuestion question)
     {
-        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "", answerText, QuestionTypeConverter.ToReadableString(question.Type)));
+        return await GenerateAnswer(GenerateQuestionExplanationQuery(question.Text, "", QuestionTypeConverter.ToReadableString(question.Type)));
     }
 
     public async Task<string?> GenerateCommentExplanationAsync(string? userComment)
