@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QuizManipulationRequestDto } from "../types";
+import { QuizManipulationRequestDto } from "../types/quiz";
 import QuizEditor from "../components/QuizEditor";
 import { Heading, VStack } from "@chakra-ui/layout";
 import { createQuiz } from "../api/quizzes";

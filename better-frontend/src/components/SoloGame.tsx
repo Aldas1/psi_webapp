@@ -5,7 +5,7 @@ import {
   QuestionParametersDto,
   QuizManipulationQuestionRequestDto,
   QuizManipulationRequestDto,
-} from "../types";
+} from "../types/quiz";
 import {
   Flex,
   Box,

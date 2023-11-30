@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuizAppApi.Models;
+using QuizAppApi.Models.Flashcards;
 using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Data;
@@ -33,4 +34,6 @@ public class QuizContext : DbContext
     public DbSet<Option> Options { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Flashcard> Flashcards { get; set; }
+    public DbSet<FlashcardCollection> FlashcardCollections { get; set; }
 }

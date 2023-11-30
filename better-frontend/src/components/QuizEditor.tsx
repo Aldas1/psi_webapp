@@ -3,7 +3,7 @@ import {
   QuestionParametersDto,
   QuizManipulationQuestionRequestDto,
   QuizManipulationRequestDto,
-} from "../types";
+} from "../types/quiz";
 import { Input } from "@chakra-ui/input";
 import { Button, IconButton } from "@chakra-ui/button";
 import {
@@ -23,7 +23,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
-import { QuestionTypeDto } from "../types";
+import { QuestionTypeDto } from "../types/quiz";
 import { ReactNode } from "react";
 
 function createQuestionParameters(

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizAppApi.Data;
 
@@ -11,9 +12,11 @@ using QuizAppApi.Data;
 namespace QuizAppApi.Data.Migrations
 {
     [DbContext(typeof(QuizContext))]
-    partial class QuizContextModelSnapshot : ModelSnapshot
+    [Migration("20231125183344_Flashcards")]
+    partial class Flashcards
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,12 +160,7 @@ namespace QuizAppApi.Data.Migrations
                     b.Property<int>("NumberOfSubmitters")
                         .HasColumnType("int");
 
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Username");
 
                     b.ToTable("Quizzes");
                 });
@@ -259,21 +257,7 @@ namespace QuizAppApi.Data.Migrations
 
             modelBuilder.Entity("QuizAppApi.Models.Quiz", b =>
                 {
-                    b.HasOne("QuizAppApi.Models.User", "User")
-                        .WithMany("Quizzes")
-                        .HasForeignKey("Username");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("QuizAppApi.Models.Quiz", b =>
-                {
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("QuizAppApi.Models.User", b =>
-                {
-                    b.Navigation("Quizzes");
                 });
 
             modelBuilder.Entity("QuizAppApi.Models.Questions.OptionQuestion", b =>

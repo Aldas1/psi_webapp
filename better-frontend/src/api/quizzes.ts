@@ -5,7 +5,7 @@ import {
   QuizManipulationRequestDto,
   QuizManipulationResponseDto,
   QuizResponseDto,
-} from "../types";
+} from "../types/quiz";
 
 let token: string | undefined;
 

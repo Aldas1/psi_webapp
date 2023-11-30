@@ -8,7 +8,7 @@ import {
   ListItem,
 } from "@chakra-ui/react";
 import useDiscussion from "../hooks/useDiscussion";
-import { DiscussionComment } from "../types";
+import { DiscussionComment } from "../types/quiz";
 import { useEffect, useRef, useState } from "react";
 
 export default function QuizDiscussionBlock({ id }: { id: number }) {
