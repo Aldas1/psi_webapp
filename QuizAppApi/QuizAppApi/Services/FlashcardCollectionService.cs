@@ -1,21 +1,72 @@
 using QuizAppApi.Dtos.Flashcards;
 using QuizAppApi.Interfaces;
 using QuizAppApi.Models.Flashcards;
+using QuizAppApi.Models.Questions;
 
 namespace QuizAppApi.Services;
 
 public class FlashcardCollectionService : IFlashcardCollectionService
 {
     private readonly IFlashcardCollectionRepository _repository;
+    private readonly IFlashcardService _flashcardService;
+    private readonly IQuizRepository _quizRepository;
 
-    public FlashcardCollectionService(IFlashcardCollectionRepository repository)
+    public FlashcardCollectionService(
+        IFlashcardCollectionRepository flashcardCollectionRepository,
+        IFlashcardService flashcardService,
+        IQuizRepository quizRepository)
     {
-        _repository = repository;
+        _repository = flashcardCollectionRepository;
+        _flashcardService = flashcardService;
+        _quizRepository = quizRepository;
     }
 
     public async Task<FlashcardCollectionDto> CreateAsync(FlashcardCollectionDto collectionDto)
     {
         return ToDto(await _repository.CreateAsync(new FlashcardCollection { Name = collectionDto.Name }));
+    }
+
+    public async Task<IEnumerable<FlashcardCollectionDto>> CreateFromQuizzesAsync(IEnumerable<int> quizIDs)
+    {
+        foreach (var quizId in quizIDs)
+        {
+            var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+            if (quiz == null) continue;
+
+            var result = await _repository.CreateAsync(new FlashcardCollection { Name = quiz.Name });
+            foreach (var question in quiz.Questions)
+            {
+                string answer = "";
+                if (question is SingleChoiceQuestion singleChoiceQuestion)
+                {
+                    answer =
+                        singleChoiceQuestion.Options.Select(option => new { Option = option })
+                        .Where(o => o.Option.Correct)
+                        .Select(o => o.Option.Name)
+                        .ToList()
+                        .First();
+                }
+                else if (question is MultipleChoiceQuestion multipleChoiceQuestion)
+                {
+                    var correctOptions =
+                        multipleChoiceQuestion.Options.Select(option => new { Option = option })
+                        .Where(o => o.Option.Correct)
+                        .Select(o => o.Option.Name)
+                        .ToList();
+                    answer = string.Join(", ", correctOptions);
+                }
+                else if (question is OpenTextQuestion openTextQuestion)
+                {
+                    answer = openTextQuestion.CorrectAnswer;
+                }
+                await _flashcardService.CreateAsync(result.Id, new FlashcardDto
+                {
+                    Question = question.Text,
+                    Answer = answer
+                });
+            }
+        }
+        return await GetAsync();
     }
 
     public async Task<FlashcardCollectionDto?> GetByIdAsync(int id)
