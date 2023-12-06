@@ -26,48 +26,50 @@ public class FlashcardCollectionService : IFlashcardCollectionService
         return ToDto(await _repository.CreateAsync(new FlashcardCollection { Name = collectionDto.Name }));
     }
 
-    public async Task<IEnumerable<FlashcardCollectionDto>> CreateFromQuizzesAsync(IEnumerable<int> quizIDs)
+    public async Task<IEnumerable<FlashcardCollectionDto>> CreateFromQuizzesAsync(int quizId)
     {
-        foreach (var quizId in quizIDs)
-        {
-            var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
-            if (quiz == null) continue;
 
-            var result = await _repository.CreateAsync(new FlashcardCollection { Name = quiz.Name });
-            foreach (var question in quiz.Questions)
+        var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+        if (quiz == null)
+        {
+            return null;
+        }
+
+        var result = await _repository.CreateAsync(new FlashcardCollection { Name = quiz.Name + " flashcards"});
+        foreach (var question in quiz.Questions)
+        {
+            string? answer;
+            switch (question)
             {
-                string? answer;
-                if (question is SingleChoiceQuestion singleChoiceQuestion)
-                {
-                    answer =
-                        singleChoiceQuestion.Options
+                case SingleChoiceQuestion singleChoiceQuestion:
+                    answer = singleChoiceQuestion.Options
                         .Where(option => option.Correct)
                         .Select(option => option.Name)
                         .FirstOrDefault();
-                }
-                else if (question is MultipleChoiceQuestion multipleChoiceQuestion)
-                {
-                    var correctOptions =
-                        multipleChoiceQuestion.Options
+                    break;
+
+                case MultipleChoiceQuestion multipleChoiceQuestion:
+                    var correctOptions = multipleChoiceQuestion.Options
                         .Where(option => option.Correct)
                         .Select(option => option.Name)
                         .ToList();
                     answer = string.Join(", ", correctOptions);
-                }
-                else if (question is OpenTextQuestion openTextQuestion)
-                {
+                    break;
+
+                case OpenTextQuestion openTextQuestion:
                     answer = openTextQuestion.CorrectAnswer;
-                }
-                else
-                {
+                    break;
+
+                default:
                     answer = "";
-                }
-                await _flashcardService.CreateAsync(result.Id, new FlashcardDto
-                {
-                    Question = question.Text,
-                    Answer = answer
-                });
+                    break;
             }
+
+            await _flashcardService.CreateAsync(result.Id, new FlashcardDto
+            {
+                Question = question.Text,
+                Answer = answer
+            });
         }
         return await GetAsync();
     }
