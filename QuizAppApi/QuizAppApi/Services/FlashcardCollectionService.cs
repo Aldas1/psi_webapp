@@ -36,28 +36,31 @@ public class FlashcardCollectionService : IFlashcardCollectionService
             var result = await _repository.CreateAsync(new FlashcardCollection { Name = quiz.Name });
             foreach (var question in quiz.Questions)
             {
-                string answer = "";
+                string? answer;
                 if (question is SingleChoiceQuestion singleChoiceQuestion)
                 {
                     answer =
-                        singleChoiceQuestion.Options.Select(option => new { Option = option })
-                        .Where(o => o.Option.Correct)
-                        .Select(o => o.Option.Name)
-                        .ToList()
-                        .First();
+                        singleChoiceQuestion.Options
+                        .Where(option => option.Correct)
+                        .Select(option => option.Name)
+                        .FirstOrDefault();
                 }
                 else if (question is MultipleChoiceQuestion multipleChoiceQuestion)
                 {
                     var correctOptions =
-                        multipleChoiceQuestion.Options.Select(option => new { Option = option })
-                        .Where(o => o.Option.Correct)
-                        .Select(o => o.Option.Name)
+                        multipleChoiceQuestion.Options
+                        .Where(option => option.Correct)
+                        .Select(option => option.Name)
                         .ToList();
                     answer = string.Join(", ", correctOptions);
                 }
                 else if (question is OpenTextQuestion openTextQuestion)
                 {
                     answer = openTextQuestion.CorrectAnswer;
+                }
+                else
+                {
+                    answer = "";
                 }
                 await _flashcardService.CreateAsync(result.Id, new FlashcardDto
                 {
