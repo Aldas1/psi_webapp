@@ -26,7 +26,7 @@ public class FlashcardCollectionService : IFlashcardCollectionService
         return ToDto(await _repository.CreateAsync(new FlashcardCollection { Name = collectionDto.Name }));
     }
 
-    public async Task<IEnumerable<FlashcardCollectionDto>> CreateFromQuizzesAsync(int quizId)
+    public async Task<FlashcardCollectionDto> CreateFromQuizAsync(int quizId)
     {
 
         var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
@@ -71,7 +71,7 @@ public class FlashcardCollectionService : IFlashcardCollectionService
                 Answer = answer
             });
         }
-        return await GetAsync();
+        return await GetByIdAsync(quizId);
     }
 
     public async Task<FlashcardCollectionDto?> GetByIdAsync(int id)

@@ -22,11 +22,11 @@ public class FlashcardCollectionController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { res.Id }, res);
     }
 
-    [HttpPost("create/{quizId}")]
-    public async Task<ActionResult<IEnumerable<FlashcardCollectionDto>>> CreateFromQuizzes(int quizId)
+    [HttpPost("create-from-quiz/{quizId}")]
+    public async Task<ActionResult<FlashcardCollectionDto>> CreateFromQuizzes(int quizId)
     {
-        var createdCollections = await _collectionService.CreateFromQuizzesAsync(quizId);
-        return CreatedAtAction(nameof(Get), createdCollections);
+        var createdCollection = await _collectionService.CreateFromQuizAsync(quizId);
+        return CreatedAtAction(nameof(GetById), createdCollection);
     }
 
     [HttpGet("{id}")]
