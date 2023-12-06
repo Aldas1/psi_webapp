@@ -51,7 +51,6 @@ public class ExplanationService : IExplanationService
     private string? GenerateCommentExplanationQuery(string userComment)
     {
         return "You are a helpful assistant. Keep your answers short. This is the user message: " + userComment;
-
     }
 
     public async Task<string?> GenerateExplanationAsync(SingleChoiceQuestion question)
