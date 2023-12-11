@@ -31,6 +31,11 @@ public class AnswerService : IAnswerService
 
         response.Status = "success";
 
+        var answerStatus = quiz.Questions.Select(q => new AnswerSubmitQuestionStatusResponseDto
+        {
+            QuestionId = q.Id,
+        }).ToList();
+
         foreach (var answer in request)
         {
             var question = quiz.Questions.FirstOrDefault(q => q.Id == answer.QuestionId);
@@ -39,11 +44,14 @@ public class AnswerService : IAnswerService
                 continue;
             }
 
-            correctAnswers += IsAnswerCorrect(question, answer) ? 1 : 0;
+            if (!IsAnswerCorrect(question, answer)) continue;
+            ++correctAnswers;
+            answerStatus.First(s => true).Correct = true;
         }
 
         response.CorrectlyAnswered = correctAnswers;
         response.Score = quiz.Questions.Count == 0 ? 0 : ((double)correctAnswers * 100 / quiz.Questions.Count);
+        response.QuestionStats = answerStatus;
 
         AnswerSubmittedEvent.Raise(this, new AnswerSubmittedEventArgs
         {
