@@ -21,11 +21,13 @@ import {
   ListItem,
   List,
   Divider,
+  Stack,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
 import { AuthContext } from "../contexts/AuthContext";
 import QuestionStatView from "./QuestionStatView";
+import ExplanationSection from "./ExplanationSection";
 
 function SingleChoiceControls({
   parameters,
@@ -190,11 +192,17 @@ function Results({
               return (
                 <ListItem key={s.questionId} w="full">
                   <Divider width="100%" m="8" />
-                  <QuestionStatView
-                    question={q}
-                    answer={answer}
-                    correct={s.correct}
-                  />
+                  <Stack>
+                    <QuestionStatView
+                      question={q}
+                      answer={answer}
+                      correct={s.correct}
+                    />
+                    <ExplanationSection
+                      quizId={quiz.id as number}
+                      questionId={q.id as number}
+                    />
+                  </Stack>
                 </ListItem>
               );
             })}

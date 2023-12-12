@@ -72,6 +72,10 @@ interface DiscussionComment {
   date: string;
 }
 
+interface ExplanationDto {
+  explanation?: string;
+}
+
 export type {
   QuestionTypeDto,
   QuestionParametersDto,
@@ -84,4 +88,5 @@ export type {
   AnswerSubmitResponseDto,
   UserLeaderboardResponseDto,
   DiscussionComment,
+  ExplanationDto,
 };

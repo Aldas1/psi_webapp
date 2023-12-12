@@ -1,11 +1,25 @@
 import axios from "axios";
-import { QuestionResponseDto } from "../types/quiz";
+import { ExplanationDto, QuestionResponseDto } from "../types/quiz";
 
-async function getQuestions(quiz_id: number) {
+async function getQuestions(quizId: number) {
   const response = await axios.get<QuestionResponseDto[]>(
-    `/api/quizzes/${quiz_id}/questions`
+    `/api/quizzes/${quizId}/questions`
   );
   return response.data;
 }
 
-export { getQuestions };
+async function getExplanation(
+  quizId: number,
+  questionId: number
+): Promise<ExplanationDto> {
+  try {
+    const response = await axios.get<ExplanationDto>(
+      `/api/quizzes/${quizId}/questions/${questionId}/explanation`
+    );
+    return response.data;
+  } catch {
+    return {};
+  }
+}
+
+export { getQuestions, getExplanation };
