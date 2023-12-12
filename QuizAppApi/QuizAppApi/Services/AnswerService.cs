@@ -46,7 +46,7 @@ public class AnswerService : IAnswerService
 
             if (!IsAnswerCorrect(question, answer)) continue;
             ++correctAnswers;
-            answerStatus.First(s => true).Correct = true;
+            answerStatus.First(s => s.QuestionId == question.Id).Correct = true;
         }
 
         response.CorrectlyAnswered = correctAnswers;
