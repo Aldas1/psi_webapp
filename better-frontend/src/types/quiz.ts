@@ -53,6 +53,12 @@ interface AnswerSubmitResponseDto {
   score: number;
   correctlyAnswered: number;
   status: string;
+  questionStats: AnswerSubmitQuestionStatusResponseDto[];
+}
+
+interface AnswerSubmitQuestionStatusResponseDto {
+  questionId: number;
+  correct: boolean;
 }
 
 interface UserLeaderboardResponseDto {
