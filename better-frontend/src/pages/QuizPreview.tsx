@@ -25,6 +25,7 @@ import { useContext, useState } from "react";
 import SoloGame from "../components/SoloGame";
 import QuizDiscussionBlock from "../components/QuizDiscussionBlock";
 import { AuthContext } from "../contexts/AuthContext";
+import { createFromQuizFlashcardCollection } from "../api/flashcardCollections";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,
@@ -129,11 +130,23 @@ function QuizPreview() {
         previewBody={
           <HStack>
             {quiz.questions.length > 0 && (
-              <Button onClick={() => setInGame(true)}>Solo game</Button>
+              <Button colorScheme="green" onClick={() => setInGame(true)}>
+                Solo game
+              </Button>
             )}
             {(quiz.owner === undefined ||
               quiz.owner === authInfo?.username) && (
               <>
+                {quiz.questions.length > 0 && (
+                  <Button
+                    onClick={async () => {
+                      const newCollection = await createFromQuizFlashcardCollection(id);
+                      navigate(`/flashcard-collections/${newCollection.id}`);
+                    }}
+                  >
+                    Generate flashcards
+                  </Button>
+                )}
                 <Button
                   colorScheme="purple"
                   onClick={() => setQuizForEdit(quiz)}
