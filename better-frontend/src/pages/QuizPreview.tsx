@@ -5,12 +5,6 @@ import { getQuestions } from "../api/questions";
 import {
   Button,
   HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Spinner,
   useDisclosure,
   useToast,
