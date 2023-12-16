@@ -187,12 +187,14 @@ function QuizPreview() {
                       </MenuItem>
                     )}
                     <MenuItem
+                      as={Button}
                       textAlign="center"
                       onClick={() => setQuizForEdit(quiz)}
                     >
                       Edit
                     </MenuItem>
                     <MenuItem
+                      as={Button}
                       color="white"
                       bg="red.500"
                       onClick={async () => {
