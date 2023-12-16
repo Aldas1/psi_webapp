@@ -19,6 +19,12 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
 } from "@chakra-ui/react";
 import { ChatIcon } from "@chakra-ui/icons";
 import {
@@ -195,8 +201,9 @@ function QuizPreview() {
                     </MenuItem>
                     <MenuItem
                       as={Button}
-                      color="white"
                       bg="red.500"
+                      color="white"
+                      _hover={{ bg: "red.600" }}
                       onClick={async () => {
                         await deleteQuiz(id);
                         navigate("/");
@@ -217,16 +224,16 @@ function QuizPreview() {
           </HStack>
         }
       />
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="full">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Quiz discussion</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody display="flex" alignItems="stretch">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>Quiz discussion</DrawerHeader>
+          <DrawerCloseButton />
+          <DrawerBody display="flex" alignItems="stretch">
             <QuizDiscussionBlock id={quiz.id} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
