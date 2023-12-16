@@ -131,7 +131,7 @@ function QuizPreview() {
           <HStack>
             {quiz.questions.length > 0 && (
               <Button colorScheme="green" onClick={() => setInGame(true)}>
-                Solo game
+                Start
               </Button>
             )}
             {(quiz.owner === undefined ||
