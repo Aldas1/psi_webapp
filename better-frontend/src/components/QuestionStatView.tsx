@@ -104,6 +104,7 @@ function QuestionWithOptionsStatView({
           let correct = false;
           if (correctOptions.includes(o) === pickedOptions.includes(o))
             correct = true;
+          const unpicked = !correct && correctOptions.includes(o);
           return (
             <ListItem
               key={o + i}
@@ -112,8 +113,12 @@ function QuestionWithOptionsStatView({
                   ? pickedOptions.includes(o)
                     ? "green.800"
                     : ""
-                  : "red.800"
+                  : !unpicked
+                  ? "red.800"
+                  : ""
               }
+              borderColor="red.800"
+              borderWidth={unpicked ? 2 : 0}
               p="4"
               rounded="lg"
               w="full"
