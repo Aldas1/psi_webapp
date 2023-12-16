@@ -14,7 +14,13 @@ import {
   Spinner,
   useDisclosure,
   useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
 } from "@chakra-ui/react";
+import { ChatIcon } from "@chakra-ui/icons";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -138,56 +144,74 @@ function QuizPreview() {
             {(quiz.owner === undefined ||
               quiz.owner === authInfo?.username) && (
               <>
-                {quiz.questions.length > 0 && (
-                  <Button
-                    onClick={async () => {
-                      if (generateButtonIsLoading) {
-                        return;
-                      }
+                <Menu>
+                  <MenuButton as={Button} colorScheme="purple">
+                    Actions
+                  </MenuButton>
+                  <MenuList>
+                    {quiz.questions.length > 0 && (
+                      <MenuItem
+                        as={Button}
+                        onClick={async () => {
+                          if (generateButtonIsLoading) {
+                            return;
+                          }
 
-                      setGenerateButtonIsLoading(true);
+                          setGenerateButtonIsLoading(true);
 
-                      try {
-                        const newCollection =
-                          await createFromQuizFlashcardCollection(id);
-                        navigate(`/flashcard-collections/${newCollection.id}`);
-                      } catch (error) {
-                        toast({
-                          title: "Flashcard generation failed",
-                          description: `Whoops! ${(error as Error).message}`,
-                          status: "error",
-                          duration: 5000,
-                          isClosable: true,
-                        });
-                      }
+                          try {
+                            const newCollection =
+                              await createFromQuizFlashcardCollection(id);
+                            navigate(
+                              `/flashcard-collections/${newCollection.id}`
+                            );
+                          } catch (error) {
+                            toast({
+                              title: "Flashcard generation failed",
+                              description: `Whoops! ${
+                                (error as Error).message
+                              }`,
+                              status: "error",
+                              duration: 5000,
+                              isClosable: true,
+                            });
+                          }
 
-                      setGenerateButtonIsLoading(false);
-                    }}
-                    isDisabled={generateButtonIsLoading}
-                  >
-                    {generateButtonIsLoading ? "Generating..." : "Generate flashcards"}
-                  </Button>
-                )}
-                <Button
-                  colorScheme="purple"
-                  onClick={() => setQuizForEdit(quiz)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  colorScheme="red"
-                  onClick={async () => {
-                    await deleteQuiz(id);
-                    navigate("/");
-                  }}
-                >
-                  Delete
-                </Button>
+                          setGenerateButtonIsLoading(false);
+                        }}
+                        isDisabled={generateButtonIsLoading}
+                      >
+                        {generateButtonIsLoading
+                          ? "Generating..."
+                          : "Generate flashcards"}
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      textAlign="center"
+                      onClick={() => setQuizForEdit(quiz)}
+                    >
+                      Edit
+                    </MenuItem>
+                    <MenuItem
+                      color="white"
+                      bg="red.500"
+                      onClick={async () => {
+                        await deleteQuiz(id);
+                        navigate("/");
+                      }}
+                    >
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </>
             )}
-            <Button variant="outline" onClick={onOpen}>
-              Discussion
-            </Button>
+            <IconButton
+              variant="outline"
+              aria-label="Discussion"
+              icon={<ChatIcon />}
+              onClick={onOpen}
+            />
           </HStack>
         }
       />
