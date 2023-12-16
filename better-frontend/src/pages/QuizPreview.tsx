@@ -219,7 +219,7 @@ function QuizPreview() {
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader>Quiz discussion</DrawerHeader>
+          <DrawerHeader fontSize="2xl" fontWeight="bold">Quiz discussion</DrawerHeader>
           <DrawerCloseButton />
           <DrawerBody display="flex" alignItems="stretch">
             <QuizDiscussionBlock id={quiz.id} />
