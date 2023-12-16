@@ -201,9 +201,7 @@ function QuizPreview() {
                     </MenuItem>
                     <MenuItem
                       as={Button}
-                      bg="red.500"
-                      color="white"
-                      _hover={{ bg: "red.600" }}
+                      colorScheme="red"
                       onClick={async () => {
                         await deleteQuiz(id);
                         navigate("/");
