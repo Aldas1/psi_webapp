@@ -94,6 +94,7 @@ function QuizPreview() {
   const questionsData = questionsQuery.data;
   const questionsIsLoading = questionsQuery.isLoading;
   const questionsIsError = questionsQuery.isError;
+  const [generateButtonIsLoading, setGenerateButtonIsLoading] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -140,18 +141,38 @@ function QuizPreview() {
                 {quiz.questions.length > 0 && (
                   <Button
                     onClick={async () => {
-                      const newCollection = await createFromQuizFlashcardCollection(id);
-                      navigate(`/flashcard-collections/${newCollection.id}`);
+                      if (generateButtonIsLoading) {
+                        return;
+                      }
+
+                      setGenerateButtonIsLoading(true);
+
+                      try {
+                        const newCollection =
+                          await createFromQuizFlashcardCollection(id);
+                        navigate(`/flashcard-collections/${newCollection.id}`);
+                      } catch (error) {
+                        toast({
+                          title: "Flashcard generation failed",
+                          description: `Whoops! ${(error as Error).message}`,
+                          status: "error",
+                          duration: 5000,
+                          isClosable: true,
+                        });
+                      }
+
+                      setGenerateButtonIsLoading(false);
                     }}
+                    isDisabled={generateButtonIsLoading}
                   >
-                    Generate flashcards
+                    {generateButtonIsLoading ? "Generating..." : "Generate flashcards"}
                   </Button>
                 )}
                 <Button
                   colorScheme="purple"
                   onClick={() => setQuizForEdit(quiz)}
                 >
-                  Edit quiz
+                  Edit
                 </Button>
                 <Button
                   colorScheme="red"
