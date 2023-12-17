@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlashcardDto } from "../types/flashcard";
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  HStack,
-  Heading,
-  IconButton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, HStack, Heading, Text, VStack } from "@chakra-ui/react";
 
 function shuffle<T>(arr: T[]): T[] {
   return Array.from(arr).sort(() => Math.random() - 0.5);
