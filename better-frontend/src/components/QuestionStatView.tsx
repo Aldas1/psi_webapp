@@ -49,7 +49,7 @@ export default function QuestionStatView({
 
 function QuestionCorrectnessBadge({ correct }: { correct: boolean }) {
   return (
-    <Heading size="xs" color={correct ? "" : "red.800"}>
+    <Heading size="xs" color={correct ? "" : "red.500"}>
       ({correct ? 1 : 0} / 1)
     </Heading>
   );
@@ -111,13 +111,19 @@ function QuestionWithOptionsStatView({
               bgColor={
                 correct
                   ? pickedOptions.includes(o)
-                    ? "green.800"
+                    ? "green.500"
                     : ""
                   : !unpicked
-                  ? "red.800"
+                  ? "red.500"
                   : ""
               }
-              borderColor="red.800"
+              textColor={
+                (correct && pickedOptions.includes(o)) ||
+                (!correct && !unpicked)
+                  ? "white"
+                  : ""
+              }
+              borderColor="red.500"
               borderWidth={unpicked ? 2 : 0}
               p="4"
               rounded="lg"
