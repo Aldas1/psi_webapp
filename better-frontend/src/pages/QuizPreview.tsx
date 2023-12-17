@@ -20,7 +20,7 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from "@chakra-ui/react";
-import { ChatIcon } from "@chakra-ui/icons";
+import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -141,51 +141,51 @@ function QuizPreview() {
                 Start
               </Button>
             )}
+            {quiz.questions.length > 0 && (
+              <Button
+                onClick={async () => {
+                  if (generateButtonIsLoading) {
+                    return;
+                  }
+
+                  setGenerateButtonIsLoading(true);
+
+                  try {
+                    const newCollection =
+                      await createFromQuizFlashcardCollection(id);
+                    navigate(`/flashcard-collections/${newCollection.id}`);
+                  } catch (error) {
+                    toast({
+                      title: "Flashcard generation failed",
+                      description: `Whoops! ${(error as Error).message}`,
+                      status: "error",
+                      duration: 5000,
+                      isClosable: true,
+                    });
+                  }
+
+                  setGenerateButtonIsLoading(false);
+                }}
+                isDisabled={generateButtonIsLoading}
+              >
+                {generateButtonIsLoading
+                  ? "Generating..."
+                  : "Generate flashcards"}
+              </Button>
+            )}
             {(quiz.owner === undefined ||
               quiz.owner === authInfo?.username) && (
               <>
                 <Menu>
-                  <MenuButton as={Button} colorScheme="purple">
+                  <MenuButton
+                    colorScheme="purple"
+                    as={IconButton}
+                    aria-label="Options"
+                    icon={<HamburgerIcon />}
+                  >
                     Actions
                   </MenuButton>
                   <MenuList>
-                    {quiz.questions.length > 0 && (
-                      <MenuItem
-                        as={Button}
-                        onClick={async () => {
-                          if (generateButtonIsLoading) {
-                            return;
-                          }
-
-                          setGenerateButtonIsLoading(true);
-
-                          try {
-                            const newCollection =
-                              await createFromQuizFlashcardCollection(id);
-                            navigate(
-                              `/flashcard-collections/${newCollection.id}`
-                            );
-                          } catch (error) {
-                            toast({
-                              title: "Flashcard generation failed",
-                              description: `Whoops! ${
-                                (error as Error).message
-                              }`,
-                              status: "error",
-                              duration: 5000,
-                              isClosable: true,
-                            });
-                          }
-
-                          setGenerateButtonIsLoading(false);
-                        }}
-                        isDisabled={generateButtonIsLoading}
-                      >
-                        {generateButtonIsLoading
-                          ? "Generating..."
-                          : "Generate flashcards"}
-                      </MenuItem>
-                    )}
                     <MenuItem
                       as={Button}
                       textAlign="center"
@@ -219,7 +219,9 @@ function QuizPreview() {
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader fontSize="2xl" fontWeight="bold">Quiz discussion</DrawerHeader>
+          <DrawerHeader fontSize="2xl" fontWeight="bold">
+            Quiz discussion
+          </DrawerHeader>
           <DrawerCloseButton />
           <DrawerBody display="flex" alignItems="stretch">
             <QuizDiscussionBlock id={quiz.id} />
