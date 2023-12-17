@@ -18,10 +18,16 @@ import {
   Input,
   CheckboxGroup,
   Checkbox,
+  ListItem,
+  List,
+  Divider,
+  Stack,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { submitAnswers } from "../api/quizzes";
 import { AuthContext } from "../contexts/AuthContext";
+import QuestionStatView from "./QuestionStatView";
+import ExplanationSection from "./ExplanationSection";
 
 function SingleChoiceControls({
   parameters,
@@ -151,9 +157,11 @@ function QuestionDisplay({
 function Results({
   quiz,
   results,
+  answers,
 }: {
   quiz: QuizManipulationRequestDto;
   results: AnswerSubmitResponseDto;
+  answers: AnswerSubmitRequestDto[];
 }) {
   if (results.status !== "success") {
     return "Internal error";
@@ -161,10 +169,46 @@ function Results({
 
   return (
     <>
-      <Heading textAlign="center">Score: {results.score.toFixed(2)}</Heading>
-      <Heading textAlign="center" size="sm">
-        {results.correctlyAnswered} / {quiz.questions.length} answered correctly
-      </Heading>
+      <VStack gap="20">
+        <Box>
+          <Heading textAlign="center">
+            Score: {results.score.toFixed(2)}
+          </Heading>
+          <Heading textAlign="center" size="sm">
+            {results.correctlyAnswered} / {quiz.questions.length} answered
+            correctly
+          </Heading>
+        </Box>
+        <VStack alignSelf="start" w="full">
+          <Heading>Stats</Heading>
+          <List w="full">
+            {results.questionStats.map((s) => {
+              const q = quiz.questions.find((q) => q.id === s.questionId);
+              const answer = answers.find((a) => a.questionId === s.questionId);
+              if (!q) {
+                return "Failed to fetch question";
+              }
+
+              return (
+                <ListItem key={s.questionId} w="full">
+                  <Divider width="100%" m="8" />
+                  <Stack>
+                    <QuestionStatView
+                      question={q}
+                      answer={answer}
+                      correct={s.correct}
+                    />
+                    <ExplanationSection
+                      quizId={quiz.id as number}
+                      questionId={q.id as number}
+                    />
+                  </Stack>
+                </ListItem>
+              );
+            })}
+          </List>
+        </VStack>
+      </VStack>
     </>
   );
 }
@@ -180,7 +224,7 @@ function SoloGame({ quiz }: { quiz: QuizManipulationRequestDto }) {
   );
 
   if (results) {
-    return <Results quiz={quiz} results={results} />;
+    return <Results quiz={quiz} results={results} answers={answers} />;
   }
 
   return (

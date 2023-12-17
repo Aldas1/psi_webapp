@@ -53,6 +53,12 @@ interface AnswerSubmitResponseDto {
   score: number;
   correctlyAnswered: number;
   status: string;
+  questionStats: AnswerSubmitQuestionStatusResponseDto[];
+}
+
+interface AnswerSubmitQuestionStatusResponseDto {
+  questionId: number;
+  correct: boolean;
 }
 
 interface UserLeaderboardResponseDto {
@@ -64,6 +70,10 @@ interface DiscussionComment {
   content: string;
   username?: string;
   date: string;
+}
+
+interface ExplanationDto {
+  explanation?: string;
 }
 
 export type {
@@ -78,4 +88,5 @@ export type {
   AnswerSubmitResponseDto,
   UserLeaderboardResponseDto,
   DiscussionComment,
+  ExplanationDto,
 };

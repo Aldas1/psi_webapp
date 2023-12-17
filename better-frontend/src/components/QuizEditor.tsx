@@ -470,3 +470,9 @@ function QuizEditor({
 }
 
 export default QuizEditor;
+export {
+  SingleChoiceQuestionEditor,
+  MultipleChoiceQuestionEditor,
+  OpenTextQuestionEditor,
+  QuestionEditor,
+};
