@@ -233,6 +233,8 @@ function CreateFlashcardForm({
           queryKey: ["flashcards", flashcardCollectionId],
         });
         setSubmitting(false);
+        setQuestion("");
+        setAnswer("");
       }
     }
     post();
@@ -242,8 +244,6 @@ function CreateFlashcardForm({
     e.preventDefault();
     setSubmitting(true);
   }
-
-  if (submitting) return <Spinner />;
 
   return (
     <Card w="full">
@@ -265,7 +265,10 @@ function CreateFlashcardForm({
                 onChange={(e) => setAnswer(e.target.value)}
               />
             </FormControl>
-            <Button type="submit" isDisabled={!question || !answer}>
+            <Button
+              type="submit"
+              isDisabled={!question || !answer || submitting}
+            >
               Add
             </Button>
           </VStack>
