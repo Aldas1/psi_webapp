@@ -6,7 +6,7 @@ import {
   getFlashcardCollection,
   getFlashcards,
   deleteFlashcard,
-  udpateFlashcard,
+  updateFlashcard,
 } from "../api/flashcardCollections";
 import {
   Card,
@@ -142,7 +142,7 @@ function FlashcardInPreview({
   async function handleEdit(newFlashcard: FlashcardDto) {
     setEditing(false);
     if (flashcard.id === undefined) return;
-    await udpateFlashcard(flashcard.id, newFlashcard);
+    await updateFlashcard(flashcard.id, newFlashcard);
     queryClient.invalidateQueries({
       queryKey: ["flashcards"],
     });

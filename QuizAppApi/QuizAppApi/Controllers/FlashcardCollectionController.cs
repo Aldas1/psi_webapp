@@ -26,7 +26,7 @@ public class FlashcardCollectionController : ControllerBase
     public async Task<ActionResult<FlashcardCollectionDto>> CreateFromQuizzes(int quizId)
     {
         var createdCollection = await _collectionService.CreateFromQuizAsync(quizId);
-        return CreatedAtAction(nameof(GetById), createdCollection);
+        return CreatedAtAction(nameof(GetById), new { createdCollection.Id }, createdCollection);
     }
 
     [HttpGet("{id}")]

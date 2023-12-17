@@ -5,16 +5,22 @@ import { getQuestions } from "../api/questions";
 import {
   Button,
   HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Spinner,
   useDisclosure,
   useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
 } from "@chakra-ui/react";
+import { ChatIcon } from "@chakra-ui/icons";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -25,6 +31,7 @@ import { useContext, useState } from "react";
 import SoloGame from "../components/SoloGame";
 import QuizDiscussionBlock from "../components/QuizDiscussionBlock";
 import { AuthContext } from "../contexts/AuthContext";
+import { createFromQuizFlashcardCollection } from "../api/flashcardCollections";
 
 function generateQuiz(
   quizResponse: QuizResponseDto,
@@ -93,6 +100,7 @@ function QuizPreview() {
   const questionsData = questionsQuery.data;
   const questionsIsLoading = questionsQuery.isLoading;
   const questionsIsError = questionsQuery.isError;
+  const [generateButtonIsLoading, setGenerateButtonIsLoading] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -129,44 +137,95 @@ function QuizPreview() {
         previewBody={
           <HStack>
             {quiz.questions.length > 0 && (
-              <Button onClick={() => setInGame(true)}>Solo game</Button>
+              <Button colorScheme="green" onClick={() => setInGame(true)}>
+                Start
+              </Button>
             )}
             {(quiz.owner === undefined ||
               quiz.owner === authInfo?.username) && (
               <>
-                <Button
-                  colorScheme="purple"
-                  onClick={() => setQuizForEdit(quiz)}
-                >
-                  Edit quiz
-                </Button>
-                <Button
-                  colorScheme="red"
-                  onClick={async () => {
-                    await deleteQuiz(id);
-                    navigate("/");
-                  }}
-                >
-                  Delete
-                </Button>
+                <Menu>
+                  <MenuButton as={Button} colorScheme="purple">
+                    Actions
+                  </MenuButton>
+                  <MenuList>
+                    {quiz.questions.length > 0 && (
+                      <MenuItem
+                        as={Button}
+                        onClick={async () => {
+                          if (generateButtonIsLoading) {
+                            return;
+                          }
+
+                          setGenerateButtonIsLoading(true);
+
+                          try {
+                            const newCollection =
+                              await createFromQuizFlashcardCollection(id);
+                            navigate(
+                              `/flashcard-collections/${newCollection.id}`
+                            );
+                          } catch (error) {
+                            toast({
+                              title: "Flashcard generation failed",
+                              description: `Whoops! ${
+                                (error as Error).message
+                              }`,
+                              status: "error",
+                              duration: 5000,
+                              isClosable: true,
+                            });
+                          }
+
+                          setGenerateButtonIsLoading(false);
+                        }}
+                        isDisabled={generateButtonIsLoading}
+                      >
+                        {generateButtonIsLoading
+                          ? "Generating..."
+                          : "Generate flashcards"}
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      as={Button}
+                      textAlign="center"
+                      onClick={() => setQuizForEdit(quiz)}
+                    >
+                      Edit
+                    </MenuItem>
+                    <MenuItem
+                      as={Button}
+                      colorScheme="red"
+                      onClick={async () => {
+                        await deleteQuiz(id);
+                        navigate("/");
+                      }}
+                    >
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </>
             )}
-            <Button variant="outline" onClick={onOpen}>
-              Discussion
-            </Button>
+            <IconButton
+              variant="outline"
+              aria-label="Discussion"
+              icon={<ChatIcon />}
+              onClick={onOpen}
+            />
           </HStack>
         }
       />
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="full">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Quiz discussion</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody display="flex" alignItems="stretch">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader fontSize="2xl" fontWeight="bold">Quiz discussion</DrawerHeader>
+          <DrawerCloseButton />
+          <DrawerBody display="flex" alignItems="stretch">
             <QuizDiscussionBlock id={quiz.id} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

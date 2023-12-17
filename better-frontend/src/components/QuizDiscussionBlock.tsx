@@ -6,6 +6,7 @@ import {
   Input,
   List,
   ListItem,
+  Text,
 } from "@chakra-ui/react";
 import useDiscussion from "../hooks/useDiscussion";
 import { DiscussionComment } from "../types/quiz";
@@ -60,7 +61,7 @@ function CommentArea({ comments }: { comments: DiscussionComment[] }) {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  const messagesEnd = useRef(null);
+  const messagesEnd = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,11 +72,14 @@ function CommentArea({ comments }: { comments: DiscussionComment[] }) {
   }, [comments]);
 
   return (
-    <List height="80vh" overflow="scroll">
+    <List height="83vh" overflowX="hidden" overflowY="scroll">
       {sortedComments.map((c, i) => {
         return (
           <ListItem key={i}>
-            {c.username == null ? "Guest" : c.username}: {c.content}
+            <Text as="span" fontWeight="bold" color="purple.300">
+              {c.username == null ? "Guest" : c.username}
+            </Text>
+            : {c.content}
           </ListItem>
         );
       })}

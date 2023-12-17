@@ -13,6 +13,11 @@ export async function createFlashcardCollection(
   return response.data;
 }
 
+export async function createFromQuizFlashcardCollection(quizId: number) {
+  const response = await axios.post<FlashcardCollectionDto>(`${BASE_URL}create-from-quiz/${quizId}`);
+  return response.data;
+}
+
 export async function getFlashcardCollections() {
   const response = await axios.get<FlashcardCollectionDto[]>(BASE_URL);
   return response.data;
@@ -42,7 +47,7 @@ export async function createFlashcard(id: number, flashcard: FlashcardDto) {
   return response.data;
 }
 
-export async function udpateFlashcard(id: number, flashcard: FlashcardDto) {
+export async function updateFlashcard(id: number, flashcard: FlashcardDto) {
   const response = await axios.put<FlashcardDto>(
     `/api/flashcards/${id}`,
     flashcard

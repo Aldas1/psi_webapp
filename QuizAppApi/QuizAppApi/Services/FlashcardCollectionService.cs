@@ -71,7 +71,7 @@ public class FlashcardCollectionService : IFlashcardCollectionService
                 Answer = answer
             });
         }
-        return await GetByIdAsync(quizId);
+        return await GetByIdAsync(result.Id);
     }
 
     public async Task<FlashcardCollectionDto?> GetByIdAsync(int id)
