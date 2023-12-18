@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FlashcardDto } from "../types/flashcard";
 import {
-  Box,
   Button,
-  Center,
-  Flex,
   HStack,
   Heading,
-  IconButton,
+  Progress,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -25,16 +22,23 @@ export default function FlashcardShufflePlay({
   const [nextLeftFlashcards, setNextLeftFlashcards] = useState<FlashcardDto[]>(
     []
   );
+  const [rememberedFlashcards, setRememberedFlashcards] = useState<
+    FlashcardDto[]
+  >([]);
 
-  useEffect(() => {
-    if (leftFlashcards.length === 0 && nextLeftFlashcards.length > 0) {
-      setLeftFlashcards(shuffle(nextLeftFlashcards));
-      setNextLeftFlashcards([]);
-    }
-  }, [leftFlashcards, nextLeftFlashcards]);
+  function reset() {
+    setNextLeftFlashcards([]);
+    setRememberedFlashcards([]);
+  }
+
+  function nextRound() {
+    setLeftFlashcards(shuffle(nextLeftFlashcards));
+    reset();
+  }
 
   function remember() {
     setLeftFlashcards(leftFlashcards.filter((_v, i) => i !== 0));
+    setRememberedFlashcards([...rememberedFlashcards, leftFlashcards[0]]);
   }
 
   function repeat() {
@@ -46,16 +50,40 @@ export default function FlashcardShufflePlay({
     return (
       <>
         <Heading>Congrats!</Heading>
-        <Button onClick={() => setLeftFlashcards(shuffle(flashcards))}>
+        <Button
+          onClick={() => {
+            setLeftFlashcards(shuffle(flashcards));
+            reset();
+          }}
+        >
           Repeat
         </Button>
       </>
     );
   }
 
+  if (leftFlashcards.length === 0 && nextLeftFlashcards.length > 0) {
+    return (
+      <NextRoundView
+        rememberedCount={rememberedFlashcards.length}
+        nextCount={nextLeftFlashcards.length}
+        onProceed={nextRound}
+      />
+    );
+  }
+
   if (leftFlashcards.length > 0) {
     return (
       <>
+        <Progress
+          w="full"
+          value={
+            ((nextLeftFlashcards.length + rememberedFlashcards.length) * 100) /
+            (nextLeftFlashcards.length +
+              leftFlashcards.length +
+              rememberedFlashcards.length)
+          }
+        />
         <Flashcard flashcard={leftFlashcards[0]} />
         <HStack justifyContent="center" mx="auto">
           <Button onClick={remember}>Remeber</Button>
@@ -64,6 +92,26 @@ export default function FlashcardShufflePlay({
       </>
     );
   }
+}
+
+function NextRoundView({
+  rememberedCount,
+  nextCount,
+  onProceed,
+}: {
+  rememberedCount: number;
+  nextCount: number;
+  onProceed: () => void;
+}) {
+  return (
+    <VStack w="full">
+      <Heading size="lg">Your progress so far</Heading>
+      <Text>
+        {rememberedCount} remembered, {nextCount} left
+      </Text>
+      <Button onClick={onProceed}>Continue</Button>
+    </VStack>
+  );
 }
 
 function Flashcard({ flashcard }: { flashcard: FlashcardDto }) {
