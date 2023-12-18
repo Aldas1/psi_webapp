@@ -20,7 +20,7 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from "@chakra-ui/react";
-import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChatIcon } from "@chakra-ui/icons";
 import {
   QuestionResponseDto,
   QuizManipulationRequestDto,
@@ -123,6 +123,18 @@ function QuizPreview() {
     return <SoloGame quiz={quiz} />;
   }
 
+  function withValidUser(f: () => void) {
+    if (quiz.owner !== undefined && quiz.owner !== authInfo?.username) {
+      toast({
+        title: "User is not authorized",
+        description: "You must be the owner of this quiz",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else f();
+  }
+
   return (
     <>
       <QuizEditor
@@ -141,72 +153,65 @@ function QuizPreview() {
                 Start
               </Button>
             )}
-            {quiz.questions.length > 0 && (
-              <Button
-                onClick={async () => {
-                  if (generateButtonIsLoading) {
-                    return;
-                  }
+            <Menu>
+              <MenuButton as={Button} colorScheme="purple">
+                Actions
+              </MenuButton>
+              <MenuList>
+                {quiz.questions.length > 0 && (
+                  <MenuItem
+                    as={Button}
+                    onClick={async () => {
+                      if (generateButtonIsLoading) {
+                        return;
+                      }
 
-                  setGenerateButtonIsLoading(true);
+                      setGenerateButtonIsLoading(true);
 
-                  try {
-                    const newCollection =
-                      await createFromQuizFlashcardCollection(id);
-                    navigate(`/flashcard-collections/${newCollection.id}`);
-                  } catch (error) {
-                    toast({
-                      title: "Flashcard generation failed",
-                      description: `Whoops! ${(error as Error).message}`,
-                      status: "error",
-                      duration: 5000,
-                      isClosable: true,
-                    });
-                  }
+                      try {
+                        const newCollection =
+                          await createFromQuizFlashcardCollection(id);
+                        navigate(`/flashcard-collections/${newCollection.id}`);
+                      } catch (error) {
+                        toast({
+                          title: "Flashcard generation failed",
+                          description: `Whoops! ${(error as Error).message}`,
+                          status: "error",
+                          duration: 5000,
+                          isClosable: true,
+                        });
+                      }
 
-                  setGenerateButtonIsLoading(false);
-                }}
-                isDisabled={generateButtonIsLoading}
-              >
-                {generateButtonIsLoading
-                  ? "Generating..."
-                  : "Generate flashcards"}
-              </Button>
-            )}
-            {(quiz.owner === undefined ||
-              quiz.owner === authInfo?.username) && (
-              <>
-                <Menu>
-                  <MenuButton
-                    colorScheme="purple"
-                    as={IconButton}
-                    aria-label="Options"
-                    icon={<HamburgerIcon />}
+                      setGenerateButtonIsLoading(false);
+                    }}
+                    isDisabled={generateButtonIsLoading}
                   >
-                    Actions
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem
-                      as={Button}
-                      textAlign="center"
-                      onClick={() => setQuizForEdit(quiz)}
-                    >
-                      Edit
-                    </MenuItem>
-                    <MenuItem
-                      as={Button}
-                      colorScheme="red"
-                      onClick={async () => {
-                        await deleteQuiz(id);
-                        navigate("/");
-                      }}
-                    >
-                      Delete
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </>
-            )}
+                    {generateButtonIsLoading
+                      ? "Generating..."
+                      : "Generate flashcards"}
+                  </MenuItem>
+                )}
+                <MenuItem
+                  as={Button}
+                  textAlign="center"
+                  onClick={() => withValidUser(() => setQuizForEdit(quiz))}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  as={Button}
+                  colorScheme="red"
+                  onClick={() =>
+                    withValidUser(async () => {
+                      await deleteQuiz(id);
+                      navigate("/");
+                    })
+                  }
+                >
+                  Delete
+                </MenuItem>
+              </MenuList>
+            </Menu>
             <IconButton
               variant="outline"
               aria-label="Discussion"
