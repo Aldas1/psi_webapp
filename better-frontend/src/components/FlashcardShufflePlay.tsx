@@ -26,10 +26,14 @@ export default function FlashcardShufflePlay({
     FlashcardDto[]
   >([]);
 
-  function nextRound() {
-    setLeftFlashcards(shuffle(nextLeftFlashcards));
+  function reset() {
     setNextLeftFlashcards([]);
     setRememberedFlashcards([]);
+  }
+
+  function nextRound() {
+    setLeftFlashcards(shuffle(nextLeftFlashcards));
+    reset();
   }
 
   function remember() {
@@ -46,7 +50,12 @@ export default function FlashcardShufflePlay({
     return (
       <>
         <Heading>Congrats!</Heading>
-        <Button onClick={() => setLeftFlashcards(shuffle(flashcards))}>
+        <Button
+          onClick={() => {
+            setLeftFlashcards(shuffle(flashcards));
+            reset();
+          }}
+        >
           Repeat
         </Button>
       </>
