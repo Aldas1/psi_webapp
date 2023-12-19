@@ -129,7 +129,11 @@ function Flashcard({ flashcard }: { flashcard: FlashcardDto }) {
       onClick={() => setIsFlipped(!isFlipped)}
       userSelect="none"
     >
-      <Text fontSize="4xl" transform={isFlipped ? "rotateY(180deg)" : ""}>
+      <Text
+        fontSize="4xl"
+        transform={isFlipped ? "rotateY(180deg)" : ""}
+        textAlign="center"
+      >
         {isFlipped ? flashcard.answer : flashcard.question}
       </Text>
     </VStack>
